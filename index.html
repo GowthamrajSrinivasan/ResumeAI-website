@@ -367,7 +367,8 @@
             );
         }
 
-        ReactDOM.render(<LoginSignup />, document.getElementById('root'));
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<LoginSignup />);
     </script>
 </body>
 </html>
