@@ -13,12 +13,12 @@
     ],
     "rewrites": [
       {
-        "source": "/",
-        "destination": "/landing.html"
-      },
-      {
         "source": "/login",
         "destination": "/index.html"
+      },
+      {
+        "source": "**",
+        "destination": "/landing.html"
       }
     ],
     "headers": [
