@@ -5,7 +5,12 @@
   "main": "index.html",
   "scripts": {
     "start": "npx http-server . -p 3000 -o",
-    "serve": "npx http-server . -p 8080 -o"
+    "serve": "npx http-server . -p 8080 -o",
+    "dev": "npx http-server . -p 3000 -o",
+    "build": "echo 'No build process needed for static HTML files' && exit 0",
+    "preview": "npx http-server . -p 8080 -o",
+    "landing": "npx http-server . -p 3000 -o landing.html",
+    "login": "npx http-server . -p 3000 -o index.html"
   },
   "dependencies": {
     "http-server": "^14.1.1"
