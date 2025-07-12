@@ -3,15 +3,18 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect, useState } from "react";
-import { Sparkles, Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
+import { Sparkles, Eye, EyeOff, Mail, Lock, User, ArrowRight } from "lucide-react";
 
 export default function LoginPage() {
-  const { user, loading, signIn, signInWithGoogle } = useAuth();
+  const { user, loading, signIn, signUp, signInWithGoogle } = useAuth();
   const router = useRouter();
+  const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
+    name: '',
+    confirmPassword: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -36,12 +39,31 @@ export default function LoginPage() {
     setError('');
 
     try {
-      await signIn(formData.email, formData.password);
+      if (isLogin) {
+        await signIn(formData.email, formData.password);
+      } else {
+        if (formData.password !== formData.confirmPassword) {
+          setError('Passwords do not match');
+          return;
+        }
+        await signUp(formData.email, formData.password);
+      }
     } catch (error: any) {
       setError(error.message || 'An error occurred');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const toggleMode = () => {
+    setIsLogin(!isLogin);
+    setFormData({
+      email: '',
+      password: '',
+      name: '',
+      confirmPassword: ''
+    });
+    setError('');
   };
 
   const togglePasswordVisibility = () => {
@@ -104,8 +126,32 @@ export default function LoginPage() {
                   </span>
                 </h2>
                 <p className="text-gray-400 text-sm">
-                  Sign in to your account to get started
+                  {isLogin ? 'Sign in to your account' : 'Create your account to get started'}
                 </p>
+              </div>
+
+              {/* Toggle Buttons */}
+              <div className="flex bg-gray-800/50 rounded-xl p-1 mb-8 border border-gray-700">
+                <button
+                  onClick={() => setIsLogin(true)}
+                  className={`flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 ${
+                    isLogin
+                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
+                      : 'text-gray-400 hover:text-gray-200'
+                  }`}
+                >
+                  Log In
+                </button>
+                <button
+                  onClick={() => setIsLogin(false)}
+                  className={`flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 ${
+                    !isLogin
+                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
+                      : 'text-gray-400 hover:text-gray-200'
+                  }`}
+                >
+                  Sign Up
+                </button>
               </div>
 
               {/* Google Sign-in Button */}
@@ -151,6 +197,27 @@ export default function LoginPage() {
 
               {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Name field for signup */}
+                {!isLogin && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Full Name
+                    </label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        className="w-full pl-11 pr-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all backdrop-blur-sm"
+                        placeholder="Enter your full name"
+                        required={!isLogin}
+                      />
+                    </div>
+                  </div>
+                )}
+
                 {/* Email field */}
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -196,6 +263,27 @@ export default function LoginPage() {
                   </div>
                 </div>
 
+                {/* Confirm Password field for signup */}
+                {!isLogin && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Confirm Password
+                    </label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        name="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={handleInputChange}
+                        className="w-full pl-11 pr-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all backdrop-blur-sm"
+                        placeholder="Confirm your password"
+                        required={!isLogin}
+                      />
+                    </div>
+                  </div>
+                )}
+
                 {/* Submit Button */}
                 <button
                   type="submit"
@@ -205,11 +293,11 @@ export default function LoginPage() {
                   {isLoading ? (
                     <>
                       <Sparkles className="h-5 w-5 animate-pulse" />
-                      <span>Signing In...</span>
+                      <span>{isLogin ? 'Signing In...' : 'Creating Account...'}</span>
                     </>
                   ) : (
                     <>
-                      <span>Log In</span>
+                      <span>{isLogin ? 'Log In' : 'Sign Up'}</span>
                       <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                     </>
                   )}
@@ -217,14 +305,29 @@ export default function LoginPage() {
               </form>
 
               {/* Additional Links */}
-              <div className="mt-8 text-center">
-                <button 
-                  type="button"
-                  onClick={() => alert('Forgot password functionality would be implemented here')}
-                  className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
-                >
-                  Forgot Password?
-                </button>
+              <div className="mt-8 text-center space-y-3">
+                {isLogin && (
+                  <div>
+                    <button 
+                      type="button"
+                      onClick={() => alert('Forgot password functionality would be implemented here')}
+                      className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
+                    >
+                      Forgot Password?
+                    </button>
+                  </div>
+                )}
+                
+                <div className="text-sm text-gray-400">
+                  {isLogin ? "Don't have an account?" : "Already have an account?"}
+                  <button
+                    type="button"
+                    onClick={toggleMode}
+                    className="ml-2 text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                  >
+                    {isLogin ? 'Sign Up' : 'Log In'}
+                  </button>
+                </div>
               </div>
             </div>
 
