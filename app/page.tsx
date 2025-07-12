@@ -66,7 +66,7 @@ export default function HomePage() {
         </p>
         <button className="mt-1 px-6 py-2 bg-yellow-400 hover:bg-yellow-300 text-black font-bold rounded-xl shadow-md transition duration-300"
         onClick={() => window.location.href = '/login'}>
-          Claim My Offer
+          Add to Chrome - It's Free
         </button>
       </header>
 
@@ -84,19 +84,19 @@ export default function HomePage() {
     />
     <div className="relative z-10">
       <h2 className="text-4xl md:text-6xl font-extrabold mb-4 text-white drop-shadow-lg">
-        Study with{' '}
+        Supercharge Your{' '}
         <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-          your AI buddy
+          LinkedIn Presence with AI
         </span>
       </h2>
       <p className="text-lg md:text-xl max-w-2xl mx-auto mb-8 text-gray-300">
-        Your personal AI-powered study partner is here to help you learn smarter, not harder. Ace your exams with powerful tools designed for modern students.
+        Stop guessing what works and let AI do the heavy lifting. Create engaging posts, write personalized messages, and optimize your profile in seconds. Unlock your true networking potential and land your next opportunity faster.
       </p>
       <button 
         onClick={() => window.location.href = '/login'} 
         className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl transition duration-300 transform hover:scale-105"
       >
-        Start my study transformation
+        Add to Chrome - It's Free
       </button>
     </div>
   </div>
@@ -108,8 +108,8 @@ export default function HomePage() {
         <section id="features" className="py-16 px-4">
           <div className="container mx-auto">
             <div className="text-center mb-12">
-              <h3 className="text-4xl font-bold drop-shadow-md">Why You'll Love Study Buddy</h3>
-              <p className="text-gray-400 mt-2">Unlock your full potential with these powerful benefits.</p>
+              <h3 className="text-4xl font-bold drop-shadow-md">Features & Benefits</h3>
+              <p className="text-gray-400 mt-2">Unlock your LinkedIn potential with these powerful AI-driven features.</p>
             </div>
             <div className="grid md:grid-cols-3 gap-10">
               {/* Benefit 1 */}
@@ -117,24 +117,24 @@ export default function HomePage() {
                 before:content-[''] before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-br before:from-blue-500/20 before:to-transparent before:z-0 relative overflow-hidden">
                 <div className="text-blue-400 mb-5 z-10 relative drop-shadow-2xl">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
                 </div>
-                <h4 className="text-2xl font-bold mb-3 z-10 relative">Deeper Understanding</h4>
-                <p className="text-gray-400 mb-6 z-10 relative">Go beyond memorization. Truly grasp complex subjects.</p>
+                <h4 className="text-2xl font-bold mb-3 z-10 relative">AI-Powered Content Creation</h4>
+                <p className="text-gray-400 mb-6 z-10 relative">Effortlessly generate high-quality, engaging posts, articles, and comments tailored to your professional brand.</p>
                 <ul className="space-y-4 z-10 relative">
                   <li className="flex items-start">
                     <span className="font-bold text-blue-400 mr-2">&#10003;</span>
                     <div>
-                      <h5 className="font-semibold">AI Explanations</h5>
-                      <p className="text-gray-500 text-sm">Simplifies tough topics into easy-to-digest concepts.</p>
+                      <h5 className="font-semibold">Save Hours of Time</h5>
+                      <p className="text-gray-500 text-sm">Stop brainstorming and let AI create engaging content instantly.</p>
                     </div>
                   </li>
                   <li className="flex items-start">
                     <span className="font-bold text-blue-400 mr-2">&#10003;</span>
                     <div>
-                      <h5 className="font-semibold">Chat with Pdf</h5>
-                      <p className="text-gray-500 text-sm">Leaverage your AI buddy to condense topics across pdf</p>
+                      <h5 className="font-semibold">Boost Your Visibility</h5>
+                      <p className="text-gray-500 text-sm">Establish yourself as a thought leader in your industry.</p>
                     </div>
                   </li>
                 </ul>
@@ -147,26 +147,24 @@ export default function HomePage() {
                 before:content-[''] before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-br before:from-indigo-500/20 before:to-transparent before:z-0 relative overflow-hidden">
                 <div className="text-indigo-400 mb-5 z-10 relative drop-shadow-2xl">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                 </div>
-                <h4 className="text-2xl font-bold mb-3 z-10 relative">Gain Exam-ready Confidence</h4>
-                <p className="text-gray-400 mb-6 z-10 relative">Study effectively and get more done in less time.</p>
+                <h4 className="text-2xl font-bold mb-3 z-10 relative">Smart Messaging Assistant</h4>
+                <p className="text-gray-400 mb-6 z-10 relative">Craft personalized connection requests, follow-up messages, and replies in a single click.</p>
                 <ul className="space-y-4 z-10 relative">
                   <li className="flex items-start">
                     <span className="font-bold text-indigo-400 mr-2">&#10003;</span>
                     <div>
-                    <h5 className="font-semibold">Smart Quiz</h5>
-                    <p className="text-gray-500 text-sm">Use Custom Quiz to leaverage test driven learning </p>
-                      {/* <h5 className="font-semibold">Smart Flashcards</h5>
-                      <p className="text-gray-500 text-sm">Uses spaced repetition to maximize memory retention.</p> */}
+                    <h5 className="font-semibold">Break the Ice Easily</h5>
+                    <p className="text-gray-500 text-sm">AI helps you start meaningful professional conversations.</p>
                     </div>
                   </li>
                   <li className="flex items-start">
                     <span className="font-bold text-indigo-400 mr-2">&#10003;</span>
                     <div>
-                      <h5 className="font-semibold">Automated Summaries</h5>
-                      <p className="text-gray-500 text-sm">Generates concise summaries from lecture notes and texts.</p>
+                      <h5 className="font-semibold">Build Your Network</h5>
+                      <p className="text-gray-500 text-sm">Network more effectively without awkward outreach.</p>
                     </div>
                   </li>
                 </ul>
@@ -178,17 +176,24 @@ export default function HomePage() {
                 before:content-[''] before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-br before:from-purple-500/20 before:to-transparent before:z-0 relative overflow-hidden">
                 <div className="text-purple-400 mb-5 z-10 relative drop-shadow-2xl">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
-                <h4 className="text-2xl font-bold mb-3 z-10 relative">Stay Motivated</h4>
-                <p className="text-gray-400 mb-6 z-10 relative">Keep your study habits consistent and track your progress.</p>
+                <h4 className="text-2xl font-bold mb-3 z-10 relative">Intelligent Profile Optimization</h4>
+                <p className="text-gray-400 mb-6 z-10 relative">Receive AI-driven suggestions to improve your LinkedIn profile headline, summary, and experience sections.</p>
                 <ul className="space-y-4 z-10 relative">
                   <li className="flex items-start">
                     <span className="font-bold text-purple-400 mr-2">&#10003;</span>
                     <div>
-                      <h5 className="font-semibold">Gamified Learning</h5>
-                      <p className="text-gray-500 text-sm">Engaging learning paths and progress tracking.</p>
+                      <h5 className="font-semibold">Stand Out to Recruiters</h5>
+                      <p className="text-gray-500 text-sm">Present the best version of your professional self.</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="font-bold text-purple-400 mr-2">&#10003;</span>
+                    <div>
+                      <h5 className="font-semibold">Attract More Opportunities</h5>
+                      <p className="text-gray-500 text-sm">Get noticed by potential clients and employers.</p>
                     </div>
                   </li>
                 </ul>
@@ -277,10 +282,10 @@ export default function HomePage() {
     {/* FAQ 1 */}
     <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
       <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-        What is Study Buddy?
+        Is LinkedIn AI Assistant safe to use with my LinkedIn account?
       </h4>
       <p className="text-gray-300 text-base">
-        Study Buddy is your personal AI-powered study assistant. It helps you understand, summarize, and quiz yourself on study materials using the latest AI technology, all in one modern and secure platform.
+        Yes, LinkedIn AI Assistant is completely safe. It works as a browser extension that assists you with content creation and messaging without compromising your account security. We follow all LinkedIn's terms of service and best practices.
       </p>
       <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
         background: "radial-gradient(circle at 40% 30%, #4361ee22 0%, transparent 75%)"
@@ -289,10 +294,10 @@ export default function HomePage() {
     {/* FAQ 2 */}
     <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
       <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-        How does the AI personalize my study experience?
+        How does the AI generate personalized content?
       </h4>
       <p className="text-gray-300 text-base">
-        Study Buddy learns from your uploaded materials and interactions to suggest quizzes, flashcards, and summaries tailored to your progress and study habits.
+        Our AI analyzes your industry, role, and professional interests to create content that matches your unique voice and expertise. It learns from your preferences to deliver increasingly relevant suggestions.
       </p>
       <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
         background: "radial-gradient(circle at 65% 40%, #7209b722 0%, transparent 75%)"
@@ -301,10 +306,10 @@ export default function HomePage() {
     {/* FAQ 3 */}
     <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
       <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-        Is my data secure and private?
+        Will my generated content be unique?
       </h4>
       <p className="text-gray-300 text-base">
-        Yes! We use advanced encryption and privacy-first design. Your data is never sold or used for advertising and can be exported or deleted at any time.
+        Absolutely! Every piece of content is uniquely generated based on your input, professional background, and current trends. No two users will receive identical suggestions.
       </p>
       <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
         background: "radial-gradient(circle at 60% 20%, #4cc9f022 0%, transparent 75%)"
@@ -313,10 +318,10 @@ export default function HomePage() {
     {/* FAQ 4 */}
     <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
       <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-        Can I use Study Buddy on multiple devices?
+        Do I need a LinkedIn Premium account?
       </h4>
       <p className="text-gray-300 text-base">
-        Absolutely! Study Buddy works seamlessly across web and mobile devices. Your study progress and materials sync automatically.
+        No, LinkedIn AI Assistant works with any LinkedIn account. However, some advanced features may work better with LinkedIn Premium due to increased messaging and connection limits.
       </p>
       <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
         background: "radial-gradient(circle at 55% 20%, #4361ee22 0%, transparent 75%)"
@@ -325,10 +330,10 @@ export default function HomePage() {
     {/* FAQ 5 */}
     <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
       <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-        How do I generate quizzes or summaries from a PDF?
+        What languages does LinkedIn AI Assistant support?
       </h4>
       <p className="text-gray-300 text-base">
-        Just upload your PDF and select "Generate Quiz" or "Summarize." Our AI instantly analyzes your document and produces high-quality, relevant content.
+        LinkedIn AI Assistant supports content generation in over 25 languages, automatically adapting to your LinkedIn profile's primary language and regional preferences.
       </p>
       <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
         background: "radial-gradient(circle at 35% 50%, #4cc9f022 0%, transparent 75%)"
@@ -337,10 +342,10 @@ export default function HomePage() {
     {/* FAQ 6 */}
     <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
       <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-        Is there a free plan or a trial available?
+        How much does LinkedIn AI Assistant cost?
       </h4>
       <p className="text-gray-300 text-base">
-        Yes, you can get started for free with limited features. Upgrade to unlock advanced AI tools, unlimited uploads, and priority support.
+        We offer a free version with basic features and premium plans starting at $9.99/month for unlimited content generation, advanced templates, and priority support.
       </p>
       <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
         background: "radial-gradient(circle at 65% 70%, #7209b722 0%, transparent 75%)"
@@ -354,7 +359,7 @@ export default function HomePage() {
     {/* Text */}
     <div className="z-10 flex-1">
       <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
-        Summarize anything<br />forget nothing
+        Supercharge your LinkedIn<br />grow your network
       </h2>
       <div className="flex items-center gap-2 mt-2">
         {/* 5 stars */}
@@ -401,10 +406,10 @@ export default function HomePage() {
     {/* Brand / Logo */}
     <div className="flex flex-col items-center md:items-start gap-2">
       <span className="text-2xl font-bold text-white tracking-tight">
-        Study Buddy
+        LinkedIn AI Assistant
       </span>
       <span className="text-gray-400 text-sm">
-        Your AI-powered study companion
+        Your AI-powered LinkedIn companion
       </span>
     </div>
     {/* Links */}
@@ -453,7 +458,7 @@ export default function HomePage() {
     </div>
   </div>
   <div className="mt-8 text-center text-gray-500 text-sm">
-    © {new Date().getFullYear()} Study Buddy. All rights reserved.
+    © {new Date().getFullYear()} LinkedIn AI Assistant. All rights reserved.
   </div>
 </footer>
 

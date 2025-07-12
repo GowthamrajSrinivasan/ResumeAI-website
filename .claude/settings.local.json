@@ -9,7 +9,8 @@
       "Bash(npx @tailwindcss/cli@next:*)",
       "Bash(npm uninstall:*)",
       "Bash(npm run build:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(sed:*)"
     ],
     "deny": []
   }
