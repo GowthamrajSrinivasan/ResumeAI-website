@@ -39,7 +39,7 @@ export default function HomePage() {
   }, [resetTime]);
   useEffect(() => {
     if (!loading && user) {
-      router.push('/login');
+      router.push('/dashboard');
     }
   }, [user, loading, router]);
 
@@ -199,6 +199,16 @@ export default function HomePage() {
                 </ul>
                 <div className="absolute -inset-1 bg-purple-400/30 blur-2xl opacity-0 group-hover:opacity-60 transition pointer-events-none rounded-3xl z-0"></div>
               </div>
+            </div>
+            
+            {/* Pricing CTA */}
+            <div className="text-center mt-16">
+              <button
+                onClick={() => window.location.href = '/pricing'}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl transition duration-300 transform hover:scale-105"
+              >
+                View Pricing Plans
+              </button>
             </div>
           </div>
         </section>
@@ -418,7 +428,7 @@ export default function HomePage() {
         <h4 className="font-semibold text-gray-300 mb-2">Product</h4>
         <ul className="space-y-1 text-gray-400 text-sm">
           <li><a href="#features" className="hover:text-blue-400 transition">Features</a></li>
-          <li><a href="#pricing" className="hover:text-blue-400 transition">Pricing</a></li>
+          <li><a href="/pricing" className="hover:text-blue-400 transition">Pricing</a></li>
           <li><a href="#faq" className="hover:text-blue-400 transition">FAQ</a></li>
         </ul>
       </div>

@@ -10,7 +10,12 @@
       "Bash(npm uninstall:*)",
       "Bash(npm run build:*)",
       "Bash(cp:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(npx tsc:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(npx next lint:*)",
+      "Bash(timeout 10s npm run dev)"
     ],
     "deny": []
   }
