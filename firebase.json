@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": ".",
+    "public": "out",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -9,17 +9,20 @@
       "package-lock.json",
       "README.md",
       "LoginSignup.jsx",
-      "public/**"
+      "app/**",
+      "hooks/**",
+      "lib/**",
+      "landingPage.tsx"
     ],
     "rewrites": [
       {
-        "source": "**",
-        "destination": "/landing.html"
+        "source": "/login",
+        "destination": "/login.html"
       },
       {
-        "source": "/login",
+        "source": "**",
         "destination": "/index.html"
-      }      
+      }
     ],
     "headers": [
       {
