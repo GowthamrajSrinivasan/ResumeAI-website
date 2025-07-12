@@ -29,23 +29,12 @@ This error means **Email/Password authentication is not enabled** in your Fireba
 - Enter your **Project support email** (required)
 - Click **"Save"**
 
-### 5. Enable Apple Sign-in (Optional but Recommended)
-- In the same "Sign-in method" tab
-- Find **"Apple"** in the list
-- Click on it
-- Toggle **"Enable"** to ON
-- **Note**: Apple sign-in requires additional setup:
-  - You need an Apple Developer account
-  - Configure your app in Apple Developer Console
-  - Add Apple ID configuration (Services ID, Key ID, Team ID, etc.)
-- For now, you can enable it and configure the Apple Developer settings later
-- Click **"Save"**
 
-### 6. Optional: Enable Email Link Sign-in
+### 5. Optional: Enable Email Link Sign-in
 - While in Email/Password settings, you can also enable **"Email link (passwordless sign-in)"**
 - This is optional but provides a better user experience
 
-### 7. Configure Authorized Domains (if needed)
+### 6. Configure Authorized Domains (if needed)
 - In the same "Sign-in method" tab
 - Scroll down to **"Authorized domains"**
 - Make sure your domain is listed (localhost should already be there for development)
@@ -104,24 +93,8 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
 - Make sure you're not in incognito/private mode
 
 #### "An account already exists with the same email"
-- This happens when someone signed up with email/password using the same email as their Google/Apple account
+- This happens when someone signed up with email/password using the same email as their Google account
 - Users can link accounts or use password reset to access the existing account
-
-### Apple Sign-in Issues
-
-#### "Apple authentication is not enabled"
-- Make sure you enabled Apple in the Sign-in method tab
-- Check that the status shows "Enabled"
-- Note: Full Apple setup requires Apple Developer account configuration
-
-#### Apple Sign-in requires additional setup
-- **For production use**, you'll need to:
-  1. Have an Apple Developer account ($99/year)
-  2. Create a Services ID in Apple Developer Console
-  3. Configure Sign in with Apple capability
-  4. Add your domain to Apple's authorized domains
-  5. Generate and configure private keys
-- **For development**, you can enable it in Firebase but it may not work until Apple Developer setup is complete
 
 ### Can't find Authentication in Firebase Console?
 - Make sure you're in the correct Firebase project

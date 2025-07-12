@@ -6,7 +6,6 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   GoogleAuthProvider,
-  OAuthProvider,
   signInWithPopup
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -20,7 +19,6 @@ interface AuthActions {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
-  signInWithApple: () => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -102,30 +100,6 @@ export function useAuth(): AuthState & AuthActions {
     }
   };
 
-  const signInWithApple = async () => {
-    try {
-      const provider = new OAuthProvider('apple.com');
-      provider.addScope('email');
-      provider.addScope('name');
-      await signInWithPopup(auth, provider);
-    } catch (error: any) {
-      console.error('Error signing in with Apple:', error);
-      // Provide user-friendly error messages
-      if (error.code === 'auth/operation-not-allowed') {
-        throw new Error('Apple authentication is not enabled. Please contact support.');
-      } else if (error.code === 'auth/popup-closed-by-user') {
-        throw new Error('Sign-in cancelled. Please try again.');
-      } else if (error.code === 'auth/popup-blocked') {
-        throw new Error('Popup blocked by browser. Please allow popups and try again.');
-      } else if (error.code === 'auth/cancelled-popup-request') {
-        throw new Error('Sign-in cancelled. Please try again.');
-      } else if (error.code === 'auth/account-exists-with-different-credential') {
-        throw new Error('An account already exists with the same email address but different sign-in credentials.');
-      } else {
-        throw new Error(error.message || 'Failed to sign in with Apple. Please try again.');
-      }
-    }
-  };
 
   const logout = async () => {
     try {
@@ -142,7 +116,6 @@ export function useAuth(): AuthState & AuthActions {
     signIn,
     signUp,
     signInWithGoogle,
-    signInWithApple,
     logout,
   };
 }
