@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect } from "react";
-import { Sparkles, LogOut, User } from "lucide-react";
+import { Sparkles, LogOut, User, Crown } from "lucide-react";
 
 export default function DashboardPage() {
   const { user, loading, logout } = useAuth();

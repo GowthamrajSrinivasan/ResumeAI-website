@@ -6,7 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
   getRedirectResult
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -19,7 +19,7 @@ interface AuthState {
 interface AuthActions {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
-  signInWithGoogle: (useRedirect?: boolean) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -90,46 +90,23 @@ export function useAuth(): AuthState & AuthActions {
     }
   };
 
-  const signInWithGoogle = async (useRedirect = false) => {
+  const signInWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
       
-      if (useRedirect) {
-        // Use redirect method directly
-        const { signInWithRedirect } = await import('firebase/auth');
-        await signInWithRedirect(auth, provider);
-        return;
-      }
-      
-      // Try popup first, fallback to redirect if popup is blocked
-      try {
-        await signInWithPopup(auth, provider);
-      } catch (popupError: any) {
-        if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/popup-closed-by-user') {
-          // Auto-fallback to redirect method
-          const { signInWithRedirect } = await import('firebase/auth');
-          await signInWithRedirect(auth, provider);
-          return;
-        }
-        throw popupError;
-      }
+      // Use redirect method - this will redirect the entire page to Google
+      // The function won't return because the page redirects away
+      // Results are handled by getRedirectResult when user returns
+      await signInWithRedirect(auth, provider);
     } catch (error: any) {
-      console.error('Error signing in with Google:', error);
-      // Provide user-friendly error messages
+      console.error('Error initiating Google sign-in redirect:', error);
+      // Handle errors that occur before redirect (rare)
       if (error.code === 'auth/operation-not-allowed') {
         throw new Error('Google authentication is not enabled. Please contact support.');
-      } else if (error.code === 'auth/popup-closed-by-user') {
-        throw new Error('Sign-in cancelled. Please try again.');
-      } else if (error.code === 'auth/popup-blocked') {
-        throw new Error('POPUP_BLOCKED'); // Special error code for handling
-      } else if (error.code === 'auth/cancelled-popup-request') {
-        throw new Error('Sign-in cancelled. Please try again.');
-      } else if (error.code === 'auth/account-exists-with-different-credential') {
-        throw new Error('An account already exists with the same email address but different sign-in credentials.');
       } else if (error.code === 'auth/unauthorized-domain') {
         throw new Error('This domain is not authorized for Google sign-in. Please contact support.');
       } else {
-        throw new Error(error.message || 'Failed to sign in with Google. Please try again.');
+        throw new Error(error.message || 'Failed to initiate Google sign-in. Please try again.');
       }
     }
   };
