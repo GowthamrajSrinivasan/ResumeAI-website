@@ -92,6 +92,9 @@ export function useAuth(redirectPath = '/dashboard'): AuthState & AuthActions {
       console.log('Auth state changed:', user ? `Logged in as ${user.email}` : 'Not logged in');
       setUser(user);
       setLoading(false);
+      if (user && window.location.pathname !== redirectPath) {
+        router.push(redirectPath);
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -102,7 +105,7 @@ export function useAuth(redirectPath = '/dashboard'): AuthState & AuthActions {
       try {
         const redirectManager = RedirectResultManager.getInstance();
         await redirectManager.checkRedirectResult();
-        console.log('✅ Redirect result check completed');
+        console.log('✅ Redirect result check completed',redirectManager.checkRedirectResult());
         setRedirectResultChecked(true);
       } catch (error) {
         console.error('❌ Error checking redirect result:', error);
