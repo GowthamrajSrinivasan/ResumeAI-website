@@ -18,10 +18,11 @@ export default function LoginPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPopupHelp, setShowPopupHelp] = useState(false);
 
   useEffect(() => {
     if (user && !loading) {
-      router.push('/dashboard');
+      router.push('/checkout');
     }
   }, [user, loading, router]);
 
@@ -70,13 +71,20 @@ export default function LoginPage() {
     setShowPassword(!showPassword);
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = async (useRedirect = false) => {
     setIsLoading(true);
     setError('');
+    setShowPopupHelp(false);
+    
     try {
-      await signInWithGoogle();
+      await signInWithGoogle(useRedirect);
     } catch (error: any) {
-      setError(error.message || 'Failed to sign in with Google');
+      if (error.message === 'POPUP_BLOCKED') {
+        setShowPopupHelp(true);
+        setError('Popup was blocked by your browser');
+      } else {
+        setError(error.message || 'Failed to sign in with Google');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -156,7 +164,7 @@ export default function LoginPage() {
 
               {/* Google Sign-in Button */}
               <button
-                onClick={handleGoogleSignIn}
+                onClick={() => handleGoogleSignIn(false)}
                 disabled={isLoading}
                 className="w-full flex items-center justify-center space-x-3 px-4 py-3 border border-gray-600 rounded-xl bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed mb-6 group"
               >
@@ -192,6 +200,36 @@ export default function LoginPage() {
               {error && (
                 <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl backdrop-blur-sm">
                   <p className="text-red-400 text-sm font-medium">{error}</p>
+                  {showPopupHelp && (
+                    <div className="mt-4 space-y-3">
+                      <div className="text-xs text-gray-400">
+                        <p className="mb-2 font-medium text-gray-300">Choose an option:</p>
+                      </div>
+                      
+                      {/* Option 1: Enable Popups */}
+                      <div className="bg-gray-800/50 p-3 rounded-lg border border-gray-600">
+                        <p className="text-xs font-medium text-gray-300 mb-2">Option 1: Enable Popups</p>
+                        <ul className="list-disc ml-4 space-y-1 text-xs text-gray-400">
+                          <li>Click the popup blocker icon in your address bar</li>
+                          <li>Select "Always allow popups from this site"</li>
+                          <li>Refresh the page and try again</li>
+                        </ul>
+                      </div>
+                      
+                      {/* Option 2: Use Redirect */}
+                      <div className="bg-blue-500/10 p-3 rounded-lg border border-blue-500/30">
+                        <p className="text-xs font-medium text-blue-300 mb-2">Option 2: Use Redirect Method</p>
+                        <p className="text-xs text-gray-400 mb-3">This will take you to Google's sign-in page directly</p>
+                        <button
+                          onClick={() => handleGoogleSignIn(true)}
+                          disabled={isLoading}
+                          className="w-full px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
+                        >
+                          {isLoading ? 'Redirecting...' : 'Sign in via Redirect'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
