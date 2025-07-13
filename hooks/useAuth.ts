@@ -92,9 +92,6 @@ export function useAuth(redirectPath = '/dashboard'): AuthState & AuthActions {
       console.log('Auth state changed:', user ? `Logged in as ${user.email}` : 'Not logged in');
       setUser(user);
       setLoading(false);
-      if (user && window.location.pathname !== redirectPath) {
-        router.push(redirectPath);
-      }
     });
     return () => unsubscribe();
   }, []);
@@ -103,9 +100,10 @@ export function useAuth(redirectPath = '/dashboard'): AuthState & AuthActions {
   useEffect(() => {
     const handleRedirectFlow = async () => {
       try {
+        console.log('🚀 Starting handleRedirectFlow...');
         const redirectManager = RedirectResultManager.getInstance();
         await redirectManager.checkRedirectResult();
-        console.log('✅ Redirect result check completed',redirectManager.checkRedirectResult());
+        console.log('✅ Redirect result check completed successfully');
         setRedirectResultChecked(true);
       } catch (error) {
         console.error('❌ Error checking redirect result:', error);
@@ -113,6 +111,7 @@ export function useAuth(redirectPath = '/dashboard'): AuthState & AuthActions {
       }
     };
     
+    console.log('🔧 useEffect for redirect flow triggered');
     handleRedirectFlow();
   }, []);
 
