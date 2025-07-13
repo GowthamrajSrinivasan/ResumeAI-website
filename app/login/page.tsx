@@ -21,7 +21,10 @@ export default function LoginPage() {
   const [showPopupHelp, setShowPopupHelp] = useState(false);
 
   useEffect(() => {
+    console.log('Login page - Auth state:', { user: user?.email || 'null', loading });
+    
     if (user && !loading) {
+      console.log('✅ User authenticated, redirecting to dashboard');
       router.push('/dashboard');
     }
   }, [user, loading, router]);

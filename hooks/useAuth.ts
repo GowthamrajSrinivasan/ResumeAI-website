@@ -23,38 +23,81 @@ interface AuthActions {
   logout: () => Promise<void>;
 }
 
+// Global singleton to ensure getRedirectResult is only called once
+class RedirectResultManager {
+  private static instance: RedirectResultManager;
+  private hasChecked = false;
+  private promise: Promise<void> | null = null;
+
+  static getInstance(): RedirectResultManager {
+    if (!RedirectResultManager.instance) {
+      RedirectResultManager.instance = new RedirectResultManager();
+    }
+    return RedirectResultManager.instance;
+  }
+
+  async checkRedirectResult(): Promise<void> {
+    if (this.hasChecked) {
+      console.log('🔍 Redirect result already checked, skipping...');
+      return;
+    }
+
+    if (this.promise) {
+      console.log('🔍 Redirect result check already in progress, waiting...');
+      return this.promise;
+    }
+
+    this.hasChecked = true;
+    this.promise = this.performCheck();
+    return this.promise;
+  }
+
+  private async performCheck(): Promise<void> {
+    try {
+      console.log('🔍 Checking for Google redirect result...');
+      const result = await getRedirectResult(auth);
+      
+      if (result) {
+        console.log('✅ Google sign-in redirect successful!');
+        console.log('✅ User:', result.user.email);
+        console.log('✅ Provider:', result.providerId);
+        // User state will be updated via onAuthStateChanged
+      } else {
+        console.log('ℹ️ No redirect result - user did not come from a redirect');
+      }
+    } catch (error: any) {
+      console.error('❌ Google redirect sign-in error:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      
+      // Handle specific redirect errors
+      if (error.code === 'auth/unauthorized-domain') {
+        console.error('🚨 Domain not authorized for redirect. Check Firebase Auth settings.');
+      } else if (error.code === 'auth/operation-not-allowed') {
+        console.error('🚨 Google provider not enabled. Check Firebase Auth settings.');
+      }
+    }
+  }
+}
+
 export function useAuth(): AuthState & AuthActions {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('Auth state changed:', user ? `Logged in as ${user.email}` : 'Not logged in');
       setUser(user);
       setLoading(false);
     });
 
-    // Handle redirect result for Google sign-in
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result) {
-          // User signed in successfully via redirect
-          console.log('Google sign-in redirect successful:', result.user.email);
-          // The user state will be automatically updated via onAuthStateChanged
-        } else {
-          console.log('No redirect result - user did not come from a redirect');
-        }
-      })
-      .catch((error) => {
-        console.error('Google redirect sign-in error:', error);
-        // Handle specific redirect errors
-        if (error.code === 'auth/unauthorized-domain') {
-          console.error('Domain not authorized for redirect. Check Firebase Auth settings.');
-        } else if (error.code === 'auth/operation-not-allowed') {
-          console.error('Google provider not enabled. Check Firebase Auth settings.');
-        }
-      });
-
     return () => unsubscribe();
+  }, []);
+
+  // Handle redirect result using singleton pattern
+  useEffect(() => {
+    const redirectManager = RedirectResultManager.getInstance();
+    redirectManager.checkRedirectResult();
   }, []);
 
   const signIn = async (email: string, password: string) => {
@@ -103,6 +146,12 @@ export function useAuth(): AuthState & AuthActions {
     try {
       const provider = new GoogleAuthProvider();
       
+      // Add some additional configuration for better redirect flow
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      });
+      
+      console.log('🚀 Initiating Google sign-in redirect...');
       // Use redirect method - this will redirect the entire page to Google
       // The function won't return because the page redirects away
       // Results are handled by getRedirectResult when user returns
@@ -119,7 +168,6 @@ export function useAuth(): AuthState & AuthActions {
       }
     }
   };
-
 
   const logout = async () => {
     try {
