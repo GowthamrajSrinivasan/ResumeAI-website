@@ -6,11 +6,10 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   GoogleAuthProvider,
-  signInWithRedirect,
+  signInWithPopup,
   getRedirectResult
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { useRouter } from 'next/navigation';
 
 interface AuthState {
   user: User | null;
@@ -20,111 +19,34 @@ interface AuthState {
 interface AuthActions {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
+  signInWithGoogle: (useRedirect?: boolean) => Promise<void>;
   logout: () => Promise<void>;
 }
 
-// Global singleton to ensure getRedirectResult is only called once
-class RedirectResultManager {
-  private static instance: RedirectResultManager;
-  private hasChecked = false;
-  private promise: Promise<void> | null = null;
-
-  static getInstance(): RedirectResultManager {
-    if (!RedirectResultManager.instance) {
-      RedirectResultManager.instance = new RedirectResultManager();
-    }
-    return RedirectResultManager.instance;
-  }
-
-  async checkRedirectResult(): Promise<void> {
-    if (this.hasChecked) {
-      console.log('🔍 Redirect result already checked, skipping...');
-      return;
-    }
-
-    if (this.promise) {
-      console.log('🔍 Redirect result check already in progress, waiting...');
-      return this.promise;
-    }
-
-    this.hasChecked = true;
-    this.promise = this.performCheck();
-    return this.promise;
-  }
-
-  private async performCheck(): Promise<void> {
-    try {
-      console.log('🔍 Checking for Google redirect result...');
-      const result = await getRedirectResult(auth);
-      
-      if (result) {
-        console.log('✅ Google sign-in redirect successful!');
-        console.log('✅ User:', result.user.email);
-        console.log('✅ Provider:', result.providerId);
-        // User state will be updated via onAuthStateChanged
-      } else {
-        console.log('ℹ️ No redirect result - user did not come from a redirect');
-      }
-    } catch (error: any) {
-      console.error('❌ Google redirect sign-in error:', error);
-      console.error('Error code:', error.code);
-      console.error('Error message:', error.message);
-      
-      // Handle specific redirect errors
-      if (error.code === 'auth/unauthorized-domain') {
-        console.error('🚨 Domain not authorized for redirect. Check Firebase Auth settings.');
-      } else if (error.code === 'auth/operation-not-allowed') {
-        console.error('🚨 Google provider not enabled. Check Firebase Auth settings.');
-      }
-    }
-  }
-}
-
-export function useAuth(redirectPath = '/dashboard'): AuthState & AuthActions {
+export function useAuth(): AuthState & AuthActions {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [redirectResultChecked, setRedirectResultChecked] = useState(false);
-  const router = useRouter();
-  
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log('Auth state changed:', user ? `Logged in as ${user.email}` : 'Not logged in');
       setUser(user);
       setLoading(false);
     });
+
+    // Handle redirect result for Google sign-in
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result) {
+          // User signed in successfully via redirect
+          console.log('Google sign-in redirect successful');
+        }
+      })
+      .catch((error) => {
+        console.error('Google redirect sign-in error:', error);
+      });
+
     return () => unsubscribe();
   }, []);
-
-  // Handle redirect result using singleton pattern - MUST complete before any navigation
-  useEffect(() => {
-    const handleRedirectFlow = async () => {
-      try {
-        console.log('🚀 Starting handleRedirectFlow...');
-        const redirectManager = RedirectResultManager.getInstance();
-        await redirectManager.checkRedirectResult();
-        console.log('✅ Redirect result check completed successfully');
-        setRedirectResultChecked(true);
-      } catch (error) {
-        console.error('❌ Error checking redirect result:', error);
-        setRedirectResultChecked(true); // Set to true even on error to prevent infinite loading
-      }
-    };
-    
-    console.log('🔧 useEffect for redirect flow triggered');
-    handleRedirectFlow();
-  }, []);
-
-  // Handle automatic redirection ONLY after redirect result has been processed
-  useEffect(() => {
-    if (user && !loading && redirectResultChecked) {
-      // Only redirect if user is authenticated and we're not on the target page
-      if (typeof window !== 'undefined' && window.location.pathname !== redirectPath) {
-        console.log(`🔄 Redirecting authenticated user to ${redirectPath}`);
-        router.push(redirectPath);
-      }
-    }
-  }, [user, loading, redirectResultChecked, redirectPath, router]);
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -168,32 +90,50 @@ export function useAuth(redirectPath = '/dashboard'): AuthState & AuthActions {
     }
   };
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (useRedirect = false) => {
     try {
       const provider = new GoogleAuthProvider();
       
-      // Add some additional configuration for better redirect flow
-      provider.setCustomParameters({
-        prompt: 'select_account'
-      });
+      if (useRedirect) {
+        // Use redirect method directly
+        const { signInWithRedirect } = await import('firebase/auth');
+        await signInWithRedirect(auth, provider);
+        return;
+      }
       
-      console.log('🚀 Initiating Google sign-in redirect...');
-      // Use redirect method - this will redirect the entire page to Google
-      // The function won't return because the page redirects away
-      // Results are handled by getRedirectResult when user returns
-      await signInWithRedirect(auth, provider);
+      // Try popup first, fallback to redirect if popup is blocked
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (popupError: any) {
+        if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/popup-closed-by-user') {
+          // Auto-fallback to redirect method
+          const { signInWithRedirect } = await import('firebase/auth');
+          await signInWithRedirect(auth, provider);
+          return;
+        }
+        throw popupError;
+      }
     } catch (error: any) {
-      console.error('Error initiating Google sign-in redirect:', error);
-      // Handle errors that occur before redirect (rare)
+      console.error('Error signing in with Google:', error);
+      // Provide user-friendly error messages
       if (error.code === 'auth/operation-not-allowed') {
         throw new Error('Google authentication is not enabled. Please contact support.');
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        throw new Error('Sign-in cancelled. Please try again.');
+      } else if (error.code === 'auth/popup-blocked') {
+        throw new Error('POPUP_BLOCKED'); // Special error code for handling
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        throw new Error('Sign-in cancelled. Please try again.');
+      } else if (error.code === 'auth/account-exists-with-different-credential') {
+        throw new Error('An account already exists with the same email address but different sign-in credentials.');
       } else if (error.code === 'auth/unauthorized-domain') {
         throw new Error('This domain is not authorized for Google sign-in. Please contact support.');
       } else {
-        throw new Error(error.message || 'Failed to initiate Google sign-in. Please try again.');
+        throw new Error(error.message || 'Failed to sign in with Google. Please try again.');
       }
     }
   };
+
 
   const logout = async () => {
     try {
