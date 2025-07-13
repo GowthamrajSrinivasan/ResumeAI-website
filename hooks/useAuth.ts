@@ -84,7 +84,9 @@ class RedirectResultManager {
 export function useAuth(redirectPath = '/dashboard'): AuthState & AuthActions {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [redirectResultChecked, setRedirectResultChecked] = useState(false);
   const router = useRouter();
+  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log('Auth state changed:', user ? `Logged in as ${user.email}` : 'Not logged in');
@@ -94,22 +96,33 @@ export function useAuth(redirectPath = '/dashboard'): AuthState & AuthActions {
     return () => unsubscribe();
   }, []);
 
-  // Handle redirect result using singleton pattern
+  // Handle redirect result using singleton pattern - MUST complete before any navigation
   useEffect(() => {
-    const redirectManager = RedirectResultManager.getInstance();
-    redirectManager.checkRedirectResult();
+    const handleRedirectFlow = async () => {
+      try {
+        const redirectManager = RedirectResultManager.getInstance();
+        await redirectManager.checkRedirectResult();
+        console.log('✅ Redirect result check completed');
+        setRedirectResultChecked(true);
+      } catch (error) {
+        console.error('❌ Error checking redirect result:', error);
+        setRedirectResultChecked(true); // Set to true even on error to prevent infinite loading
+      }
+    };
+    
+    handleRedirectFlow();
   }, []);
 
-  // Handle automatic redirection after successful authentication
+  // Handle automatic redirection ONLY after redirect result has been processed
   useEffect(() => {
-    if (user && !loading) {
+    if (user && !loading && redirectResultChecked) {
       // Only redirect if user is authenticated and we're not on the target page
       if (typeof window !== 'undefined' && window.location.pathname !== redirectPath) {
         console.log(`🔄 Redirecting authenticated user to ${redirectPath}`);
         router.push(redirectPath);
       }
     }
-  }, [user, loading, redirectPath, router]);
+  }, [user, loading, redirectResultChecked, redirectPath, router]);
 
   const signIn = async (email: string, password: string) => {
     try {
