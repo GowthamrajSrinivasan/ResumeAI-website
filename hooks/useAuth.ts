@@ -10,7 +10,7 @@ import {
   getRedirectResult
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 interface AuthState {
   user: User | null;
@@ -90,11 +90,6 @@ export function useAuth(redirectPath = '/dashboard'): AuthState & AuthActions {
       console.log('Auth state changed:', user ? `Logged in as ${user.email}` : 'Not logged in');
       setUser(user);
       setLoading(false);
-       // Optionally auto-redirect after login
-      // Only redirect if user just logged in and not already on the target page
-      if (user && window.location.pathname !== redirectPath) {
-        router.push(redirectPath); 
-      }
     });
     return () => unsubscribe();
   }, []);
@@ -103,13 +98,18 @@ export function useAuth(redirectPath = '/dashboard'): AuthState & AuthActions {
   useEffect(() => {
     const redirectManager = RedirectResultManager.getInstance();
     redirectManager.checkRedirectResult();
-    console.log("checkRedirectResult",redirectManager.checkRedirectResult())
-    // After redirect result has been checked, if user is logged in, redirect
-    if (auth.currentUser) {
-      router.push(redirectPath); // For Next.js
-      // navigate(redirectPath); // For React Router
-    }
   }, []);
+
+  // Handle automatic redirection after successful authentication
+  useEffect(() => {
+    if (user && !loading) {
+      // Only redirect if user is authenticated and we're not on the target page
+      if (typeof window !== 'undefined' && window.location.pathname !== redirectPath) {
+        console.log(`🔄 Redirecting authenticated user to ${redirectPath}`);
+        router.push(redirectPath);
+      }
+    }
+  }, [user, loading, redirectPath, router]);
 
   const signIn = async (email: string, password: string) => {
     try {
