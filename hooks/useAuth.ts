@@ -38,11 +38,20 @@ export function useAuth(): AuthState & AuthActions {
       .then((result) => {
         if (result) {
           // User signed in successfully via redirect
-          console.log('Google sign-in redirect successful');
+          console.log('Google sign-in redirect successful:', result.user.email);
+          // The user state will be automatically updated via onAuthStateChanged
+        } else {
+          console.log('No redirect result - user did not come from a redirect');
         }
       })
       .catch((error) => {
         console.error('Google redirect sign-in error:', error);
+        // Handle specific redirect errors
+        if (error.code === 'auth/unauthorized-domain') {
+          console.error('Domain not authorized for redirect. Check Firebase Auth settings.');
+        } else if (error.code === 'auth/operation-not-allowed') {
+          console.error('Google provider not enabled. Check Firebase Auth settings.');
+        }
       });
 
     return () => unsubscribe();
