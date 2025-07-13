@@ -22,7 +22,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (user && !loading) {
-      router.push('/checkout');
+      router.push('/dashboard');
     }
   }, [user, loading, router]);
 

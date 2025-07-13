@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect } from "react";
-import { Sparkles, LogOut, User, Crown } from "lucide-react";
+import { Sparkles, LogOut, User } from "lucide-react";
 
 export default function DashboardPage() {
   const { user, loading, logout } = useAuth();
@@ -50,13 +50,6 @@ export default function DashboardPage() {
             <h1 className="text-xl font-semibold text-blue-600">LinkedIn AI Assistant</h1>
           </div>
           <div className="flex items-center space-x-4">
-            <button
-              onClick={() => router.push('/pricing')}
-              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
-            >
-              <Crown className="h-4 w-4" />
-              <span className="font-medium">Upgrade</span>
-            </button>
             <div className="flex items-center space-x-2">
               <User className="h-5 w-5 text-gray-500" />
               <span className="text-gray-700">{user.email}</span>
