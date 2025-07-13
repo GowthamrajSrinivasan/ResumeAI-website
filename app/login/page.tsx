@@ -71,23 +71,20 @@ export default function LoginPage() {
     setShowPassword(!showPassword);
   };
 
-  const handleGoogleSignIn = async (p0: boolean) => {
+  const handleGoogleSignIn = async () => {
     setIsLoading(true);
     setError('');
-    setShowPopupHelp(false);
     
     try {
+      // This will redirect to Google - the page will navigate away
+      // No need to handle success here as the page redirects
       await signInWithGoogle();
     } catch (error: any) {
-      if (error.message === 'POPUP_BLOCKED') {
-        setShowPopupHelp(true);
-        setError('Popup was blocked by your browser');
-      } else {
-        setError(error.message || 'Failed to sign in with Google');
-      }
-    } finally {
+      // Only handle errors that occur before redirect (rare)
+      setError(error.message || 'Failed to initiate Google sign-in');
       setIsLoading(false);
     }
+    // Note: setIsLoading(false) not needed in finally because page redirects
   };
 
   if (loading) {
