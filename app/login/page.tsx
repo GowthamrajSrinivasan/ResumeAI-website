@@ -161,7 +161,7 @@ export default function LoginPage() {
 
               {/* Google Sign-in Button */}
               <button
-                onClick={() => handleGoogleSignIn(false)}
+                onClick={() => handleGoogleSignIn()}
                 disabled={isLoading}
                 className="w-full flex items-center justify-center space-x-3 px-4 py-3 border border-gray-600 rounded-xl bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed mb-6 group"
               >
@@ -218,7 +218,7 @@ export default function LoginPage() {
                         <p className="text-xs font-medium text-blue-300 mb-2">Option 2: Use Redirect Method</p>
                         <p className="text-xs text-gray-400 mb-3">This will take you to Google's sign-in page directly</p>
                         <button
-                          onClick={() => handleGoogleSignIn(true)}
+                          onClick={() => handleGoogleSignIn()}
                           disabled={isLoading}
                           className="w-full px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
                         >
