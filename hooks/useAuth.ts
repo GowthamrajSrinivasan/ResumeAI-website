@@ -17,6 +17,7 @@ import {
   updateDoc
 } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
+import { extensionComm } from '@/lib/extensionCommunication';
 
 interface AuthState {
   user: User | null;
@@ -103,6 +104,32 @@ export function useAuth(): AuthState & AuthActions {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Initialize extension communication
+  useEffect(() => {
+    extensionComm.initialize();
+    
+    // Set up custom extension event handlers
+    extensionComm.onExtensionAuthenticated = (idToken: string) => {
+      console.log('Extension is authenticated with token');
+    };
+    
+    extensionComm.onExtensionUnauthenticated = () => {
+      console.log('Extension is not authenticated');
+    };
+    
+    extensionComm.onIdTokenStored = () => {
+      console.log('Token successfully stored in extension');
+    };
+    
+    extensionComm.onIdTokenCleared = () => {
+      console.log('Token successfully cleared from extension');
+    };
+    
+    return () => {
+      extensionComm.destroy();
+    };
+  }, []);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
@@ -127,12 +154,20 @@ export function useAuth(): AuthState & AuthActions {
             await saveUserToFirestore(user, token);
             console.log('✅ User data saved to Firestore successfully');
             
-            // Send login message after successful Firestore save
-            window.postMessage({
-              type: "REQUILL_LOGIN",
-              idToken: token
-            }, "*");
-            console.log('✅ REQUILL_LOGIN message sent with token');
+            // Prepare user data for extension
+            const userData = {
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              emailVerified: user.emailVerified
+            };
+            
+            // Send comprehensive extension messages
+            extensionComm.setIdToken(token, userData);
+            extensionComm.sendRequillLogin(token);
+            
+            console.log('✅ Extension communication messages sent');
           } catch (firestoreError) {
             console.error('❌ Failed to save user data to Firestore:', firestoreError);
           }
@@ -277,7 +312,13 @@ export function useAuth(): AuthState & AuthActions {
 
   const logout = async () => {
     try {
+      // Clear from extension first
+      extensionComm.clearIdToken();
+      
+      // Then sign out from Firebase
       await signOut(auth);
+      
+      console.log('✅ User signed out successfully');
     } catch (error) {
       console.error('Error signing out:', error);
       throw error;
