@@ -45,7 +45,8 @@ export function useAuth(): AuthState & AuthActions {
           
           // Calculate auth expiry (1 hour from now)
           const authExpiry = new Date(Date.now() + 60 * 60 * 1000).getTime();
-          
+          console.log('Chrome is not undefined check:',chrome);
+
           // Store in Chrome storage
           if (typeof chrome !== 'undefined' && chrome.storage) {
             const chromeStorageData = {
