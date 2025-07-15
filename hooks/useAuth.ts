@@ -45,10 +45,10 @@ export function useAuth(): AuthState & AuthActions {
           
           // Calculate auth expiry (1 hour from now)
           const authExpiry = new Date(Date.now() + 60 * 60 * 1000).getTime();
-          console.log('Chrome is not undefined check:',chrome);
-
-          // Store in Chrome storage
-          if (typeof chrome !== 'undefined' && chrome.storage) {
+          
+          // Check Chrome availability and store in Chrome storage
+          if (typeof chrome !== 'undefined' && chrome?.storage?.local) {
+            console.log('Chrome extension environment detected, storing user data...');
             const chromeStorageData = {
               userToken: token,
               userEmail: user.email,
@@ -63,19 +63,23 @@ export function useAuth(): AuthState & AuthActions {
             console.log('  - userEmail:', user.email);
             console.log('  - authExpiry:', new Date(authExpiry).toISOString());
             console.log('  - userDetails:', userDetails);
+          } else {
+            console.log('Chrome extension environment not detected - skipping Chrome storage');
           }
         } catch (error) {
           console.error('Error storing user data in Chrome storage:', error);
         }
       } else {
         // Clear Chrome storage on logout
-        if (typeof chrome !== 'undefined' && chrome.storage) {
+        if (typeof chrome !== 'undefined' && chrome?.storage?.local) {
           try {
             await chrome.storage.local.remove(['userToken', 'userEmail', 'authExpiry', 'userDetails']);
             console.log('User data cleared from Chrome storage');
           } catch (error) {
             console.error('Error clearing Chrome storage:', error);
           }
+        } else {
+          console.log('Chrome extension environment not detected - skipping Chrome storage cleanup');
         }
       }
     });
