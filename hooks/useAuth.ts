@@ -154,6 +154,15 @@ export function useAuth(): AuthState & AuthActions {
             await saveUserToFirestore(user, token);
             console.log('✅ User data saved to Firestore successfully');
             
+            // 🔐 Send the specific REQUILL_EXTENSION message for chrome extension
+            window.postMessage({
+              source: "REQUILL_EXTENSION",
+              type: "LOGIN_SUCCESS",
+              uid: user.uid,
+              idToken: token
+            }, "*");
+            console.log('✅ REQUILL_EXTENSION LOGIN_SUCCESS message sent');
+            
             // Prepare user data for extension
             const userData = {
               uid: user.uid,
