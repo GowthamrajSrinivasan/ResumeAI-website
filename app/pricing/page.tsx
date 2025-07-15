@@ -11,7 +11,7 @@ export default function PricingPage() {
 
   useEffect(() => {
     if (!loading && user) {
-      router.push('/login');
+      router.push('/dashboard');
     }
   }, [user, loading, router]);
 
