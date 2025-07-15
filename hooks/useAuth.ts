@@ -9,7 +9,14 @@ import {
   signInWithPopup,
   getRedirectResult
 } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { 
+  doc, 
+  setDoc, 
+  getDoc, 
+  serverTimestamp,
+  updateDoc
+} from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
 
 interface AuthState {
   user: User | null;
@@ -23,6 +30,75 @@ interface AuthActions {
   logout: () => Promise<void>;
 }
 
+// Function to save user data to Firestore
+const saveUserToFirestore = async (user: User, token: string) => {
+  try {
+    const userRef = doc(db, 'users', user.uid);
+    const userDoc = await getDoc(userRef);
+    
+    // Calculate auth expiry (1 hour from now)
+    const authExpiry = new Date(Date.now() + 60 * 60 * 1000).getTime();
+    
+    // User details structure matching your fetch requirements
+    const userDetails = {
+      uid: user.uid,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+      emailVerified: user.emailVerified
+    };
+    
+    // Main user data structure matching your fetch requirements
+    const userData = {
+      // Fields you're fetching
+      userToken: token,
+      userEmail: user.email,
+      authExpiry: authExpiry,
+      userDetails: userDetails,
+      
+      // Additional fields for comprehensive user management
+      uid: user.uid,
+      lastLoginAt: serverTimestamp(),
+      providerData: user.providerData.map(provider => ({
+        providerId: provider.providerId,
+        uid: provider.uid,
+        email: provider.email,
+        displayName: provider.displayName,
+        photoURL: provider.photoURL
+      }))
+    };
+
+    if (userDoc.exists()) {
+      // Update existing user
+      await updateDoc(userRef, {
+        ...userData,
+        updatedAt: serverTimestamp()
+      });
+      console.log('User data updated in Firestore:', userData);
+      console.log('Firestore storage details:');
+      console.log('  - userToken:', token ? `${token.substring(0, 20)}...` : 'null');
+      console.log('  - userEmail:', user.email);
+      console.log('  - authExpiry:', new Date(authExpiry).toISOString());
+      console.log('  - userDetails:', userDetails);
+    } else {
+      // Create new user
+      await setDoc(userRef, {
+        ...userData,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      console.log('New user created in Firestore:', userData);
+      console.log('Firestore storage details:');
+      console.log('  - userToken:', token ? `${token.substring(0, 20)}...` : 'null');
+      console.log('  - userEmail:', user.email);
+      console.log('  - authExpiry:', new Date(authExpiry).toISOString());
+      console.log('  - userDetails:', userDetails);
+    }
+  } catch (error) {
+    console.error('Error saving user to Firestore:', error);
+    throw error;
+  }
+};
+
 export function useAuth(): AuthState & AuthActions {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -32,7 +108,7 @@ export function useAuth(): AuthState & AuthActions {
       setUser(user);
       setLoading(false);
       
-      // Update Chrome storage on successful login
+      // Update Chrome storage and Firestore on successful login
       if (user) {
         try {
           const token = await user.getIdToken();
@@ -45,6 +121,14 @@ export function useAuth(): AuthState & AuthActions {
           
           // Calculate auth expiry (1 hour from now)
           const authExpiry = new Date(Date.now() + 60 * 60 * 1000).getTime();
+          
+          // Save user to Firestore
+          try {
+            await saveUserToFirestore(user, token);
+            console.log('✅ User data saved to Firestore successfully');
+          } catch (firestoreError) {
+            console.error('❌ Failed to save user data to Firestore:', firestoreError);
+          }
           
           // Check Chrome availability and store in Chrome storage
           if (typeof chrome !== 'undefined' && chrome?.storage?.local) {
@@ -67,7 +151,7 @@ export function useAuth(): AuthState & AuthActions {
             console.log('Chrome extension environment not detected - skipping Chrome storage');
           }
         } catch (error) {
-          console.error('Error storing user data in Chrome storage:', error);
+          console.error('Error storing user data:', error);
         }
       } else {
         // Clear Chrome storage on logout
