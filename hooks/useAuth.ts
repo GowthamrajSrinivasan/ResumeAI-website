@@ -28,9 +28,48 @@ export function useAuth(): AuthState & AuthActions {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       setLoading(false);
+      
+      // Update Chrome storage on successful login
+      if (user) {
+        try {
+          const token = await user.getIdToken();
+          const userDetails = {
+            uid: user.uid,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            emailVerified: user.emailVerified
+          };
+          
+          // Calculate auth expiry (1 hour from now)
+          const authExpiry = new Date(Date.now() + 60 * 60 * 1000).getTime();
+          
+          // Store in Chrome storage
+          if (typeof chrome !== 'undefined' && chrome.storage) {
+            await chrome.storage.local.set({
+              userToken: token,
+              userEmail: user.email,
+              authExpiry: authExpiry,
+              userDetails: userDetails
+            });
+            console.log('User data stored in Chrome storage');
+          }
+        } catch (error) {
+          console.error('Error storing user data in Chrome storage:', error);
+        }
+      } else {
+        // Clear Chrome storage on logout
+        if (typeof chrome !== 'undefined' && chrome.storage) {
+          try {
+            await chrome.storage.local.remove(['userToken', 'userEmail', 'authExpiry', 'userDetails']);
+            console.log('User data cleared from Chrome storage');
+          } catch (error) {
+            console.error('Error clearing Chrome storage:', error);
+          }
+        }
+      }
     });
 
     // Handle redirect result for Google sign-in
