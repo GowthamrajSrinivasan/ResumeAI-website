@@ -6,13 +6,17 @@ export class ExtensionCommunication {
   private messageHandlers: { [key: string]: (data: any) => void } = {};
 
   constructor() {
-    this.setupMessageListener();
+    if (typeof window !== 'undefined') {
+      this.setupMessageListener();
+    }
   }
 
   /**
    * Set up message listener for extension responses
    */
   setupMessageListener() {
+    if (typeof window === 'undefined') return;
+    
     // Listen for responses from the extension
     window.addEventListener('message', (event) => {
       // Verify the message is from our extension's content script
@@ -53,6 +57,8 @@ export class ExtensionCommunication {
    * Send idToken to extension after user login
    */
   setIdToken(idToken: string, userData: any = null) {
+    if (typeof window === 'undefined') return;
+    
     console.log('Website sending idToken to extension:', idToken ? `${idToken.substring(0, 20)}...` : 'null');
     window.postMessage({
       type: 'SET_ID_TOKEN',
@@ -65,6 +71,8 @@ export class ExtensionCommunication {
    * Request idToken from extension
    */
   getIdToken() {
+    if (typeof window === 'undefined') return;
+    
     console.log('Website requesting idToken from extension');
     window.postMessage({
       type: 'GET_ID_TOKEN'
@@ -75,6 +83,8 @@ export class ExtensionCommunication {
    * Clear idToken from extension (logout)
    */
   clearIdToken() {
+    if (typeof window === 'undefined') return;
+    
     console.log('Website clearing idToken from extension');
     window.postMessage({
       type: 'CLEAR_ID_TOKEN'
@@ -85,6 +95,8 @@ export class ExtensionCommunication {
    * Check if extension is available and active
    */
   checkExtensionStatus() {
+    if (typeof window === 'undefined') return;
+    
     console.log('Website checking extension status');
     window.postMessage({
       type: 'CHECK_EXTENSION_STATUS'
@@ -95,6 +107,8 @@ export class ExtensionCommunication {
    * Send the legacy REQUILL_LOGIN message for backward compatibility
    */
   sendRequillLogin(idToken: string) {
+    if (typeof window === 'undefined') return;
+    
     console.log('Website sending REQUILL_LOGIN message');
     window.postMessage({
       type: 'REQUILL_LOGIN',
