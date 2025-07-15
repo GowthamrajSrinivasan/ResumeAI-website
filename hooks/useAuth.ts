@@ -48,13 +48,20 @@ export function useAuth(): AuthState & AuthActions {
           
           // Store in Chrome storage
           if (typeof chrome !== 'undefined' && chrome.storage) {
-            await chrome.storage.local.set({
+            const chromeStorageData = {
               userToken: token,
               userEmail: user.email,
               authExpiry: authExpiry,
               userDetails: userDetails
-            });
-            console.log('User data stored in Chrome storage');
+            };
+            
+            await chrome.storage.local.set(chromeStorageData);
+            console.log('User data stored in Chrome storage:', chromeStorageData);
+            console.log('Chrome storage details:');
+            console.log('  - userToken:', token ? `${token.substring(0, 20)}...` : 'null');
+            console.log('  - userEmail:', user.email);
+            console.log('  - authExpiry:', new Date(authExpiry).toISOString());
+            console.log('  - userDetails:', userDetails);
           }
         } catch (error) {
           console.error('Error storing user data in Chrome storage:', error);
