@@ -126,44 +126,49 @@ export function useAuth(): AuthState & AuthActions {
           try {
             await saveUserToFirestore(user, token);
             console.log('✅ User data saved to Firestore successfully');
+            
+            // Send login message after successful Firestore save
+            window.postMessage({
+              type: "REQUILL_LOGIN",
+              idToken: token
+            }, "*");
+            console.log('✅ REQUILL_LOGIN message sent with token');
           } catch (firestoreError) {
             console.error('❌ Failed to save user data to Firestore:', firestoreError);
           }
           
-          // Check Chrome availability and store in Chrome storage
-          if (typeof chrome !== 'undefined' && chrome?.storage?.local) {
-            console.log('Chrome extension environment detected, storing user data...');
-            const chromeStorageData = {
-              userToken: token,
-              userEmail: user.email,
-              authExpiry: authExpiry,
-              userDetails: userDetails
-            };
-            
-            await chrome.storage.local.set(chromeStorageData);
-            console.log('User data stored in Chrome storage:', chromeStorageData);
-            console.log('Chrome storage details:');
-            console.log('  - userToken:', token ? `${token.substring(0, 20)}...` : 'null');
-            console.log('  - userEmail:', user.email);
-            console.log('  - authExpiry:', new Date(authExpiry).toISOString());
-            console.log('  - userDetails:', userDetails);
-          } else {
-            console.log('Chrome extension environment not detected - skipping Chrome storage');
+          // Store only uid in Chrome storage sync if available
+          try {
+            if (typeof chrome !== 'undefined' && chrome?.storage?.sync) {
+              console.log('Chrome extension environment detected, storing uid in sync storage...');
+              const chromeStorageData = {
+                uid: user.uid
+              };
+              
+              await chrome.storage.sync.set(chromeStorageData);
+              console.log('✅ User uid stored in Chrome sync storage:', chromeStorageData);
+              console.log('Chrome sync storage details:');
+              console.log('  - uid:', user.uid);
+            } else {
+              console.log('ℹ️ Chrome extension API not available - uid not stored in Chrome sync storage');
+            }
+          } catch (chromeError) {
+            console.warn('⚠️ Chrome sync storage failed:', chromeError);
           }
         } catch (error) {
           console.error('Error storing user data:', error);
         }
       } else {
-        // Clear Chrome storage on logout
-        if (typeof chrome !== 'undefined' && chrome?.storage?.local) {
+        // Clear uid from Chrome sync storage on logout
+        if (typeof chrome !== 'undefined' && chrome?.storage?.sync) {
           try {
-            await chrome.storage.local.remove(['userToken', 'userEmail', 'authExpiry', 'userDetails']);
-            console.log('User data cleared from Chrome storage');
+            await chrome.storage.sync.remove(['uid']);
+            console.log('✅ User uid cleared from Chrome sync storage');
           } catch (error) {
-            console.error('Error clearing Chrome storage:', error);
+            console.error('❌ Error clearing uid from Chrome sync storage:', error);
           }
         } else {
-          console.log('Chrome extension environment not detected - skipping Chrome storage cleanup');
+          console.log('ℹ️ Chrome extension API not available - no Chrome sync storage cleanup needed');
         }
       }
     });
