@@ -8,7 +8,7 @@ import { Sparkles, Eye, EyeOff, Mail, Lock, User, ArrowRight } from "lucide-reac
 export default function LoginPage() {
   const { user, loading, signIn, signUp, signInWithGoogle } = useAuth();
   const router = useRouter();
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -138,29 +138,23 @@ export default function LoginPage() {
                 </p>
               </div>
 
-              {/* Toggle Buttons */}
-              <div className="flex bg-gray-800/50 rounded-xl p-1 mb-8 border border-gray-700">
-                <button
-                  onClick={() => setIsLogin(true)}
-                  className={`flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 ${
-                    isLogin
-                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
-                      : 'text-gray-400 hover:text-gray-200'
-                  }`}
-                >
-                  Log In
-                </button>
-                <button
-                  onClick={() => setIsLogin(false)}
-                  className={`flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 ${
-                    !isLogin
-                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
-                      : 'text-gray-400 hover:text-gray-200'
-                  }`}
-                >
-                  Sign Up
-                </button>
-              </div>
+              {/* Toggle Buttons - Only show if Login tab is active */}
+              {isLogin && (
+                <div className="flex bg-gray-800/50 rounded-xl p-1 mb-8 border border-gray-700">
+                  <button
+                    onClick={() => setIsLogin(true)}
+                    className="flex-1 py-3 px-4 rounded-lg text-sm font-medium bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg"
+                  >
+                    Log In
+                  </button>
+                  <button
+                    onClick={() => setIsLogin(false)}
+                    className="flex-1 py-3 px-4 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-200 transition-all duration-300"
+                  >
+                    Sign Up
+                  </button>
+                </div>
+              )}
 
               {/* Google Sign-in Button */}
               <button
