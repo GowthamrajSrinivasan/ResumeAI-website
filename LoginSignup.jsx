@@ -61,27 +61,6 @@ export default function LoginSignup() {
           {/* Login/Signup Card */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div className="p-6">
-              {/* Toggle Buttons */}
-              <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
-                <button
-                  onClick={() => setIsLogin(true)}
-                  className={`w-full flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium`}
-                   
-                >
-                  Log In
-                </button>
-                <button
-                  onClick={() => setIsLogin(false)}
-                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                    !isLogin
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  Sign Up
-                </button>
-              </div>
-
               {/* Form */}
               <div className="space-y-4">
                 {/* Name field for signup */}
