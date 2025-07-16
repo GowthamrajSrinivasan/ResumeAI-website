@@ -292,10 +292,10 @@ export default function HomePage() {
     {/* FAQ 1 */}
     <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
       <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-        Is LinkedIn AI Assistant safe to use with my LinkedIn account?
+        Is Requill safe to use with my LinkedIn account?
       </h4>
       <p className="text-gray-300 text-base">
-        Yes, LinkedIn AI Assistant is completely safe. It works as a browser extension that assists you with content creation and messaging without compromising your account security. We follow all LinkedIn's terms of service and best practices.
+        Yes, Requill is completely safe. It works as a browser extension that assists you with content creation and messaging without compromising your account security. We follow all LinkedIn's terms of service and best practices.
       </p>
       <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
         background: "radial-gradient(circle at 40% 30%, #4361ee22 0%, transparent 75%)"
@@ -331,7 +331,7 @@ export default function HomePage() {
         Do I need a LinkedIn Premium account?
       </h4>
       <p className="text-gray-300 text-base">
-        No, LinkedIn AI Assistant works with any LinkedIn account. However, some advanced features may work better with LinkedIn Premium due to increased messaging and connection limits.
+        No, Requill works with any LinkedIn account. However, some advanced features may work better with LinkedIn Premium due to increased messaging and connection limits.
       </p>
       <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
         background: "radial-gradient(circle at 55% 20%, #4361ee22 0%, transparent 75%)"
@@ -340,10 +340,10 @@ export default function HomePage() {
     {/* FAQ 5 */}
     <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
       <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-        What languages does LinkedIn AI Assistant support?
+        What languages does Requill support?
       </h4>
       <p className="text-gray-300 text-base">
-        LinkedIn AI Assistant supports content generation in over 25 languages, automatically adapting to your LinkedIn profile's primary language and regional preferences.
+        Requill supports content generation in over 25 languages, automatically adapting to your LinkedIn profile's primary language and regional preferences.
       </p>
       <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
         background: "radial-gradient(circle at 35% 50%, #4cc9f022 0%, transparent 75%)"
@@ -352,7 +352,7 @@ export default function HomePage() {
     {/* FAQ 6 */}
     <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
       <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-        How much does LinkedIn AI Assistant cost?
+        How much does Requill cost?
       </h4>
       <p className="text-gray-300 text-base">
         We offer a free version with basic features and premium plans starting at $9.99/month for unlimited content generation, advanced templates, and priority support.
@@ -416,7 +416,7 @@ export default function HomePage() {
     {/* Brand / Logo */}
     <div className="flex flex-col items-center md:items-start gap-2">
       <span className="text-2xl font-bold text-white tracking-tight">
-        LinkedIn AI Assistant
+        Requill
       </span>
       <span className="text-gray-400 text-sm">
         Your AI-powered LinkedIn companion
@@ -468,7 +468,7 @@ export default function HomePage() {
     </div>
   </div>
   <div className="mt-8 text-center text-gray-500 text-sm">
-    © {new Date().getFullYear()} LinkedIn AI Assistant. All rights reserved.
+    © {new Date().getFullYear()} Requill. All rights reserved.
   </div>
 </footer>
 

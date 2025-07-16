@@ -50,7 +50,7 @@ export default function LoginSignup() {
         <div className="flex items-center justify-center">
           <div className="flex items-center space-x-2">
             <Sparkles className="h-6 w-6 text-blue-600" />
-            <h1 className="text-xl font-semibold text-blue-600">LinkedIn AI Assistant</h1>
+            <h1 className="text-xl font-semibold text-blue-600">Requill - Powered by OpenAI</h1>
           </div>
         </div>
       </div>

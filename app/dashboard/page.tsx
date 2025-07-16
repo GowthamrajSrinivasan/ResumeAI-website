@@ -47,7 +47,7 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Sparkles className="h-6 w-6 text-blue-600" />
-            <h1 className="text-xl font-semibold text-blue-600">LinkedIn AI Assistant</h1>
+            <h1 className="text-xl font-semibold text-blue-600">Requill</h1>
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
@@ -69,7 +69,7 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto p-6">
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome to your Dashboard</h2>
-          <p className="text-gray-600">Get started with LinkedIn AI Assistant to supercharge your professional presence.</p>
+          <p className="text-gray-600">Get started with Requill to supercharge your professional presence.</p>
         </div>
 
         {/* Features Grid */}
@@ -157,7 +157,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold text-blue-900 mb-2">Install Browser Extension</h3>
-              <p className="text-blue-700 text-sm">Get the full LinkedIn AI Assistant experience with our browser extension.</p>
+              <p className="text-blue-700 text-sm">Get the full Requill experience with our browser extension.</p>
             </div>
             <button className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
               Install Extension

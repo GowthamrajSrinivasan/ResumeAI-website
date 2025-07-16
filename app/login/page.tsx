@@ -107,7 +107,7 @@ export default function LoginPage() {
       <header className="sticky top-0 z-30 w-full flex items-center justify-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 py-4 px-4 shadow-xl text-white rounded-b-2xl backdrop-blur-lg bg-opacity-90">
         <div className="flex items-center space-x-2">
           <Sparkles className="h-6 w-6 text-white" />
-          <h1 className="text-xl font-extrabold">LinkedIn AI Assistant</h1>
+          <h1 className="text-xl font-extrabold">Requill</h1>
         </div>
       </header>
 
@@ -130,7 +130,7 @@ export default function LoginPage() {
                 <h2 className="text-2xl font-extrabold text-white mb-2">
                   Welcome to{' '}
                   <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-                    LinkedIn AI
+                    Requill
                   </span>
                 </h2>
                 <p className="text-gray-400 text-sm">
@@ -138,21 +138,14 @@ export default function LoginPage() {
                 </p>
               </div>
 
-              {/* Toggle Buttons - Only show if Login tab is active */}
+              {/* Single Login Tab - Only show if Login tab is active */}
               {isLogin && (
-                <div className="flex bg-gray-800/50 rounded-xl p-1 mb-8 border border-gray-700">
-                  <button
-                    onClick={() => setIsLogin(true)}
-                    className="flex-1 py-3 px-4 rounded-lg text-sm font-medium bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg"
-                  >
-                    Log In
-                  </button>
-                  <button
-                    onClick={() => setIsLogin(false)}
-                    className="flex-1 py-3 px-4 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-200 transition-all duration-300"
-                  >
-                    Sign Up
-                  </button>
+                <div className="flex justify-center mb-8">
+                  <div className="bg-gray-800/50 rounded-xl p-1 border border-gray-700">
+                    <div className="py-3 px-6 rounded-lg text-sm font-medium bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg cursor-default">
+                      Log In
+                    </div>
+                  </div>
                 </div>
               )}
 

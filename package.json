@@ -1,7 +1,7 @@
 {
   "name": "linkedin-ai-assistant-login",
   "version": "1.0.0",
-  "description": "Independent login/signup page for LinkedIn AI Assistant",
+  "description": "Independent login/signup page for Requill",
   "main": "index.html",
   "scripts": {
     "dev": "next dev",

@@ -308,7 +308,7 @@ export default function PricingPage() {
             {/* Brand / Logo */}
             <div className="flex flex-col items-center md:items-start gap-2">
               <span className="text-2xl font-bold text-white tracking-tight">
-                LinkedIn AI Assistant
+                Requill
               </span>
               <span className="text-gray-400 text-sm">
                 Your AI-powered LinkedIn companion
@@ -360,7 +360,7 @@ export default function PricingPage() {
             </div>
           </div>
           <div className="mt-8 text-center text-gray-500 text-sm">
-            © {new Date().getFullYear()} LinkedIn AI Assistant. All rights reserved.
+            © {new Date().getFullYear()} Requill. All rights reserved.
           </div>
         </footer>
       </main>
