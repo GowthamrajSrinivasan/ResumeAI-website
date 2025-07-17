@@ -48,7 +48,7 @@ export default function PrivacyPolicyPage() {
               
               <div className="text-center mb-8">
                 <p className="text-lg text-gray-300">
-                  Last updated: {new Date().toLocaleDateString()}
+                  Last updated: July 13, 2025
                 </p>
               </div>
             </div>
@@ -66,179 +66,222 @@ export default function PrivacyPolicyPage() {
               <div className="relative z-10">
                 <h3 className="text-2xl font-bold text-white mb-4">Introduction</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  At Requill, we are committed to protecting your privacy and ensuring the security of your personal information. 
-                  This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our 
-                  AI-powered LinkedIn companion service.
+                  We believe your data should always be secure, private, and fully under your control. This Privacy Policy 
+                  outlines how we safeguard your information when you use our Service.
                 </p>
               </div>
             </div>
 
-            {/* Information We Collect */}
+            {/* Information Collection and Use */}
             <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                 background: "radial-gradient(circle at 60% 20%, #4cc9f022 0%, transparent 75%)"
               }} />
               <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">Information We Collect</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">Information Collection and Use</h3>
                 <div className="space-y-4 text-gray-300">
-                  <div>
-                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Account Information</h4>
-                    <p className="leading-relaxed">
-                      When you create an account, we collect your email address, name, and authentication credentials 
-                      through Firebase Authentication.
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Usage Data</h4>
-                    <p className="leading-relaxed">
-                      We collect information about how you interact with our service, including features used, 
-                      content generated, and usage patterns to improve our AI algorithms.
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Browser Extension Data</h4>
-                    <p className="leading-relaxed">
-                      Our Chrome extension stores authentication tokens locally to provide seamless LinkedIn integration. 
-                      This data remains on your device and is used only for authentication purposes.
-                    </p>
-                  </div>
+                  <p className="leading-relaxed">
+                    Requill is designed to help you interact with content on LinkedIn in new ways. Our goal is to provide 
+                    a useful service, not to extract value from your data. We do not use your data for advertising, profiling, 
+                    or training any third-party AI models beyond what is necessary to provide the service.
+                  </p>
+                  <p className="leading-relaxed">
+                    When you use the extension, we collect the text content from LinkedIn posts that you choose to process. 
+                    This data is sent to our secure cloud service to be analyzed by an AI model (powered by OpenAI) to generate 
+                    the results displayed to you in the side panel.
+                  </p>
+                  <p className="leading-relaxed">
+                    We may collect personally identifiable information such as your email address only if you voluntarily 
+                    provide it for account access or support and to communicate important updates.
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* How We Use Your Information */}
+            {/* Log Data */}
             <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                 background: "radial-gradient(circle at 65% 40%, #7209b722 0%, transparent 75%)"
               }} />
               <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">How We Use Your Information</h3>
-                <div className="space-y-3 text-gray-300">
-                  <div className="flex items-start">
-                    <span className="font-bold text-blue-400 mr-3">•</span>
-                    <p>Provide and maintain our AI-powered content generation service</p>
-                  </div>
-                  <div className="flex items-start">
-                    <span className="font-bold text-blue-400 mr-3">•</span>
-                    <p>Personalize content suggestions based on your professional profile</p>
-                  </div>
-                  <div className="flex items-start">
-                    <span className="font-bold text-blue-400 mr-3">•</span>
-                    <p>Improve our AI algorithms and service quality</p>
-                  </div>
-                  <div className="flex items-start">
-                    <span className="font-bold text-blue-400 mr-3">•</span>
-                    <p>Communicate with you about service updates and support</p>
-                  </div>
-                  <div className="flex items-start">
-                    <span className="font-bold text-blue-400 mr-3">•</span>
-                    <p>Ensure security and prevent fraudulent activity</p>
-                  </div>
+                <h3 className="text-2xl font-bold text-white mb-4">Log Data</h3>
+                <div className="text-gray-300">
+                  <p className="leading-relaxed">
+                    When you use the Service, we may collect standard diagnostic information—called Log Data. This can include 
+                    details like your IP address, browser type, and version to help us diagnose and fix issues with the service.
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* Data Security */}
+            {/* Cookies */}
             <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                 background: "radial-gradient(circle at 35% 50%, #4cc9f022 0%, transparent 75%)"
               }} />
               <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">Data Security & Storage</h3>
-                <div className="space-y-4 text-gray-300">
+                <h3 className="text-2xl font-bold text-white mb-4">Cookies</h3>
+                <div className="text-gray-300">
                   <p className="leading-relaxed">
-                    We implement industry-standard security measures to protect your data:
+                    Our service does not use cookies, as it operates as a browser extension. However, we do use the browser's 
+                    local storage to save your settings and preferences to improve your experience.
                   </p>
-                  <div className="space-y-3">
-                    <div className="flex items-start">
-                      <span className="font-bold text-purple-400 mr-3">🔒</span>
-                      <div>
-                        <p className="font-semibold">Encryption</p>
-                        <p className="text-gray-400">All data is encrypted in transit and at rest using Firebase security</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-purple-400 mr-3">🏠</span>
-                      <div>
-                        <p className="font-semibold">Local-First Approach</p>
-                        <p className="text-gray-400">Authentication tokens are stored locally on your device</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-purple-400 mr-3">⏰</span>
-                      <div>
-                        <p className="font-semibold">Token Expiry</p>
-                        <p className="text-gray-400">Authentication tokens expire automatically after 1 hour</p>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Your Rights */}
+            {/* Service Providers */}
             <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                 background: "radial-gradient(circle at 55% 20%, #4361ee22 0%, transparent 75%)"
               }} />
               <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">Your Rights</h3>
-                <div className="space-y-3 text-gray-300">
-                  <div className="flex items-start">
-                    <span className="font-bold text-green-400 mr-3">✓</span>
-                    <p><strong>Data Ownership:</strong> Your data belongs to you and you have full control over it</p>
+                <h3 className="text-2xl font-bold text-white mb-4">Service Providers</h3>
+                <div className="space-y-4 text-gray-300">
+                  <p className="leading-relaxed">
+                    We use trusted third-party services to support our operations:
+                  </p>
+                  <div className="space-y-3">
+                    <div className="flex items-start">
+                      <span className="font-bold text-blue-400 mr-3">•</span>
+                      <p><strong>Google Cloud Platform:</strong> Hosts our backend services that process the data.</p>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="font-bold text-blue-400 mr-3">•</span>
+                      <p><strong>OpenAI:</strong> Provides the AI models used for analyzing the text content.</p>
+                    </div>
                   </div>
-                  <div className="flex items-start">
-                    <span className="font-bold text-green-400 mr-3">✓</span>
-                    <p><strong>Data Portability:</strong> Export all your data anytime in Markdown format</p>
-                  </div>
-                  <div className="flex items-start">
-                    <span className="font-bold text-green-400 mr-3">✓</span>
-                    <p><strong>Account Deletion:</strong> Delete your account and all associated data at any time</p>
-                  </div>
-                  <div className="flex items-start">
-                    <span className="font-bold text-green-400 mr-3">✓</span>
-                    <p><strong>Data Access:</strong> Request a copy of all data we have about you</p>
-                  </div>
+                  <p className="leading-relaxed">
+                    We may also use services for analytics and error tracking to improve our product.
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* LinkedIn Integration */}
+            {/* Security */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 35% 50%, #4cc9f022 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">Security</h3>
+                <div className="text-gray-300">
+                  <p className="leading-relaxed">
+                    We take data security seriously. We use industry-standard security practices to protect your Personal Information, 
+                    both in transit and at rest. However, no system is 100% secure, so we encourage users to also take steps to 
+                    safeguard their credentials.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Data Ownership & Portability */}
             <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                 background: "radial-gradient(circle at 65% 70%, #7209b722 0%, transparent 75%)"
               }} />
               <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">LinkedIn Integration</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">Data Ownership & Portability</h3>
                 <div className="space-y-4 text-gray-300">
-                  <p className="leading-relaxed">
-                    Requill operates as a browser extension that assists with LinkedIn content creation. We want to be 
-                    transparent about our LinkedIn integration:
-                  </p>
-                  <div className="space-y-3">
-                    <div className="flex items-start">
-                      <span className="font-bold text-blue-400 mr-3">•</span>
-                      <p>We do not access your LinkedIn credentials or login information</p>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-blue-400 mr-3">•</span>
-                      <p>We do not store or read your LinkedIn messages or connections</p>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-blue-400 mr-3">•</span>
-                      <p>We follow all LinkedIn terms of service and best practices</p>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-blue-400 mr-3">•</span>
-                      <p>All content generation happens locally in your browser</p>
-                    </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Data Ownership</h4>
+                    <p className="leading-relaxed">
+                      You own your data. Full stop. We do not access or use your content for any reason other than delivering 
+                      the features of the Service. You can access or delete your data at any time.
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Data Portability</h4>
+                    <p className="leading-relaxed">
+                      Your data should move with you. We support exporting your saved content so you always retain control.
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Contact Information */}
+            {/* Your Rights (GDPR, CCPA, and similar laws) */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 55% 20%, #4361ee22 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">Your Rights (GDPR, CCPA, and similar laws)</h3>
+                <div className="space-y-4 text-gray-300">
+                  <p className="leading-relaxed">
+                    Depending on your location, you may have rights under applicable data protection laws, such as:
+                  </p>
+                  <div className="space-y-3">
+                    <div className="flex items-start">
+                      <span className="font-bold text-green-400 mr-3">•</span>
+                      <p><strong>Right to access</strong> – You can request a copy of the personal data we hold about you.</p>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="font-bold text-green-400 mr-3">•</span>
+                      <p><strong>Right to rectification</strong> – You can ask us to correct inaccurate or incomplete data.</p>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="font-bold text-green-400 mr-3">•</span>
+                      <p><strong>Right to erasure ("Right to be forgotten")</strong> – You can request that we delete your data.</p>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="font-bold text-green-400 mr-3">•</span>
+                      <p><strong>Right to data portability</strong> – You can export your data in a machine-readable format.</p>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="font-bold text-green-400 mr-3">•</span>
+                      <p><strong>Right to object</strong> – You can object to certain types of processing, like marketing or profiling (we don't do this anyway).</p>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="font-bold text-green-400 mr-3">•</span>
+                      <p><strong>Right not to be subject to automated decision-making</strong> (we don't do this anyway).</p>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="font-bold text-green-400 mr-3">•</span>
+                      <p><strong>Right to opt-out of the sale of personal data</strong> (we don't sell data).</p>
+                    </div>
+                  </div>
+                  <p className="leading-relaxed">
+                    To exercise any of these rights, email us at <strong>support@executivesai.com</strong>. We'll respond within 30 days.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Links to Other Sites */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 65% 70%, #7209b722 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">Links to Other Sites</h3>
+                <div className="text-gray-300">
+                  <p className="leading-relaxed">
+                    Our Service operates on LinkedIn and may interact with links to external sites. We do not control and are not 
+                    responsible for the privacy practices or content of those other sites. We encourage you to review their privacy 
+                    policies if you visit them.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Changes to This Privacy Policy */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 40% 30%, #4361ee22 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">Changes to This Privacy Policy</h3>
+                <div className="text-gray-300">
+                  <p className="leading-relaxed">
+                    We may update this Privacy Policy periodically. We will notify users of any significant changes by posting 
+                    the new policy within the extension or on our website. Changes are effective immediately once published.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Us */}
             <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                 background: "radial-gradient(circle at 50% 50%, #4361ee22 0%, transparent 75%)"
@@ -247,15 +290,13 @@ export default function PrivacyPolicyPage() {
                 <h3 className="text-2xl font-bold text-white mb-4">Contact Us</h3>
                 <div className="text-gray-300">
                   <p className="leading-relaxed mb-4">
-                    If you have any questions about this Privacy Policy or our data practices, please contact us:
+                    If you have any questions, concerns, or requests related to your data or this Privacy Policy, please contact us at:
                   </p>
-                  <div className="space-y-2">
-                    <p><strong>Email:</strong> privacy@requill.com</p>
-                    <p><strong>Support:</strong> support@requill.com</p>
+                  <div className="text-center">
+                    <p className="text-lg font-semibold text-blue-300">
+                      <strong>support@executivesai.com</strong>
+                    </p>
                   </div>
-                  <p className="mt-4 text-sm text-gray-400">
-                    We will respond to all privacy-related inquiries within 48 hours.
-                  </p>
                 </div>
               </div>
             </div>
