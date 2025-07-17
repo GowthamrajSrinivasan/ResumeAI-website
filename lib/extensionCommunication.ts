@@ -37,6 +37,15 @@ export class ExtensionCommunication {
         case 'EXTENSION_STATUS_RESPONSE':
           this.handleExtensionStatusResponse(event.data);
           break;
+        case 'LINKEDIN_URL_STORED_RESPONSE':
+          this.handleLinkedInUrlStoredResponse(event.data.success);
+          break;
+        case 'STORED_LINKEDIN_URL_RESPONSE':
+          this.handleStoredLinkedInUrlResponse(event.data.url);
+          break;
+        case 'LINKEDIN_NAVIGATION_COMPLETE':
+          this.handleLinkedInNavigationComplete(event.data.success);
+          break;
       }
 
       // Call custom handlers if registered
@@ -116,6 +125,42 @@ export class ExtensionCommunication {
     }, '*');
   }
 
+  /**
+   * Store LinkedIn URL before starting sign-in process
+   */
+  storeLinkedInUrl() {
+    if (typeof window === 'undefined') return;
+    
+    console.log('Website requesting to store current LinkedIn URL');
+    window.postMessage({
+      type: 'STORE_LINKEDIN_URL'
+    }, '*');
+  }
+
+  /**
+   * Get stored LinkedIn URL after successful authentication
+   */
+  getStoredLinkedInUrl() {
+    if (typeof window === 'undefined') return;
+    
+    console.log('Website requesting stored LinkedIn URL');
+    window.postMessage({
+      type: 'GET_STORED_LINKEDIN_URL'
+    }, '*');
+  }
+
+  /**
+   * Navigate to stored LinkedIn URL or fallback
+   */
+  navigateToLinkedIn() {
+    if (typeof window === 'undefined') return;
+    
+    console.log('Website requesting navigation to LinkedIn');
+    window.postMessage({
+      type: 'NAVIGATE_TO_LINKEDIN'
+    }, '*');
+  }
+
   // Response handlers
   handleIdTokenResponse(idToken: string | null) {
     if (idToken) {
@@ -160,6 +205,36 @@ export class ExtensionCommunication {
     }
   }
 
+  handleLinkedInUrlStoredResponse(success: boolean) {
+    if (success) {
+      console.log('✅ LinkedIn URL successfully stored in extension');
+      this.onLinkedInUrlStored();
+    } else {
+      console.log('❌ Failed to store LinkedIn URL in extension');
+      this.onLinkedInUrlStoreFailed();
+    }
+  }
+
+  handleStoredLinkedInUrlResponse(url: string | null) {
+    if (url) {
+      console.log('✅ Retrieved stored LinkedIn URL:', url);
+      this.onStoredLinkedInUrlRetrieved(url);
+    } else {
+      console.log('ℹ️ No LinkedIn URL stored in extension');
+      this.onNoLinkedInUrlStored();
+    }
+  }
+
+  handleLinkedInNavigationComplete(success: boolean) {
+    if (success) {
+      console.log('✅ Successfully navigated to LinkedIn');
+      this.onLinkedInNavigationSuccess();
+    } else {
+      console.log('❌ Failed to navigate to LinkedIn');
+      this.onLinkedInNavigationFailed();
+    }
+  }
+
   // Override these methods for custom behavior
   onExtensionAuthenticated(idToken: string) {
     // Override in implementation
@@ -190,6 +265,30 @@ export class ExtensionCommunication {
   }
 
   onExtensionUnavailable() {
+    // Override in implementation
+  }
+
+  onLinkedInUrlStored() {
+    // Override in implementation
+  }
+
+  onLinkedInUrlStoreFailed() {
+    // Override in implementation
+  }
+
+  onStoredLinkedInUrlRetrieved(url: string) {
+    // Override in implementation
+  }
+
+  onNoLinkedInUrlStored() {
+    // Override in implementation
+  }
+
+  onLinkedInNavigationSuccess() {
+    // Override in implementation
+  }
+
+  onLinkedInNavigationFailed() {
     // Override in implementation
   }
 
