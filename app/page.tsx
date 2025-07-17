@@ -445,7 +445,7 @@ export default function HomePage() {
         <ul className="space-y-1 text-gray-400 text-sm">
           <li><a href="/privacy" className="hover:text-blue-400 transition">Privacy Policy</a></li>
           <li><a href="/service-delivery" className="hover:text-blue-400 transition">Service Delivery</a></li>
-          <li><a href="#terms" className="hover:text-blue-400 transition">Terms of Service</a></li>
+          <li><a href="/terms" className="hover:text-blue-400 transition">Terms of Service</a></li>
         </ul>
       </div>
     </div>

@@ -391,7 +391,7 @@ export default function LoginPage() {
             By continuing, you agree to our{' '}
             <button 
               type="button"
-              onClick={() => alert('Terms of Service would be displayed here')}
+              onClick={() => router.push('/terms')}
               className="text-blue-400 hover:text-blue-300 transition-colors"
             >
               Terms of Service
