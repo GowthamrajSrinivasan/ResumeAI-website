@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { extensionComm } from '@/lib/extensionCommunication';
 import React, { useEffect, useState } from "react";
 import { Sparkles, Eye, EyeOff, Mail, Lock, User, ArrowRight } from "lucide-react";
 
@@ -24,8 +25,27 @@ export default function LoginPage() {
     console.log('Login page - Auth state:', { user: user?.email || 'null', loading });
     
     if (user && !loading) {
-      console.log('✅ User authenticated, redirecting to dashboard');
-      router.push('/dashboard');
+      console.log('✅ User authenticated, attempting to navigate to stored LinkedIn URL');
+      
+      // Set up callback to handle stored LinkedIn URL retrieval
+      extensionComm.onStoredLinkedInUrlRetrieved = (url: string) => {
+        console.log('✅ Navigating to stored LinkedIn URL:', url);
+        window.location.href = url;
+      };
+      
+      extensionComm.onNoLinkedInUrlStored = () => {
+        console.log('ℹ️ No stored LinkedIn URL, falling back to linkedin.com');
+        window.location.href = 'https://www.linkedin.com';
+      };
+      
+      // Request stored LinkedIn URL from extension
+      extensionComm.getStoredLinkedInUrl();
+      
+      // Fallback timeout in case extension doesn't respond
+      setTimeout(() => {
+        console.log('⚠️ Extension response timeout, falling back to linkedin.com');
+        window.location.href = 'https://www.linkedin.com';
+      }, 2000);
     }
   }, [user, loading, router]);
 
@@ -43,6 +63,9 @@ export default function LoginPage() {
     setError('');
 
     try {
+      // Store current LinkedIn URL before starting sign-in
+      extensionComm.storeLinkedInUrl();
+      
       if (isLogin) {
         await signIn(formData.email, formData.password);
       } else {
@@ -79,6 +102,9 @@ export default function LoginPage() {
     setError('');
     
     try {
+      // Store current LinkedIn URL before starting sign-in
+      extensionComm.storeLinkedInUrl();
+      
       // This will redirect to Google - the page will navigate away
       // No need to handle success here as the page redirects
       await signInWithGoogle();
@@ -373,7 +399,7 @@ export default function LoginPage() {
             {' '}and{' '}
             <button 
               type="button"
-              onClick={() => alert('Privacy Policy would be displayed here')}
+              onClick={() => router.push('/privacy')}
               className="text-blue-400 hover:text-blue-300 transition-colors"
             >
               Privacy Policy
