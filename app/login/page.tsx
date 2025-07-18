@@ -139,7 +139,66 @@ export default function LoginPage() {
 
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center p-4 pt-16">
-        <div className="w-full max-w-md">
+        <div className="flex w-full max-w-7xl gap-12 items-center">
+          {/* Left Side - Feature Highlights */}
+          <div className="hidden lg:flex flex-col flex-1 space-y-6">
+            {/* Feature 1 */}
+            <div className="relative rounded-2xl border border-blue-900/50 bg-[#181c28]/60 backdrop-blur-md p-6 shadow-xl">
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-transparent pointer-events-none" />
+              <div className="relative z-10">
+                <div className="flex items-start space-x-3 mb-4">
+                  <div className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 flex-shrink-0">
+                    <Sparkles className="h-5 w-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white">
+                    🚀 Effortless LinkedIn Engagement
+                  </h3>
+                </div>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  Busy executive, marketing lead, or job seeker? Our extension helps you stay consistently active on LinkedIn by summarizing posts and crafting personalized replies—so you can maintain your presence without spending hours online.
+                </p>
+              </div>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="relative rounded-2xl border border-purple-900/50 bg-[#181c28]/60 backdrop-blur-md p-6 shadow-xl">
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-transparent pointer-events-none" />
+              <div className="relative z-10">
+                <div className="flex items-start space-x-3 mb-4">
+                  <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 flex-shrink-0">
+                    <ArrowRight className="h-5 w-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white">
+                    ⚡ Others Are Leveling Up—Why Not You?
+                  </h3>
+                </div>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  Many professionals are automating their content interactions. With our free tool, you can do it faster, better, and more authentically, freeing you to focus on the creative, complex, and high-impact work that matters most.
+                </p>
+              </div>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="relative rounded-2xl border border-pink-900/50 bg-[#181c28]/60 backdrop-blur-md p-6 shadow-xl">
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-pink-500/10 via-blue-500/5 to-transparent pointer-events-none" />
+              <div className="relative z-10">
+                <div className="flex items-start space-x-3 mb-4">
+                  <div className="p-2 rounded-lg bg-gradient-to-r from-pink-500 to-pink-600 flex-shrink-0">
+                    <User className="h-5 w-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white">
+                    📈 Boost Your LinkedIn Presence, Effortlessly
+                  </h3>
+                </div>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  Whether you're job hunting or building your personal brand, the extension helps you increase visibility, engagement, and consistency—with minimal effort and maximum impact.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Side - Login Card */}
+          <div className="w-full max-w-md lg:max-w-lg">
           {/* Login/Signup Card */}
           <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl overflow-hidden transition hover:-translate-y-1 hover:scale-[1.01]">
             {/* Subtle radial glow for depth */}
@@ -404,6 +463,7 @@ export default function LoginPage() {
             >
               Privacy Policy
             </button>
+          </div>
           </div>
         </div>
       </div>
