@@ -158,8 +158,8 @@ export default function LoginPage() {
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-transparent pointer-events-none" />
               <div className="relative z-10">
                 <div className="flex items-start space-x-3 mb-4">
-                  <div className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 flex-shrink-0">
-                  <Rocket className="w-5 h-5 text-blue-500" />
+                  <div className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center shadow-inner">
+                    <Rocket className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-white">
                     Effortless LinkedIn Engagement
@@ -176,11 +176,11 @@ export default function LoginPage() {
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-transparent pointer-events-none" />
               <div className="relative z-10">
                 <div className="flex items-start space-x-3 mb-4">
-                  <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 flex-shrink-0">
-                  <Zap className="w-5 h-5 text-yellow-500" />
+                  <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center shadow-inner">
+                    <Zap className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-white">
-                     Others Are Leveling Up—Why Not You?
+                    Others Are Leveling Up—Why Not You?
                   </h3>
                 </div>
                 <p className="text-gray-300 text-sm leading-relaxed">
@@ -194,19 +194,20 @@ export default function LoginPage() {
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-pink-500/10 via-blue-500/5 to-transparent pointer-events-none" />
               <div className="relative z-10">
                 <div className="flex items-start space-x-3 mb-4">
-                  <div className="p-2 rounded-lg bg-gradient-to-r from-pink-500 to-pink-600 flex-shrink-0">
-                  <TrendingUp className="w-5 h-5 text-green-500" />
+                  <div className="p-2 rounded-lg bg-gradient-to-r from-pink-500 to-pink-600 flex items-center justify-center shadow-inner">
+                    <TrendingUp className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-white">
-                     Boost Your LinkedIn Presence, Effortlessly
+                    Boost Your LinkedIn Presence, Effortlessly
                   </h3>
                 </div>
                 <p className="text-gray-300 text-sm leading-relaxed">
                   Whether you're job hunting or building your personal brand, the extension helps you increase visibility, engagement, and consistency—with minimal effort and maximum impact.
                 </p>
               </div>
-            </div>
+              </div>
           </div>
+            
 
           {/* Right Side - Login Card */}
           <div className="w-full max-w-md lg:max-w-lg">
@@ -234,16 +235,29 @@ export default function LoginPage() {
                 </p>
               </div>
 
-              {/* Single Login Tab - Only show if Login tab is active */}
-              {isLogin && (
-                <div className="flex justify-center mb-8">
-                  <div className="bg-gray-800/50 rounded-xl p-1 border border-gray-700">
-                    <div className="py-3 px-6 rounded-lg text-sm font-medium bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg cursor-default">
-                      Log In
-                    </div>
-                  </div>
-                </div>
-              )}
+              {/* Toggle Buttons */}
+              <div className="flex bg-gray-800/50 rounded-xl p-1 mb-8 border border-gray-700">
+                <button
+                  onClick={() => setIsLogin(true)}
+                  className={`flex-1 py-3 px-6 rounded-lg text-sm font-medium transition-all duration-300 ${
+                    isLogin
+                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
+                      : 'text-gray-400 hover:text-gray-200'
+                  }`}
+                >
+                  Log In
+                </button>
+                <button
+                  onClick={() => setIsLogin(false)}
+                  className={`flex-1 py-3 px-6 rounded-lg text-sm font-medium transition-all duration-300 ${
+                    !isLogin
+                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
+                      : 'text-gray-400 hover:text-gray-200'
+                  }`}
+                >
+                  Sign Up
+                </button>
+              </div>
 
               {/* Google Sign-in Button */}
               <button
