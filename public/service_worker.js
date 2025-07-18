@@ -1,9 +1,9 @@
 // service_worker.js - Chrome Extension Service Worker (Manifest V3)
-// This is the Manifest V3 version of background.js
+// This is the updated Manifest V3 compatible version
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "STORE_LOGIN_DATA") {
-    console.log("Service worker storing login data:", {
+    console.log("Background script storing login data:", {
       uid: message.uid
     });
 
@@ -12,12 +12,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       uid: message.uid
     };
 
-    // Store UID in chrome.storage.sync
+    // Use async/await with Promises for Manifest V3
     chrome.storage.sync.set(syncData).then(() => {
       console.log("✅ UID stored in chrome.storage.sync for cross-device sync");
       sendResponse({ success: true });
     }).catch((error) => {
-      console.error("❌ Error storing UID:", error);
+      console.error("Error storing UID in sync storage:", error);
       sendResponse({ success: false, error: error.message });
     });
 
@@ -27,7 +27,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   // Handle other message types if needed
   if (message.type === "GET_LOGIN_DATA") {
-    // Retrieve stored UID
+    // Retrieve stored UID using Promise-based API
     chrome.storage.sync.get(['uid']).then((syncResult) => {
       sendResponse({
         uid: syncResult.uid
@@ -40,7 +40,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message.type === "CLEAR_LOGIN_DATA") {
-    // Clear stored UID
+    // Clear stored UID using Promise-based API
     chrome.storage.sync.remove(['uid']).then(() => {
       console.log("✅ UID cleared from chrome.storage.sync");
       sendResponse({ success: true });
@@ -52,4 +52,4 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-console.log("Service worker loaded and ready to handle UID data");
+console.log("Background script loaded and ready to handle UID data");
