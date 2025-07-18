@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { extensionComm } from '@/lib/extensionCommunication';
 import React, { useEffect, useState } from "react";
 import { Sparkles, Eye, EyeOff, Mail, Lock, User, ArrowRight, Rocket, Zap, TrendingUp } from "lucide-react";
+import { RiQuillPenAiFill } from "react-icons/ri";
 
 export default function LoginPage() {
   const { user, loading, signIn, signUp, signInWithGoogle } = useAuth();
@@ -132,8 +133,8 @@ export default function LoginPage() {
       {/* Header */}
       <header className="sticky top-0 z-30 w-full flex items-center justify-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 py-4 px-4 shadow-xl text-white rounded-b-2xl backdrop-blur-lg bg-opacity-90">
         <div className="flex items-center space-x-2">
-          <Sparkles className="h-6 w-6 text-white" />
-          <h1 className="text-xl font-extrabold">Requill</h1>
+          <RiQuillPenAiFill className="h-6 w-6 text-white" />
+          <h1 className="text-xl font-extrabold">Requill - powered by OpenAI</h1>
         </div>
       </header>
 
