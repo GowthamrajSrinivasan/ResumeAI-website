@@ -32,15 +32,12 @@ interface AuthActions {
 }
 
 // Function to save user data to Firestore
-const saveUserToFirestore = async (user: User, token: string) => {
+const saveUserToFirestore = async (user: User) => {
   try {
     const userRef = doc(db, 'users', user.uid);
     const userDoc = await getDoc(userRef);
     
-    // Calculate auth expiry (1 hour from now)
-    const authExpiry = new Date(Date.now() + 60 * 60 * 1000).getTime();
-    
-    // User details structure matching your fetch requirements
+    // User details structure
     const userDetails = {
       uid: user.uid,
       displayName: user.displayName,
@@ -48,12 +45,10 @@ const saveUserToFirestore = async (user: User, token: string) => {
       emailVerified: user.emailVerified
     };
     
-    // Main user data structure matching your fetch requirements
+    // Main user data structure
     const userData = {
-      // Fields you're fetching
-      userToken: token,
+      // Core fields
       userEmail: user.email,
-      authExpiry: authExpiry,
       userDetails: userDetails,
       
       // Additional fields for comprehensive user management
@@ -76,9 +71,7 @@ const saveUserToFirestore = async (user: User, token: string) => {
       });
       console.log('User data updated in Firestore:', userData);
       console.log('Firestore storage details:');
-      console.log('  - userToken:', token ? `${token.substring(0, 20)}...` : 'null');
       console.log('  - userEmail:', user.email);
-      console.log('  - authExpiry:', new Date(authExpiry).toISOString());
       console.log('  - userDetails:', userDetails);
     } else {
       // Create new user
@@ -89,9 +82,7 @@ const saveUserToFirestore = async (user: User, token: string) => {
       });
       console.log('New user created in Firestore:', userData);
       console.log('Firestore storage details:');
-      console.log('  - userToken:', token ? `${token.substring(0, 20)}...` : 'null');
       console.log('  - userEmail:', user.email);
-      console.log('  - authExpiry:', new Date(authExpiry).toISOString());
       console.log('  - userDetails:', userDetails);
     }
   } catch (error) {
@@ -109,20 +100,20 @@ export function useAuth(): AuthState & AuthActions {
     extensionComm.initialize();
     
     // Set up custom extension event handlers
-    extensionComm.onExtensionAuthenticated = (idToken: string) => {
-      console.log('Extension is authenticated with token');
+    extensionComm.onExtensionAuthenticated = (uid: string) => {
+      console.log('Extension is authenticated with uid:', uid);
     };
     
     extensionComm.onExtensionUnauthenticated = () => {
       console.log('Extension is not authenticated');
     };
     
-    extensionComm.onIdTokenStored = () => {
-      console.log('Token successfully stored in extension');
+    extensionComm.onUidStored = () => {
+      console.log('UID successfully stored in extension');
     };
     
-    extensionComm.onIdTokenCleared = () => {
-      console.log('Token successfully cleared from extension');
+    extensionComm.onUidCleared = () => {
+      console.log('UID successfully cleared from extension');
     };
     
     return () => {
@@ -138,7 +129,6 @@ export function useAuth(): AuthState & AuthActions {
       // Update Chrome storage and Firestore on successful login
       if (user) {
         try {
-          const token = await user.getIdToken();
           const userDetails = {
             uid: user.uid,
             displayName: user.displayName,
@@ -146,12 +136,9 @@ export function useAuth(): AuthState & AuthActions {
             emailVerified: user.emailVerified
           };
           
-          // Calculate auth expiry (1 hour from now)
-          const authExpiry = new Date(Date.now() + 60 * 60 * 1000).getTime();
-          
           // Save user to Firestore
           try {
-            await saveUserToFirestore(user, token);
+            await saveUserToFirestore(user);
             console.log('✅ User data saved to Firestore successfully');
             
             // 🔐 Send the specific REQUILL_EXTENSION message for chrome extension
@@ -159,8 +146,7 @@ export function useAuth(): AuthState & AuthActions {
               window.postMessage({
                 source: "REQUILL_EXTENSION",
                 type: "LOGIN_SUCCESS",
-                uid: user.uid,
-                idToken: token
+                uid: user.uid
               }, "*");
               console.log('✅ REQUILL_EXTENSION LOGIN_SUCCESS message sent');
             }
@@ -175,8 +161,8 @@ export function useAuth(): AuthState & AuthActions {
             };
             
             // Send comprehensive extension messages
-            extensionComm.setIdToken(token, userData);
-            extensionComm.sendRequillLogin(token);
+            extensionComm.setUid(user.uid, userData);
+            extensionComm.sendRequillLogin(user.uid);
             
             console.log('✅ Extension communication messages sent');
           } catch (firestoreError) {
@@ -324,7 +310,7 @@ export function useAuth(): AuthState & AuthActions {
   const logout = async () => {
     try {
       // Clear from extension first
-      extensionComm.clearIdToken();
+      extensionComm.clearUid();
       
       // Then sign out from Firebase
       await signOut(auth);

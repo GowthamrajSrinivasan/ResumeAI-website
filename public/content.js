@@ -9,16 +9,15 @@ window.addEventListener("message", (event) => {
 
   console.log("Content script received LOGIN_SUCCESS:", event.data);
 
-  // Send UID and ID token to background for storage
+  // Send UID to background for storage
   chrome.runtime.sendMessage({
     type: "STORE_LOGIN_DATA",
-    uid: event.data.uid,
-    idToken: event.data.idToken
+    uid: event.data.uid
   }, (response) => {
     if (chrome.runtime.lastError) {
       console.error("Error sending message to background:", chrome.runtime.lastError);
     } else {
-      console.log("Successfully sent login data to background script");
+      console.log("Successfully sent UID to background script");
     }
   });
 });

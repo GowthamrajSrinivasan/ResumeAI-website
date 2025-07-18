@@ -17,14 +17,14 @@ class ExtensionCommunication {
             console.log('Website received message from extension:', event.data);
 
             switch (event.data.type) {
-                case 'ID_TOKEN_RESPONSE':
-                    this.handleIdTokenResponse(event.data.idToken);
+                case 'UID_RESPONSE':
+                    this.handleUidResponse(event.data.uid);
                     break;
-                case 'ID_TOKEN_SET_RESPONSE':
-                    this.handleIdTokenSetResponse(event.data.success);
+                case 'UID_SET_RESPONSE':
+                    this.handleUidSetResponse(event.data.success);
                     break;
-                case 'ID_TOKEN_CLEARED_RESPONSE':
-                    this.handleIdTokenClearedResponse(event.data.success);
+                case 'UID_CLEARED_RESPONSE':
+                    this.handleUidClearedResponse(event.data.success);
                     break;
                 case 'EXTENSION_STATUS_RESPONSE':
                     this.handleExtensionStatusResponse(event.data);
@@ -33,29 +33,29 @@ class ExtensionCommunication {
         });
     }
 
-    // Send idToken to extension after user login
-    setIdToken(idToken, userData = null) {
-        console.log('Website sending idToken to extension:', idToken ? `${idToken.substring(0, 20)}...` : 'null');
+    // Send uid to extension after user login
+    setUid(uid, userData = null) {
+        console.log('Website sending uid to extension:', uid);
         window.postMessage({
-            type: 'SET_ID_TOKEN',
-            idToken: idToken,
+            type: 'SET_UID',
+            uid: uid,
             userData: userData
         }, '*');
     }
 
-    // Request idToken from extension
-    getIdToken() {
-        console.log('Website requesting idToken from extension');
+    // Request uid from extension
+    getUid() {
+        console.log('Website requesting uid from extension');
         window.postMessage({
-            type: 'GET_ID_TOKEN'
+            type: 'GET_UID'
         }, '*');
     }
 
-    // Clear idToken from extension (logout)
-    clearIdToken() {
-        console.log('Website clearing idToken from extension');
+    // Clear uid from extension (logout)
+    clearUid() {
+        console.log('Website clearing uid from extension');
         window.postMessage({
-            type: 'CLEAR_ID_TOKEN'
+            type: 'CLEAR_UID'
         }, '*');
     }
 
@@ -67,45 +67,45 @@ class ExtensionCommunication {
         }, '*');
     }
 
-    // Send legacy REQUILL_LOGIN message
-    sendRequillLogin(idToken) {
+    // Send REQUILL_LOGIN message with uid
+    sendRequillLogin(uid) {
         console.log('Website sending REQUILL_LOGIN message');
         window.postMessage({
             type: 'REQUILL_LOGIN',
-            idToken: idToken
+            uid: uid
         }, '*');
     }
 
     // Handle responses
-    handleIdTokenResponse(idToken) {
-        if (idToken) {
-            console.log('✅ Extension has idToken:', idToken ? `${idToken.substring(0, 20)}...` : 'null');
+    handleUidResponse(uid) {
+        if (uid) {
+            console.log('✅ Extension has uid:', uid);
             // User is logged in to extension
-            this.onExtensionAuthenticated?.(idToken);
+            this.onExtensionAuthenticated?.(uid);
         } else {
-            console.log('ℹ️ Extension does not have idToken');
+            console.log('ℹ️ Extension does not have uid');
             // User is not logged in to extension
             this.onExtensionUnauthenticated?.();
         }
     }
 
-    handleIdTokenSetResponse(success) {
+    handleUidSetResponse(success) {
         if (success) {
-            console.log('✅ idToken successfully stored in extension');
-            this.onIdTokenStored?.();
+            console.log('✅ uid successfully stored in extension');
+            this.onUidStored?.();
         } else {
-            console.log('❌ Failed to store idToken in extension');
-            this.onIdTokenStoreFailed?.();
+            console.log('❌ Failed to store uid in extension');
+            this.onUidStoreFailed?.();
         }
     }
 
-    handleIdTokenClearedResponse(success) {
+    handleUidClearedResponse(success) {
         if (success) {
-            console.log('✅ idToken successfully cleared from extension');
-            this.onIdTokenCleared?.();
+            console.log('✅ uid successfully cleared from extension');
+            this.onUidCleared?.();
         } else {
-            console.log('❌ Failed to clear idToken from extension');
-            this.onIdTokenClearFailed?.();
+            console.log('❌ Failed to clear uid from extension');
+            this.onUidClearFailed?.();
         }
     }
 
@@ -128,7 +128,7 @@ class ExtensionCommunication {
         this.checkExtensionStatus();
         
         // Check if user is already logged in to extension
-        this.getIdToken();
+        this.getUid();
     }
 }
 
@@ -156,9 +156,9 @@ function integrateWithFirebaseAuth() {
             emailVerified: user.emailVerified
         };
 
-        // Send to extension (idToken will be stored in chrome.storage.local by extension)
-        window.extensionComm.setIdToken(idToken, userData);
-        window.extensionComm.sendRequillLogin(idToken);
+        // Send to extension (uid will be stored in chrome.storage.sync by extension)
+        window.extensionComm.setUid(user.uid, userData);
+        window.extensionComm.sendRequillLogin(user.uid);
         
         // Store in Firestore (implement your Firestore logic here)
         console.log('Store user data in Firestore:', userData);
@@ -172,7 +172,7 @@ function integrateWithFirebaseAuth() {
         console.log('Firebase logout, clearing extension data...');
         
         // Clear from extension
-        window.extensionComm.clearIdToken();
+        window.extensionComm.clearUid();
     };
 }
 
