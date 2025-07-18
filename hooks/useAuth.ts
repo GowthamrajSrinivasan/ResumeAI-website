@@ -183,39 +183,12 @@ export function useAuth(): AuthState & AuthActions {
             console.error('❌ Failed to save user data to Firestore:', firestoreError);
           }
           
-          // Store only uid in Chrome storage sync if available
-          try {
-            if (typeof chrome !== 'undefined' && chrome?.storage?.sync) {
-              console.log('Chrome extension environment detected, storing uid in sync storage...');
-              const chromeStorageData = {
-                uid: user.uid
-              };
-              
-              await chrome.storage.sync.set(chromeStorageData);
-              console.log('✅ User uid stored in Chrome sync storage:', chromeStorageData);
-              console.log('Chrome sync storage details:');
-              console.log('  - uid:', user.uid);
-            } else {
-              console.log('ℹ️ Chrome extension API not available - uid not stored in Chrome sync storage');
-            }
-          } catch (chromeError) {
-            console.warn('⚠️ Chrome sync storage failed:', chromeError);
-          }
+          // Chrome extension will handle storing uid in Chrome storage when it receives the messages
         } catch (error) {
           console.error('Error storing user data:', error);
         }
       } else {
-        // Clear uid from Chrome sync storage on logout
-        if (typeof chrome !== 'undefined' && chrome?.storage?.sync) {
-          try {
-            await chrome.storage.sync.remove(['uid']);
-            console.log('✅ User uid cleared from Chrome sync storage');
-          } catch (error) {
-            console.error('❌ Error clearing uid from Chrome sync storage:', error);
-          }
-        } else {
-          console.log('ℹ️ Chrome extension API not available - no Chrome sync storage cleanup needed');
-        }
+        // Extension will handle clearing uid from Chrome storage
       }
     });
 

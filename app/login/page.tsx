@@ -238,16 +238,6 @@ export default function LoginPage() {
               {/* Toggle Buttons */}
               <div className="flex bg-gray-800/50 rounded-xl p-1 mb-8 border border-gray-700">
                 <button
-                  onClick={() => setIsLogin(true)}
-                  className={`flex-1 py-3 px-6 rounded-lg text-sm font-medium transition-all duration-300 ${
-                    isLogin
-                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
-                      : 'text-gray-400 hover:text-gray-200'
-                  }`}
-                >
-                  Log In
-                </button>
-                <button
                   onClick={() => setIsLogin(false)}
                   className={`flex-1 py-3 px-6 rounded-lg text-sm font-medium transition-all duration-300 ${
                     !isLogin
@@ -256,6 +246,16 @@ export default function LoginPage() {
                   }`}
                 >
                   Sign Up
+                </button>
+                <button
+                  onClick={() => setIsLogin(true)}
+                  className={`flex-1 py-3 px-6 rounded-lg text-sm font-medium transition-all duration-300 ${
+                    isLogin
+                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
+                      : 'text-gray-400 hover:text-gray-200'
+                  }`}
+                >
+                  Log In
                 </button>
               </div>
 
