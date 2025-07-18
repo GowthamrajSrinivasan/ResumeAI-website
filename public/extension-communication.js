@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Example integration with Firebase Auth
 function integrateWithFirebaseAuth() {
     // Example: After Firebase login success
-    window.handleFirebaseLoginSuccess = function(user, idToken) {
+    window.handleFirebaseLoginSuccess = function(user) {
         console.log('Firebase login successful, integrating with extension...');
         
         // Prepare user data for extension

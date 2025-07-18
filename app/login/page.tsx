@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { extensionComm } from '@/lib/extensionCommunication';
 import React, { useEffect, useState } from "react";
-import { Sparkles, Eye, EyeOff, Mail, Lock, User, ArrowRight } from "lucide-react";
+import { Sparkles, Eye, EyeOff, Mail, Lock, User, ArrowRight, Rocket, Zap, TrendingUp } from "lucide-react";
 
 export default function LoginPage() {
   const { user, loading, signIn, signUp, signInWithGoogle } = useAuth();
@@ -142,16 +142,27 @@ export default function LoginPage() {
         <div className="flex w-full max-w-7xl gap-12 items-center">
           {/* Left Side - Feature Highlights */}
           <div className="hidden lg:flex flex-col flex-1 space-y-6">
+            {/* Title */}
+            <div className="text-center mb-6">
+              <h2 className="text-3xl font-bold text-white mb-2">
+                Automate the Busywork.
+                <br />
+                <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                  Focus on What Matters.
+                </span>
+              </h2>
+            </div>
+
             {/* Feature 1 */}
-            <div className="relative rounded-2xl border border-blue-900/50 bg-[#181c28]/60 backdrop-blur-md p-6 shadow-xl">
+            <div className="relative rounded-2xl border border-blue-900/50 bg-[#181c28]/60 backdrop-blur-md p-6 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-blue-500/50 group cursor-pointer">
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-transparent pointer-events-none" />
               <div className="relative z-10">
                 <div className="flex items-start space-x-3 mb-4">
                   <div className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 flex-shrink-0">
-                    <Sparkles className="h-5 w-5 text-white" />
+                  <Rocket className="w-5 h-5 text-blue-500" />
                   </div>
                   <h3 className="text-lg font-bold text-white">
-                    🚀 Effortless LinkedIn Engagement
+                    Effortless LinkedIn Engagement
                   </h3>
                 </div>
                 <p className="text-gray-300 text-sm leading-relaxed">
@@ -161,15 +172,15 @@ export default function LoginPage() {
             </div>
 
             {/* Feature 2 */}
-            <div className="relative rounded-2xl border border-purple-900/50 bg-[#181c28]/60 backdrop-blur-md p-6 shadow-xl">
+            <div className="relative rounded-2xl border border-purple-900/50 bg-[#181c28]/60 backdrop-blur-md p-6 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-purple-500/50 group cursor-pointer">
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-transparent pointer-events-none" />
               <div className="relative z-10">
                 <div className="flex items-start space-x-3 mb-4">
                   <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 flex-shrink-0">
-                    <ArrowRight className="h-5 w-5 text-white" />
+                  <Zap className="w-5 h-5 text-yellow-500" />
                   </div>
                   <h3 className="text-lg font-bold text-white">
-                    ⚡ Others Are Leveling Up—Why Not You?
+                     Others Are Leveling Up—Why Not You?
                   </h3>
                 </div>
                 <p className="text-gray-300 text-sm leading-relaxed">
@@ -179,15 +190,15 @@ export default function LoginPage() {
             </div>
 
             {/* Feature 3 */}
-            <div className="relative rounded-2xl border border-pink-900/50 bg-[#181c28]/60 backdrop-blur-md p-6 shadow-xl">
+            <div className="relative rounded-2xl border border-pink-900/50 bg-[#181c28]/60 backdrop-blur-md p-6 shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-pink-500/50 group cursor-pointer">
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-pink-500/10 via-blue-500/5 to-transparent pointer-events-none" />
               <div className="relative z-10">
                 <div className="flex items-start space-x-3 mb-4">
                   <div className="p-2 rounded-lg bg-gradient-to-r from-pink-500 to-pink-600 flex-shrink-0">
-                    <User className="h-5 w-5 text-white" />
+                  <TrendingUp className="w-5 h-5 text-green-500" />
                   </div>
                   <h3 className="text-lg font-bold text-white">
-                    📈 Boost Your LinkedIn Presence, Effortlessly
+                     Boost Your LinkedIn Presence, Effortlessly
                   </h3>
                 </div>
                 <p className="text-gray-300 text-sm leading-relaxed">

@@ -19,6 +19,14 @@ import {
 import { auth, db } from '@/lib/firebase';
 import { extensionComm } from '@/lib/extensionCommunication';
 
+// Type declaration for window extensions
+declare global {
+  interface Window {
+    handleFirebaseLoginSuccess?: (user: User) => void;
+    handleFirebaseLogout?: () => void;
+  }
+}
+
 interface AuthState {
   user: User | null;
   loading: boolean;
@@ -163,6 +171,12 @@ export function useAuth(): AuthState & AuthActions {
             // Send comprehensive extension messages
             extensionComm.setUid(user.uid, userData);
             extensionComm.sendRequillLogin(user.uid);
+            
+            // Call the global Firebase login success handler if available
+            if (typeof window !== 'undefined' && window.handleFirebaseLoginSuccess) {
+              window.handleFirebaseLoginSuccess(user);
+              console.log('✅ Called window.handleFirebaseLoginSuccess');
+            }
             
             console.log('✅ Extension communication messages sent');
           } catch (firestoreError) {
@@ -311,6 +325,12 @@ export function useAuth(): AuthState & AuthActions {
     try {
       // Clear from extension first
       extensionComm.clearUid();
+      
+      // Call the global Firebase logout handler if available
+      if (typeof window !== 'undefined' && window.handleFirebaseLogout) {
+        window.handleFirebaseLogout();
+        console.log('✅ Called window.handleFirebaseLogout');
+      }
       
       // Then sign out from Firebase
       await signOut(auth);
