@@ -78,6 +78,10 @@ export default function TermsOfServicePage() {
                     By accessing or using the Service you agree to be bound by these Terms. If you disagree with any part of 
                     the terms then you may not access the Service.
                   </p>
+                  <p className="leading-relaxed font-semibold text-blue-300">
+                    Our Privacy Policy, which is incorporated into these Terms of Service, explains how we collect, use, and 
+                    share your personal information. Please read it carefully before using the Service.
+                  </p>
                 </div>
               </div>
             </div>
@@ -234,23 +238,7 @@ export default function TermsOfServicePage() {
               </div>
             </div>
 
-            {/* 8. Governing Law */}
-            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
-              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-                background: "radial-gradient(circle at 65% 40%, #7209b722 0%, transparent 75%)"
-              }} />
-              <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">8. Governing Law</h3>
-                <div className="text-gray-300">
-                  <p className="leading-relaxed">
-                    The laws of the United States, excluding its conflicts of law rules, shall govern this Agreement and your use of 
-                    the extension. Your use of the extension may also be subject to other local, state, national, or international laws.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* 9. Changes to This Agreement */}
+            {/* 8. Changes to This Agreement */}
             <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                 background: "radial-gradient(circle at 35% 50%, #4cc9f022 0%, transparent 75%)"
@@ -271,7 +259,7 @@ export default function TermsOfServicePage() {
               </div>
             </div>
 
-            {/* 10. Contact Us */}
+            {/* 9. Contact Us */}
             <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                 background: "radial-gradient(circle at 50% 50%, #4361ee22 0%, transparent 75%)"
@@ -280,18 +268,123 @@ export default function TermsOfServicePage() {
                 <h3 className="text-2xl font-bold text-white mb-4">10. Contact Us</h3>
                 <div className="text-gray-300">
                   <p className="leading-relaxed mb-4">
-                    If you have any questions about these Terms of Service, you can contact us:
+                    If you have any questions about these Terms of Service, you can contact us by email: 
+                    <strong className="text-blue-300">support@executivesai.com</strong></p>
+                </div>
+              </div>
+            </div>
+
+            {/* AI-Powered Services */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 60% 70%, #4361ee22 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">AI-Powered Services</h3>
+                <div className="space-y-4 text-gray-300">
+                  <p className="leading-relaxed">
+                    Our Service uses third-party artificial intelligence models, including those provided by OpenAI, to generate content and provide features. By using the Service, you acknowledge and agree to the following:
                   </p>
-                  <div className="space-y-2">
-                    <div className="flex items-start">
-                      <span className="font-bold text-blue-400 mr-3">•</span>
-                      <p>By email: <strong className="text-blue-300">support@executivesai.com</strong></p>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-blue-400 mr-3">•</span>
-                      <p>By visiting our website contact page</p>
-                    </div>
-                  </div>
+                  <ul className="list-disc list-inside space-y-2 pl-4">
+                    <li>
+                      <strong className="text-blue-400">AI Output:</strong> Content generated by the AI is probabilistic and may contain inaccuracies, errors, or offensive material. We do not guarantee the accuracy, completeness, or reliability of any AI-generated content. You are solely responsible for reviewing and verifying any information you receive from the Service before relying on it.
+                    </li>
+                    <li>
+                      <strong className="text-blue-400">User Responsibility:</strong> You are responsible for the inputs you provide to the AI and the subsequent use of its output. You agree not to use the service to generate content that is illegal, harmful, harassing, or violates the rights of others.
+                    </li>
+                    <li>
+                      <strong className="text-blue-400">Ownership of Content:</strong> You retain ownership of the original content you provide as input. Subject to these Terms, we grant you a worldwide, non-exclusive, royalty-free license to use the content generated by the Service for your personal or internal business purposes.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* User Content and Conduct */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 40% 30%, #4361ee22 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">User Content and Conduct</h3>
+                <div className="space-y-4 text-gray-300">
+                  <p className="leading-relaxed">
+                    To operate and improve the Service, you grant us a non-exclusive, worldwide, royalty-free license to use, host, store, and process any content you submit through the Service. This license is solely for the purpose of providing, maintaining, and enhancing the Service.
+                  </p>
+                  <p className="leading-relaxed">
+                    You agree not to misuse the Service or help anyone else to do so. This includes, but is not limited to, probing or testing the vulnerability of any system, reverse-engineering the Service, or using it to send altered or deceptive information.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Accounts */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 50% 50%, #4361ee22 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">Accounts</h3>
+                <div className="text-gray-300">
+                  <p className="leading-relaxed">
+                    You may be required to create an account to use the Service. You agree to provide accurate, current, and complete information during the registration process and to update such information to keep it accurate, current, and complete.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Disclaimers and Limitation of Liability */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 50% 50%, #4361ee22 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">Disclaimers and Limitation of Liability</h3>
+                <div className="space-y-4 text-gray-300">
+                  <p className="leading-relaxed">
+                    THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT ANY WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED. WE DISCLAIM ALL WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+                  </p>
+                  <p className="leading-relaxed">
+                    TO THE FULLEST EXTENT PERMITTED BY LAW, IN NO EVENT SHALL EXECUTIVESAI, ITS AFFILIATES, DIRECTORS, OR EMPLOYEES BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES, WHETHER INCURRED DIRECTLY OR INDIRECTLY, OR ANY LOSS OF DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES, RESULTING FROM YOUR USE OF THE SERVICE. OUR TOTAL LIABILITY FOR ANY CLAIM ARISING OUT OF THESE TERMS OR THE SERVICE WILL NOT EXCEED THE GREATER OF THE AMOUNT YOU PAID US, IF ANY, IN THE PAST SIX MONTHS OR ONE HUNDRED DOLLARS ($100).
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Governing Law and Dispute Resolution */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 20% 80%, #4361ee22 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">Governing Law and Dispute Resolution</h3>
+                <div className="space-y-4 text-gray-300">
+                  <p className="leading-relaxed">
+                    These Terms shall be governed by and construed in accordance with the laws of the Republic of India, without regard to its conflict of law provisions.
+                  </p>
+                  <p className="leading-relaxed">
+                    Any dispute, claim, or controversy arising out of or relating to these Terms or the breach, termination, enforcement, interpretation, or validity thereof, shall be determined by arbitration in India, in accordance with the Arbitration and Conciliation Act, 1996. The seat of the arbitration shall be Bangalore, India. The language of the arbitration shall be English.
+                  </p>
+                  <p className="leading-relaxed">
+                    Subject to the arbitration clause above, the parties agree to submit to the exclusive jurisdiction of the competent courts located in Bangalore, India for any disputes arising out of these Terms.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Changes */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 50% 50%, #4361ee22 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">Changes</h3>
+                <div className="text-gray-300">
+                  <p className="leading-relaxed">
+                    We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is 
+                    material we will provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material 
+                    change will be determined at our sole discretion.
+                  </p>
                 </div>
               </div>
             </div>
@@ -344,7 +437,7 @@ export default function TermsOfServicePage() {
             </div>
           </div>
           <div className="mt-8 text-center text-gray-500 text-sm">
-            © {new Date().getFullYear()} Requill. All rights reserved.
+            &copy; {new Date().getFullYear()} Requill. All rights reserved.
           </div>
         </footer>
       </main>

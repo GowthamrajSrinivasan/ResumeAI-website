@@ -1,5 +1,5 @@
-// background.js - Chrome Extension Background Script (Manifest V2)
-// For Manifest V3, rename this to service_worker.js
+// background.js - Chrome Extension Background Script (Manifest V3)
+// This is the updated Manifest V3 compatible version
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "STORE_LOGIN_DATA") {
@@ -12,15 +12,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       uid: message.uid
     };
 
-    // Store UID in chrome.storage.sync
-    chrome.storage.sync.set(syncData, () => {
-      if (chrome.runtime.lastError) {
-        console.error("Error storing UID in sync storage:", chrome.runtime.lastError);
-        sendResponse({ success: false, error: chrome.runtime.lastError.message });
-      } else {
-        console.log("✅ UID stored in chrome.storage.sync for cross-device sync");
-        sendResponse({ success: true });
-      }
+    // Use async/await with Promises for Manifest V3
+    chrome.storage.sync.set(syncData).then(() => {
+      console.log("✅ UID stored in chrome.storage.sync for cross-device sync");
+      sendResponse({ success: true });
+    }).catch((error) => {
+      console.error("Error storing UID in sync storage:", error);
+      sendResponse({ success: false, error: error.message });
     });
 
     // Return true to indicate we will send a response asynchronously
@@ -29,20 +27,26 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   // Handle other message types if needed
   if (message.type === "GET_LOGIN_DATA") {
-    // Retrieve stored UID
-    chrome.storage.sync.get(['uid'], (syncResult) => {
+    // Retrieve stored UID using Promise-based API
+    chrome.storage.sync.get(['uid']).then((syncResult) => {
       sendResponse({
         uid: syncResult.uid
       });
+    }).catch((error) => {
+      console.error("Error retrieving UID:", error);
+      sendResponse({ error: error.message });
     });
     return true;
   }
 
   if (message.type === "CLEAR_LOGIN_DATA") {
-    // Clear stored UID
-    chrome.storage.sync.remove(['uid'], () => {
+    // Clear stored UID using Promise-based API
+    chrome.storage.sync.remove(['uid']).then(() => {
       console.log("✅ UID cleared from chrome.storage.sync");
       sendResponse({ success: true });
+    }).catch((error) => {
+      console.error("Error clearing UID:", error);
+      sendResponse({ success: false, error: error.message });
     });
     return true;
   }
