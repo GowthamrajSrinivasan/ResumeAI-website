@@ -11,6 +11,12 @@ export default function ExtensionMonitorProvider({
 }) {
   const { user } = useAuth();
   const hasInitialized = useRef(false);
+  const currentUserRef = useRef(user);
+
+  // Update user ref without triggering effects
+  useEffect(() => {
+    currentUserRef.current = user;
+  }, [user]);
 
   useEffect(() => {
     if (hasInitialized.current) return;
@@ -35,7 +41,7 @@ export default function ExtensionMonitorProvider({
       console.log('⚠️ Extension stopped responding');
       
       // Show warning to user
-      if (user) {
+      if (currentUserRef.current) {
         const warning = document.createElement('div');
         warning.innerHTML = `
           <div style="
@@ -90,7 +96,7 @@ export default function ExtensionMonitorProvider({
       existingWarnings.forEach(warning => warning.remove());
       
       // Show success notification
-      if (user) {
+      if (currentUserRef.current) {
         const success = document.createElement('div');
         success.innerHTML = `
           <div style="
@@ -138,7 +144,7 @@ export default function ExtensionMonitorProvider({
       console.log('🛑 Cleaning up global extension monitor');
       extensionMonitor.destroy();
     };
-  }, [user]);
+  }, []); // Remove user dependency to prevent re-initialization
 
   return <>{children}</>;
 }
