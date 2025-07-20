@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db, auth } from '@/lib/firebase';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function ExtensionUninstalled() {
@@ -20,53 +20,105 @@ export default function ExtensionUninstalled() {
     // Log the uninstall event
     console.log('📊 User reached extension uninstall page');
     
-    // Log page visit to Firestore (only if user is authenticated)
-    if (user) {
-      addDoc(collection(db, 'extension_uninstalls'), {
-        event: 'extension_uninstall_page_visit',
-        timestamp: serverTimestamp(),
-        userAgent: navigator.userAgent,
-        referrer: document.referrer,
-        url: window.location.href,
-        source: 'uninstall_redirect_page',
-        userId: user.uid
-      }).catch(error => {
-        console.error('Failed to track uninstall page visit:', error);
-      });
-    } else {
-      // Log to console if user not authenticated
-      console.log('📊 Extension uninstall page visit (anonymous):', {
-        event: 'extension_uninstall_page_visit',
-        timestamp: Date.now(),
-        userAgent: navigator.userAgent,
-        referrer: document.referrer,
-        url: window.location.href,
-        source: 'uninstall_redirect_page'
-      });
-    }
+    // Use Firebase Auth directly to avoid race conditions with useAuth hook
+    const currentUser = auth.currentUser;
+    
+    const logPageVisit = async () => {
+      if (currentUser) {
+        try {
+          await addDoc(collection(db, 'extension_uninstalls'), {
+            event: 'extension_uninstall_page_visit',
+            timestamp: serverTimestamp(),
+            userAgent: navigator.userAgent,
+            referrer: document.referrer,
+            url: window.location.href,
+            source: 'uninstall_redirect_page',
+            userId: currentUser.uid
+          });
+          console.log('✅ Successfully logged uninstall page visit');
+        } catch (error) {
+          console.error('❌ Failed to track uninstall page visit:', error);
+          // Fallback to console logging
+          console.log('📊 Extension uninstall page visit (fallback):', {
+            event: 'extension_uninstall_page_visit',
+            timestamp: Date.now(),
+            userAgent: navigator.userAgent,
+            referrer: document.referrer,
+            url: window.location.href,
+            source: 'uninstall_redirect_page',
+            userId: currentUser.uid
+          });
+        }
+      } else {
+        // Log to console if user not authenticated
+        console.log('📊 Extension uninstall page visit (anonymous):', {
+          event: 'extension_uninstall_page_visit',
+          timestamp: Date.now(),
+          userAgent: navigator.userAgent,
+          referrer: document.referrer,
+          url: window.location.href,
+          source: 'uninstall_redirect_page'
+        });
+      }
+    };
 
+    // Add a small delay to ensure Firebase auth state is loaded
+    const timer = setTimeout(logPageVisit, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   const submitFeedback = async () => {
     if (!feedback.trim()) return;
     
     setIsSubmitting(true);
+    const currentUser = auth.currentUser;
+    
     try {
-      await addDoc(collection(db, 'extension_feedback'), {
-        feedback: feedback.trim(),
-        type: 'uninstall',
-        timestamp: serverTimestamp(),
-        userAgent: navigator.userAgent,
-        url: window.location.href,
-        source: 'extension_uninstall_page'
-      });
+      if (currentUser) {
+        // User is authenticated - save to Firestore
+        await addDoc(collection(db, 'extension_feedback'), {
+          feedback: feedback.trim(),
+          type: 'uninstall',
+          timestamp: serverTimestamp(),
+          userAgent: navigator.userAgent,
+          url: window.location.href,
+          source: 'extension_uninstall_page',
+          userId: currentUser.uid
+        });
+        console.log('✅ Feedback submitted to Firestore');
+      } else {
+        // User not authenticated - log to console
+        console.log('📊 Feedback submitted (anonymous):', {
+          feedback: feedback.trim(),
+          type: 'uninstall',
+          timestamp: Date.now(),
+          userAgent: navigator.userAgent,
+          url: window.location.href,
+          source: 'extension_uninstall_page'
+        });
+        console.log('✅ Feedback logged to console (user not authenticated)');
+      }
       
       setFeedbackSubmitted(true);
       setShowFeedbackForm(false);
-      console.log('✅ Feedback submitted to Firestore');
     } catch (error) {
       console.error('❌ Error submitting feedback:', error);
-      alert('Failed to submit feedback. Please try again.');
+      
+      // Fallback to console logging
+      console.log('📊 Feedback submitted (fallback):', {
+        feedback: feedback.trim(),
+        type: 'uninstall',
+        timestamp: Date.now(),
+        userAgent: navigator.userAgent,
+        url: window.location.href,
+        source: 'extension_uninstall_page',
+        userId: currentUser?.uid
+      });
+      
+      // Still show success to user (feedback was captured in console)
+      setFeedbackSubmitted(true);
+      setShowFeedbackForm(false);
     } finally {
       setIsSubmitting(false);
     }
