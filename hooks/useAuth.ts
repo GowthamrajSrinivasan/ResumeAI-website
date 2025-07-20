@@ -262,44 +262,48 @@ export function useAuth(): AuthState & AuthActions {
             emailVerified: user.emailVerified
           };
           
-          // Save user to Firestore
-          try {
-            await saveUserToFirestore(user);
-            console.log('✅ User data saved to Firestore successfully');
-            
-            // 🔐 Send the specific REQUILL_EXTENSION message for chrome extension
-            if (typeof window !== 'undefined') {
-              window.postMessage({
-                source: "REQUILL_EXTENSION",
-                type: "LOGIN_SUCCESS",
-                uid: user.uid
-              }, "*");
-              console.log('✅ REQUILL_EXTENSION LOGIN_SUCCESS message sent');
-            }
-            
-            // Prepare user data for extension
-            const userData = {
-              uid: user.uid,
-              email: user.email,
-              displayName: user.displayName,
-              photoURL: user.photoURL,
-              emailVerified: user.emailVerified
-            };
-            
-            // Send comprehensive extension messages
-            extensionComm.setUid(user.uid, userData);
-            extensionComm.sendRequillLogin(user.uid);
-            
-            // Call the global Firebase login success handler if available
-            if (typeof window !== 'undefined' && window.handleFirebaseLoginSuccess) {
-              window.handleFirebaseLoginSuccess(user);
-              console.log('✅ Called window.handleFirebaseLoginSuccess');
-            }
-            
-            console.log('✅ Extension communication messages sent');
-          } catch (firestoreError) {
-            console.error('❌ Failed to save user data to Firestore:', firestoreError);
+          // Prepare user data for extension
+          const userData = {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            emailVerified: user.emailVerified
+          };
+          
+          // 🚀 IMMEDIATE: Send extension messages first (no waiting)
+          console.log('🚀 Sending immediate extension messages...');
+          
+          // 🔐 Send the specific REQUILL_EXTENSION message for chrome extension
+          if (typeof window !== 'undefined') {
+            window.postMessage({
+              source: "REQUILL_EXTENSION",
+              type: "LOGIN_SUCCESS",
+              uid: user.uid
+            }, "*");
+            console.log('✅ REQUILL_EXTENSION LOGIN_SUCCESS message sent immediately');
           }
+          
+          // Send comprehensive extension messages with retry logic
+          extensionComm.setUid(user.uid, userData);
+          extensionComm.sendRequillLogin(user.uid);
+          
+          // Call the global Firebase login success handler if available
+          if (typeof window !== 'undefined' && window.handleFirebaseLoginSuccess) {
+            window.handleFirebaseLoginSuccess(user);
+            console.log('✅ Called window.handleFirebaseLoginSuccess');
+          }
+          
+          console.log('✅ Extension communication messages sent immediately');
+          
+          // 📊 BACKGROUND: Save to Firestore (non-blocking)
+          saveUserToFirestore(user)
+            .then(() => {
+              console.log('✅ User data saved to Firestore successfully (background)');
+            })
+            .catch((firestoreError) => {
+              console.error('❌ Failed to save user data to Firestore:', firestoreError);
+            });
           
           // Chrome extension will handle storing uid in Chrome storage when it receives the messages
         } catch (error) {

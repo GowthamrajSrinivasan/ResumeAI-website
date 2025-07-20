@@ -1,27 +1,9 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 export default function PricingPage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
   const [isAnnual, setIsAnnual] = useState(false);
-
-  useEffect(() => {
-    if (!loading && user) {
-      router.push('/dashboard');
-    }
-  }, [user, loading, router]);
-
-  if (loading || user) {
-    return (
-      <div className="flex flex-col items-center justify-center text-center py-12 h-screen">
-        <p className="text-xl text-foreground/80">Loading...</p>
-      </div>
-    );
-  }
 
   const plans = {
     free: {
