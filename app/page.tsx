@@ -106,7 +106,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-radial text-gray-200 overflow-x-hidden">
       {/* Sticky Header */}
-      <header className="sticky top-0 z-30 w-full flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 py-4 px-4 shadow-xl text-white rounded-b-2xl backdrop-blur-lg bg-opacity-90">
+      {/* <header className="sticky top-0 z-30 w-full flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 py-4 px-4 shadow-xl text-white rounded-b-2xl backdrop-blur-lg bg-opacity-90">
         <h1 className="text-3xl md:text-4xl font-extrabold mb-1 text-center">
           Hurry! Grab Today <span className="bg-white bg-clip-text text-transparent">Limited Time Offer</span>
         </h1>
@@ -146,12 +146,12 @@ export default function HomePage() {
         {submitError && (
           <p className="mt-1 text-red-300 text-sm">{submitError}</p>
         )}
-      </header>
+      </header> */}
 
       {/* Main Content */}
       <main className="relative">
         {/* Hero Section (smaller) */}
-        <section className="py-20 md:py-28 flex items-center justify-center">
+        <section id="header" className="py-20 md:py-28 flex items-center justify-center">
   <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-10 md:p-14 w-full max-w-5xl mx-auto transition hover:-translate-y-2 hover:scale-[1.02] overflow-hidden">
     {/* Subtle radial glow for depth */}
     <div
@@ -489,7 +489,7 @@ export default function HomePage() {
     {/* Button */}
     <div className="z-10 flex-1 flex md:justify-end w-full md:w-auto mt-8 md:mt-0">
       <button
-        onClick={() => window.location.href = '/login'}
+        onClick={() => document.getElementById('header')?.scrollIntoView({ behavior: 'smooth' })}
         className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg shadow-lg transition duration-300"
       >
         Get Started
