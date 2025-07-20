@@ -216,11 +216,6 @@ export class ExtensionMonitor {
         // Sign out from Firebase
         await signOut(auth);
         this.log('✅ User logged out successfully');
-        
-        // Redirect to login page with clear reason
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login?reason=extension_uninstalled&userId=' + userId;
-        }
       } catch (error) {
         console.error('❌ Error during logout:', error);
       }
@@ -401,7 +396,7 @@ export class ExtensionMonitor {
         
         // Redirect to login page
         if (typeof window !== 'undefined') {
-          window.location.href = '/login?reason=extension_not_installed';
+          window.location.href = '/login';
         }
       } catch (error) {
         console.error('❌ Error logging out user for missing extension:', error);
