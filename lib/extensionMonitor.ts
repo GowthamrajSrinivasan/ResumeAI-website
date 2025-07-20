@@ -37,6 +37,9 @@ export class ExtensionMonitor {
 
   // Track if we've already logged out for missing extension
   private hasLoggedOutForMissingExtension = false;
+  
+  // Track recent uninstall to prevent duplicate logout
+  private recentUninstallLogout = false;
 
   // Callbacks
   public onExtensionUninstalled?: (userId: string) => void;
@@ -194,10 +197,17 @@ export class ExtensionMonitor {
       this.log('🚪 Logging out user due to extension uninstall');
       
       try {
-        // Set a flag to prevent automatic re-login
+        // Set flags to prevent automatic re-login and duplicate logout
         localStorage.setItem('extension_uninstall_logout', 'true');
         localStorage.setItem('extension_uninstall_userId', userId);
         localStorage.setItem('extension_uninstall_timestamp', Date.now().toString());
+        
+        // Prevent "not installed" logout from running for next 60 seconds
+        this.recentUninstallLogout = true;
+        this.hasLoggedOutForMissingExtension = true;
+        setTimeout(() => {
+          this.recentUninstallLogout = false;
+        }, 60000); // 60 seconds
         
         // Clear all possible auth storage
         localStorage.removeItem('firebase:authUser:' + window.location.hostname);
@@ -360,6 +370,12 @@ export class ExtensionMonitor {
 
   private async handleExtensionNotInstalled(): Promise<void> {
     const currentUser = auth.currentUser;
+    
+    // Don't run if we recently handled an uninstall
+    if (this.recentUninstallLogout) {
+      this.log('🔄 Skipping extension not installed check - recent uninstall detected');
+      return;
+    }
     
     // Only logout if user is authenticated and we haven't already logged out for this reason
     if (currentUser && !this.hasLoggedOutForMissingExtension) {
