@@ -129,7 +129,17 @@ export function useAuth(): AuthState & AuthActions {
     const initializeExtensionUninstallDetection = () => {
       // Listen for messages from the Chrome extension
       const messageHandler = (event: MessageEvent) => {
-        // Security: Only accept messages from your own domain or extension
+        console.log('📨 Received message:', event.data, 'from origin:', event.origin);
+        
+        // Handle extension uninstall notification
+        if (event.data.type === 'EXTENSION_UNINSTALLED') {
+          console.log('🔴 Extension uninstalled for user:', event.data.userId);
+          console.log('🔍 Current auth user:', auth.currentUser?.uid);
+          handleExtensionUninstall(event.data.userId, event.data.timestamp);
+          return;
+        }
+        
+        // Security: Only accept other messages from your own domain or extension
         const allowedOrigins = [
           window.location.origin,
           'chrome-extension://' // Allow any chrome extension (you could be more specific)
@@ -143,12 +153,6 @@ export function useAuth(): AuthState & AuthActions {
         if (!isAllowedOrigin) {
           console.log('Blocked message from unauthorized origin:', event.origin);
           return;
-        }
-
-        // Handle extension uninstall notification
-        if (event.data.type === 'EXTENSION_UNINSTALLED') {
-          console.log('Extension uninstalled for user:', event.data.userId);
-          handleExtensionUninstall(event.data.userId, event.data.timestamp);
         }
       };
 
