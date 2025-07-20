@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect } from "react";
 import { Sparkles, LogOut, User, Crown } from "lucide-react";
+import ExtensionStatusIndicator from '@/components/ExtensionStatusIndicator';
 
 export default function DashboardPage() {
   const { user, loading, logout } = useAuth();
@@ -70,6 +71,11 @@ export default function DashboardPage() {
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome to your Dashboard</h2>
           <p className="text-gray-600">Get started with Requill to supercharge your professional presence.</p>
+        </div>
+
+        {/* Extension Status */}
+        <div className="mb-8">
+          <ExtensionStatusIndicator />
         </div>
 
         {/* Features Grid */}
