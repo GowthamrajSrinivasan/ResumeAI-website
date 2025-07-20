@@ -170,16 +170,23 @@ export function useAuth(): AuthState & AuthActions {
             console.error('Failed to log extension uninstall to Firestore:', error);
           });
 
-          // 3. Check if this user is currently logged in
-          const currentUserId = user?.uid;
-          if (currentUserId === userId) {
+          // 3. Check if this user is currently logged in using Firebase Auth directly
+          const currentUser = auth.currentUser;
+          if (currentUser && currentUser.uid === userId) {
             // 4. Log out the user
-            signOut(auth).catch(error => {
+            signOut(auth).then(() => {
+              console.log('🚪 Extension was uninstalled - user has been logged out');
+              // Optionally redirect to login page
+              if (typeof window !== 'undefined') {
+                window.location.href = '/login';
+              }
+            }).catch(error => {
               console.error('Error during extension uninstall logout:', error);
             });
-
-            // 5. Show notification to user (optional)
-            console.log('🚪 Extension was uninstalled - user has been logged out');
+          } else if (currentUser) {
+            console.log('🔍 Extension uninstalled for different user:', userId, 'Current user:', currentUser.uid);
+          } else {
+            console.log('🔍 Extension uninstalled but no user currently logged in');
           }
 
         } catch (error) {

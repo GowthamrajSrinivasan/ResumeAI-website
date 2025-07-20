@@ -4,14 +4,17 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function ExtensionUninstalled() {
-  const [countdown, setCountdown] = useState(5);
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  
+  // Initialize useAuth to enable extension uninstall detection and login/logout handling
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     // Log the uninstall event
@@ -29,20 +32,7 @@ export default function ExtensionUninstalled() {
       console.error('Failed to track uninstall page visit:', error);
     });
 
-    // Countdown timer
-    const timer = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          router.push('/');
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [router]);
+  }, []);
 
   const submitFeedback = async () => {
     if (!feedback.trim()) return;
@@ -164,9 +154,14 @@ export default function ExtensionUninstalled() {
           </button>
         </div>
 
-        {/* Auto redirect notice */}
+        {/* Navigation options */}
         <div className="text-xs text-gray-500">
-          Redirecting to homepage in {countdown} seconds...
+          <button
+            onClick={() => router.push('/')}
+            className="text-blue-600 hover:text-blue-700 underline"
+          >
+            Return to Homepage
+          </button>
         </div>
       </div>
 
