@@ -164,12 +164,22 @@ export class ExtensionMonitor {
       this.log('🚪 Logging out user due to extension uninstall');
       
       try {
+        // Set a flag to prevent automatic re-login
+        localStorage.setItem('extension_uninstall_logout', 'true');
+        localStorage.setItem('extension_uninstall_userId', userId);
+        localStorage.setItem('extension_uninstall_timestamp', Date.now().toString());
+        
+        // Clear all possible auth storage
+        localStorage.removeItem('firebase:authUser:' + window.location.hostname);
+        sessionStorage.clear();
+        
+        // Sign out from Firebase
         await signOut(auth);
         this.log('✅ User logged out successfully');
         
-        // Redirect to login page
+        // Redirect to login page with clear reason
         if (typeof window !== 'undefined') {
-          window.location.href = '/login?reason=extension_uninstalled';
+          window.location.href = '/login?reason=extension_uninstalled&userId=' + userId;
         }
       } catch (error) {
         console.error('❌ Error during logout:', error);

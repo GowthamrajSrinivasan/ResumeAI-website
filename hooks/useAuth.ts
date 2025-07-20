@@ -212,6 +212,33 @@ export function useAuth(): AuthState & AuthActions {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      // Check if user was logged out due to extension uninstall
+      const extensionLogout = localStorage.getItem('extension_uninstall_logout');
+      const logoutUserId = localStorage.getItem('extension_uninstall_userId');
+      const logoutTimestamp = localStorage.getItem('extension_uninstall_timestamp');
+      
+      if (extensionLogout === 'true' && user) {
+        // Check if this is the same user who was logged out due to extension uninstall
+        if (logoutUserId === user.uid) {
+          // Check if logout was recent (within last 30 seconds to handle redirects)
+          const logoutTime = parseInt(logoutTimestamp || '0');
+          const timeDiff = Date.now() - logoutTime;
+          
+          if (timeDiff < 30000) { // 30 seconds
+            console.log('🚫 Preventing automatic re-login after extension uninstall');
+            await signOut(auth);
+            setUser(null);
+            setLoading(false);
+            return;
+          } else {
+            // Clear the logout flag if it's been more than 30 seconds
+            localStorage.removeItem('extension_uninstall_logout');
+            localStorage.removeItem('extension_uninstall_userId');
+            localStorage.removeItem('extension_uninstall_timestamp');
+          }
+        }
+      }
+      
       setUser(user);
       setLoading(false);
       
@@ -290,6 +317,11 @@ export function useAuth(): AuthState & AuthActions {
 
   const signIn = async (email: string, password: string) => {
     try {
+      // Clear extension uninstall logout flags on manual login
+      localStorage.removeItem('extension_uninstall_logout');
+      localStorage.removeItem('extension_uninstall_userId');
+      localStorage.removeItem('extension_uninstall_timestamp');
+      
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error: any) {
       console.error('Error signing in:', error);
@@ -332,6 +364,11 @@ export function useAuth(): AuthState & AuthActions {
 
   const signInWithGoogle = async (useRedirect = false) => {
     try {
+      // Clear extension uninstall logout flags on manual login
+      localStorage.removeItem('extension_uninstall_logout');
+      localStorage.removeItem('extension_uninstall_userId');
+      localStorage.removeItem('extension_uninstall_timestamp');
+      
       const provider = new GoogleAuthProvider();
       
       if (useRedirect) {
