@@ -3,13 +3,21 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect, useState } from "react";
-import { Squirrel } from "lucide-react";
+import { Squirrel, Mail, ArrowRight } from "lucide-react";
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export default function HomePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [resetTime, setResetTime] = useState(getNextResetTime());
   const [timeLeft, setTimeLeft] = useState(getTimeRemaining(resetTime));
+  
+  // Waitlist state
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   function getNextResetTime() {
     const now = new Date();
@@ -24,6 +32,46 @@ export default function HomePage() {
     const seconds = Math.floor((total / 1000) % 60);
     return { total, hours, minutes, seconds };
   }
+
+  const submitToWaitlist = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email.trim()) {
+      setSubmitError('Please enter your email address');
+      return;
+    }
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setSubmitError('Please enter a valid email address');
+      return;
+    }
+    
+    setIsSubmitting(true);
+    setSubmitError('');
+    
+    try {
+      await addDoc(collection(db, 'waitlist'), {
+        email: email.trim().toLowerCase(),
+        timestamp: serverTimestamp(),
+        userAgent: navigator.userAgent,
+        source: 'landing_page',
+        ipAddress: null, // Could be added if needed
+        referrer: document.referrer || null
+      });
+      
+      setIsSubmitted(true);
+      setEmail('');
+      console.log('✅ Email added to waitlist successfully');
+    } catch (error) {
+      console.error('❌ Error adding email to waitlist:', error);
+      setSubmitError('Failed to join waitlist. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   useEffect(() => {
     const timer = setInterval(() => {
       const remaining = getTimeRemaining(resetTime);
@@ -64,10 +112,36 @@ export default function HomePage() {
             {`${String(timeLeft.hours).padStart(2, "0")}:${String(timeLeft.minutes).padStart(2, "0")}:${String(timeLeft.seconds).padStart(2, "0")}`}
           </span>
         </p>
-        <button className="mt-1 px-6 py-2 bg-yellow-400 hover:bg-yellow-300 text-black font-bold rounded-xl shadow-md transition duration-300"
-        onClick={() => window.location.href = '/login'}>
-          Add to Chrome - It's Free
-        </button>
+        {!isSubmitted ? (
+          <form onSubmit={submitToWaitlist} className="mt-2 flex flex-col sm:flex-row gap-2 items-center">
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="pl-10 pr-4 py-2 rounded-lg text-black font-medium w-64 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                disabled={isSubmitting}
+              />
+            </div>
+            <button 
+              type="submit"
+              disabled={isSubmitting}
+              className="px-6 py-2 bg-yellow-400 hover:bg-yellow-300 text-black font-bold rounded-lg shadow-md transition duration-300 disabled:opacity-50 flex items-center gap-2"
+            >
+              {isSubmitting ? 'Joining...' : 'Join Waitlist'}
+              {!isSubmitting && <ArrowRight className="h-4 w-4" />}
+            </button>
+          </form>
+        ) : (
+          <div className="mt-2 px-6 py-2 bg-green-400 text-black font-bold rounded-lg shadow-md">
+            ✅ You're on the waitlist!
+          </div>
+        )}
+        {submitError && (
+          <p className="mt-1 text-red-300 text-sm">{submitError}</p>
+        )}
       </header>
 
       {/* Main Content */}
@@ -92,12 +166,36 @@ export default function HomePage() {
       <p className="text-lg md:text-xl max-w-2xl mx-auto mb-8 text-gray-300">
         Stop guessing what works and let AI do the heavy lifting. Create engaging posts, write personalized messages, and optimize your profile in seconds. Unlock your true networking potential and land your next opportunity faster.
       </p>
-      <button 
-        onClick={() => window.location.href = '/login'} 
-        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl transition duration-300 transform hover:scale-105"
-      >
-        Add to Chrome - It's Free
-      </button>
+      {!isSubmitted ? (
+        <form onSubmit={submitToWaitlist} className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email address"
+              className="pl-12 pr-4 py-3 rounded-full text-black font-medium w-80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg"
+              disabled={isSubmitting}
+            />
+          </div>
+          <button 
+            type="submit"
+            disabled={isSubmitting}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl transition duration-300 transform hover:scale-105 disabled:opacity-50 flex items-center gap-2"
+          >
+            {isSubmitting ? 'Joining...' : 'Join Waitlist'}
+            {!isSubmitting && <ArrowRight className="h-5 w-5" />}
+          </button>
+        </form>
+      ) : (
+        <div className="bg-green-500 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl flex items-center gap-2">
+          ✅ You're on the waitlist! We'll notify you soon.
+        </div>
+      )}
+      {submitError && (
+        <p className="mt-4 text-red-400 text-lg">{submitError}</p>
+      )}
     </div>
   </div>
 </section>
