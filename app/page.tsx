@@ -51,7 +51,8 @@ export default function HomePage() {
     setSubmitError('');
     
     try {
-      await fetch('https://script.google.com/macros/s/AKfycbx3M11sSXJtRjHOBPc_bTCpCOkH3Lc8xTDs1Ug9VvvaFrAhgcY0DCooD3osR8r6ZQUV/exec', {
+      // Send JSON data to match your Google Apps Script function
+      await fetch('https://script.google.com/macros/s/AKfycbwHnBvy79K-iJyzufY6TgVzF-Xc5SLQkkjPZWPzzIB32cCeU8hhwrs6VwS-xdD2ogiA/exec', {
         method: 'POST',
         mode: 'no-cors',
         headers: {
