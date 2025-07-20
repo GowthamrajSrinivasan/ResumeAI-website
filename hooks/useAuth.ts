@@ -232,14 +232,19 @@ export function useAuth(): AuthState & AuthActions {
             setUser(null);
             setLoading(false);
             return;
+          } else if (extensionNotInstalledLogout === 'true') {
+            // For extension not installed, keep blocking until user manually logs in
+            // Don't clear the flag automatically - force manual intervention
+            console.log('🚫 Extension still not installed - preventing automatic login');
+            await signOut(auth);
+            setUser(null);
+            setLoading(false);
+            return;
           } else {
-            // Clear the logout flags if it's been more than 30 seconds
+            // Clear the logout flags only for extension uninstall (not for missing extension)
             localStorage.removeItem('extension_uninstall_logout');
             localStorage.removeItem('extension_uninstall_userId');
             localStorage.removeItem('extension_uninstall_timestamp');
-            localStorage.removeItem('extension_not_installed_logout');
-            localStorage.removeItem('extension_logout_userId');
-            localStorage.removeItem('extension_logout_timestamp');
           }
         }
       }

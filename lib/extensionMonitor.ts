@@ -286,6 +286,12 @@ export class ExtensionMonitor {
     this.extensionStatus.isInstalled = true;
     this.extensionStatus.lastHeartbeat = this.lastHeartbeat;
     this.extensionStatus.version = data.version;
+    this.hasLoggedOutForMissingExtension = false;
+    
+    // Clear extension not installed logout flags when extension responds
+    localStorage.removeItem('extension_not_installed_logout');
+    localStorage.removeItem('extension_logout_userId');
+    localStorage.removeItem('extension_logout_timestamp');
     
     // Call callback if extension was restored
     if (!wasResponding && this.onExtensionRestored) {
@@ -391,6 +397,12 @@ export class ExtensionMonitor {
     this.log('✅ Extension presence confirmed');
     this.extensionStatus.isInstalled = true;
     this.extensionStatus.version = data.version;
+    this.hasLoggedOutForMissingExtension = false;
+    
+    // Clear extension not installed logout flags when extension is found
+    localStorage.removeItem('extension_not_installed_logout');
+    localStorage.removeItem('extension_logout_userId');
+    localStorage.removeItem('extension_logout_timestamp');
   }
 
   // 4. SESSION VALIDATION
