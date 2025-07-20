@@ -215,24 +215,24 @@ export default function HomePage() {
                 before:content-[''] before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-br before:from-blue-500/20 before:to-transparent before:z-0 relative overflow-hidden">
                 <div className="text-blue-400 mb-5 z-10 relative drop-shadow-2xl">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <h4 className="text-2xl font-bold mb-3 z-10 relative">AI-Powered Content Creation</h4>
-                <p className="text-gray-400 mb-6 z-10 relative">Effortlessly generate high-quality, engaging posts, articles, and comments tailored to your professional brand.</p>
+                <h4 className="text-2xl font-bold mb-3 z-10 relative">Effortless LinkedIn Engagement</h4>
+                <p className="text-gray-400 mb-6 z-10 relative">Busy executive, marketing lead, or job seeker? Our extension helps you stay consistently active on LinkedIn by summarizing posts and crafting personalized replies—so you can maintain your presence without spending hours online.</p>
                 <ul className="space-y-4 z-10 relative">
                   <li className="flex items-start">
                     <span className="font-bold text-blue-400 mr-2">&#10003;</span>
                     <div>
-                      <h5 className="font-semibold">Save Hours of Time</h5>
-                      <p className="text-gray-500 text-sm">Stop brainstorming and let AI create engaging content instantly.</p>
+                      <h5 className="font-semibold">Stay Consistently Active</h5>
+                      <p className="text-gray-500 text-sm">Maintain your LinkedIn presence without spending hours online.</p>
                     </div>
                   </li>
                   <li className="flex items-start">
                     <span className="font-bold text-blue-400 mr-2">&#10003;</span>
                     <div>
-                      <h5 className="font-semibold">Boost Your Visibility</h5>
-                      <p className="text-gray-500 text-sm">Establish yourself as a thought leader in your industry.</p>
+                      <h5 className="font-semibold">Personalized Replies</h5>
+                      <p className="text-gray-500 text-sm">Craft authentic responses that reflect your professional voice.</p>
                     </div>
                   </li>
                 </ul>
@@ -245,24 +245,24 @@ export default function HomePage() {
                 before:content-[''] before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-br before:from-indigo-500/20 before:to-transparent before:z-0 relative overflow-hidden">
                 <div className="text-indigo-400 mb-5 z-10 relative drop-shadow-2xl">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h4 className="text-2xl font-bold mb-3 z-10 relative">Smart Messaging Assistant</h4>
-                <p className="text-gray-400 mb-6 z-10 relative">Craft personalized connection requests, follow-up messages, and replies in a single click.</p>
+                <h4 className="text-2xl font-bold mb-3 z-10 relative">Others Are Leveling Up—Why Not You?</h4>
+                <p className="text-gray-400 mb-6 z-10 relative">Many professionals are automating their content interactions. With our free tool, you can do it faster, better, and more authentically, freeing you to focus on the creative, complex, and high-impact work that matters most.</p>
                 <ul className="space-y-4 z-10 relative">
                   <li className="flex items-start">
                     <span className="font-bold text-indigo-400 mr-2">&#10003;</span>
                     <div>
-                    <h5 className="font-semibold">Break the Ice Easily</h5>
-                    <p className="text-gray-500 text-sm">AI helps you start meaningful professional conversations.</p>
+                    <h5 className="font-semibold">Faster & Better Automation</h5>
+                    <p className="text-gray-500 text-sm">Outperform competitors with superior AI-powered interactions.</p>
                     </div>
                   </li>
                   <li className="flex items-start">
                     <span className="font-bold text-indigo-400 mr-2">&#10003;</span>
                     <div>
-                      <h5 className="font-semibold">Build Your Network</h5>
-                      <p className="text-gray-500 text-sm">Network more effectively without awkward outreach.</p>
+                      <h5 className="font-semibold">Focus on High-Impact Work</h5>
+                      <p className="text-gray-500 text-sm">Free up time for creative and strategic initiatives.</p>
                     </div>
                   </li>
                 </ul>
@@ -274,24 +274,24 @@ export default function HomePage() {
                 before:content-[''] before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-br before:from-purple-500/20 before:to-transparent before:z-0 relative overflow-hidden">
                 <div className="text-purple-400 mb-5 z-10 relative drop-shadow-2xl">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                   </svg>
                 </div>
-                <h4 className="text-2xl font-bold mb-3 z-10 relative">Intelligent Profile Optimization</h4>
-                <p className="text-gray-400 mb-6 z-10 relative">Receive AI-driven suggestions to improve your LinkedIn profile headline, summary, and experience sections.</p>
+                <h4 className="text-2xl font-bold mb-3 z-10 relative">Boost Your LinkedIn Presence, Effortlessly</h4>
+                <p className="text-gray-400 mb-6 z-10 relative">Whether you're job hunting or building your personal brand, the extension helps you increase visibility, engagement, and consistency—with minimal effort and maximum impact.</p>
                 <ul className="space-y-4 z-10 relative">
                   <li className="flex items-start">
                     <span className="font-bold text-purple-400 mr-2">&#10003;</span>
                     <div>
-                      <h5 className="font-semibold">Stand Out to Recruiters</h5>
-                      <p className="text-gray-500 text-sm">Present the best version of your professional self.</p>
+                      <h5 className="font-semibold">Increase Visibility & Engagement</h5>
+                      <p className="text-gray-500 text-sm">Get noticed by recruiters and build your professional brand.</p>
                     </div>
                   </li>
                   <li className="flex items-start">
                     <span className="font-bold text-purple-400 mr-2">&#10003;</span>
                     <div>
-                      <h5 className="font-semibold">Attract More Opportunities</h5>
-                      <p className="text-gray-500 text-sm">Get noticed by potential clients and employers.</p>
+                      <h5 className="font-semibold">Minimal Effort, Maximum Impact</h5>
+                      <p className="text-gray-500 text-sm">Achieve better results with less time and energy invested.</p>
                     </div>
                   </li>
                 </ul>

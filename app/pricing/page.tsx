@@ -50,7 +50,7 @@ export default function PricingPage() {
           Unlock your LinkedIn potential with our AI-powered tools
         </p>
         <button 
-          onClick={() => router.push('/')}
+          onClick={() => window.location.href = '/'}
           className="mt-1 px-6 py-2 bg-white/20 hover:bg-white/30 text-white font-bold rounded-xl shadow-md transition duration-300"
         >
           ← Back to Home
