@@ -51,8 +51,9 @@ export default function HomePage() {
     setSubmitError('');
     
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbx3M11sSXJtRjHOBPc_bTCpCOkH3Lc8xTDs1Ug9VvvaFrAhgcY0DCooD3osR8r6ZQUV/exec', {
+      await fetch('https://script.google.com/macros/s/AKfycbx3M11sSXJtRjHOBPc_bTCpCOkH3Lc8xTDs1Ug9VvvaFrAhgcY0DCooD3osR8r6ZQUV/exec', {
         method: 'POST',
+        mode: 'no-cors',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -61,15 +62,11 @@ export default function HomePage() {
         }),
       });
 
-      const data = await response.json();
-      
-      if (data.success) {
-        setIsSubmitted(true);
-        setEmail('');
-        console.log('✅ Email submitted to waitlist via Google Sheets');
-      } else {
-        throw new Error(data.error || 'Failed to join waitlist');
-      }
+      // With no-cors mode, we can't read the response
+      // Assume success if no error was thrown
+      setIsSubmitted(true);
+      setEmail('');
+      console.log('✅ Email submitted to waitlist via Google Sheets');
     } catch (error) {
       console.error('❌ Error adding email to waitlist:', error);
       setSubmitError('Failed to join waitlist. Please try again.');
