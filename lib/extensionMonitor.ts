@@ -123,22 +123,43 @@ export class ExtensionMonitor {
     this.extensionStatus.isInstalled = false;
     this.extensionStatus.isResponding = false;
     
-    // Log to Firestore
-    try {
-      await addDoc(collection(db, 'extension_events'), {
+    // Log to Firestore (only if we have a valid user session)
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      try {
+        await addDoc(collection(db, 'extension_events'), {
+          event: 'extension_uninstalled',
+          userId,
+          timestamp: serverTimestamp(),
+          originalTimestamp: timestamp,
+          userAgent: navigator.userAgent,
+          url: window.location.href
+        });
+      } catch (error) {
+        console.error('Failed to log extension uninstall:', error);
+        // Fallback to console logging
+        console.log('📊 Extension uninstalled (fallback):', {
+          event: 'extension_uninstalled',
+          userId,
+          timestamp: Date.now(),
+          originalTimestamp: timestamp,
+          userAgent: navigator.userAgent,
+          url: window.location.href
+        });
+      }
+    } else {
+      // Log to console if no user session
+      console.log('📊 Extension uninstalled (no auth):', {
         event: 'extension_uninstalled',
         userId,
-        timestamp: serverTimestamp(),
+        timestamp: Date.now(),
         originalTimestamp: timestamp,
         userAgent: navigator.userAgent,
         url: window.location.href
       });
-    } catch (error) {
-      console.error('Failed to log extension uninstall:', error);
     }
 
     // Check if current user should be logged out
-    const currentUser = auth.currentUser;
     if (currentUser && currentUser.uid === userId) {
       this.log('🚪 Logging out user due to extension uninstall');
       
@@ -334,6 +355,21 @@ export class ExtensionMonitor {
   }
 
   private async logExtensionEvent(event: string, additionalData: any = {}): Promise<void> {
+    const currentUser = auth.currentUser;
+    
+    if (!currentUser) {
+      // Log to console if user not authenticated
+      console.log(`📊 Extension Event (anonymous): ${event}`, {
+        event,
+        timestamp: Date.now(),
+        userAgent: navigator.userAgent,
+        url: window.location.href,
+        extensionStatus: this.extensionStatus,
+        ...additionalData
+      });
+      return;
+    }
+
     try {
       await addDoc(collection(db, 'extension_events'), {
         event,
@@ -341,11 +377,21 @@ export class ExtensionMonitor {
         userAgent: navigator.userAgent,
         url: window.location.href,
         extensionStatus: this.extensionStatus,
-        userId: auth.currentUser?.uid,
+        userId: currentUser.uid,
         ...additionalData
       });
     } catch (error) {
       console.error('Failed to log extension event:', error);
+      // Fallback to console logging
+      console.log(`📊 Extension Event (fallback): ${event}`, {
+        event,
+        timestamp: Date.now(),
+        userAgent: navigator.userAgent,
+        url: window.location.href,
+        extensionStatus: this.extensionStatus,
+        userId: currentUser.uid,
+        ...additionalData
+      });
     }
   }
 

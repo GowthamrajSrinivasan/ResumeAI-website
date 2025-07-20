@@ -20,17 +20,30 @@ export default function ExtensionUninstalled() {
     // Log the uninstall event
     console.log('📊 User reached extension uninstall page');
     
-    // Log page visit to Firestore
-    addDoc(collection(db, 'extension_uninstalls'), {
-      event: 'extension_uninstall_page_visit',
-      timestamp: serverTimestamp(),
-      userAgent: navigator.userAgent,
-      referrer: document.referrer,
-      url: window.location.href,
-      source: 'uninstall_redirect_page'
-    }).catch(error => {
-      console.error('Failed to track uninstall page visit:', error);
-    });
+    // Log page visit to Firestore (only if user is authenticated)
+    if (user) {
+      addDoc(collection(db, 'extension_uninstalls'), {
+        event: 'extension_uninstall_page_visit',
+        timestamp: serverTimestamp(),
+        userAgent: navigator.userAgent,
+        referrer: document.referrer,
+        url: window.location.href,
+        source: 'uninstall_redirect_page',
+        userId: user.uid
+      }).catch(error => {
+        console.error('Failed to track uninstall page visit:', error);
+      });
+    } else {
+      // Log to console if user not authenticated
+      console.log('📊 Extension uninstall page visit (anonymous):', {
+        event: 'extension_uninstall_page_visit',
+        timestamp: Date.now(),
+        userAgent: navigator.userAgent,
+        referrer: document.referrer,
+        url: window.location.href,
+        source: 'uninstall_redirect_page'
+      });
+    }
 
   }, []);
 
