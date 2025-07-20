@@ -212,29 +212,34 @@ export function useAuth(): AuthState & AuthActions {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      // Check if user was logged out due to extension uninstall
-      const extensionLogout = localStorage.getItem('extension_uninstall_logout');
-      const logoutUserId = localStorage.getItem('extension_uninstall_userId');
-      const logoutTimestamp = localStorage.getItem('extension_uninstall_timestamp');
+      // Check if user was logged out due to extension issues
+      const extensionUninstallLogout = localStorage.getItem('extension_uninstall_logout');
+      const extensionNotInstalledLogout = localStorage.getItem('extension_not_installed_logout');
+      const logoutUserId = localStorage.getItem('extension_uninstall_userId') || localStorage.getItem('extension_logout_userId');
+      const logoutTimestamp = localStorage.getItem('extension_uninstall_timestamp') || localStorage.getItem('extension_logout_timestamp');
       
-      if (extensionLogout === 'true' && user) {
-        // Check if this is the same user who was logged out due to extension uninstall
+      if ((extensionUninstallLogout === 'true' || extensionNotInstalledLogout === 'true') && user) {
+        // Check if this is the same user who was logged out due to extension issues
         if (logoutUserId === user.uid) {
           // Check if logout was recent (within last 30 seconds to handle redirects)
           const logoutTime = parseInt(logoutTimestamp || '0');
           const timeDiff = Date.now() - logoutTime;
           
           if (timeDiff < 30000) { // 30 seconds
-            console.log('🚫 Preventing automatic re-login after extension uninstall');
+            const reason = extensionUninstallLogout === 'true' ? 'extension uninstall' : 'extension not installed';
+            console.log(`🚫 Preventing automatic re-login after ${reason}`);
             await signOut(auth);
             setUser(null);
             setLoading(false);
             return;
           } else {
-            // Clear the logout flag if it's been more than 30 seconds
+            // Clear the logout flags if it's been more than 30 seconds
             localStorage.removeItem('extension_uninstall_logout');
             localStorage.removeItem('extension_uninstall_userId');
             localStorage.removeItem('extension_uninstall_timestamp');
+            localStorage.removeItem('extension_not_installed_logout');
+            localStorage.removeItem('extension_logout_userId');
+            localStorage.removeItem('extension_logout_timestamp');
           }
         }
       }
@@ -317,10 +322,13 @@ export function useAuth(): AuthState & AuthActions {
 
   const signIn = async (email: string, password: string) => {
     try {
-      // Clear extension uninstall logout flags on manual login
+      // Clear all extension logout flags on manual login
       localStorage.removeItem('extension_uninstall_logout');
       localStorage.removeItem('extension_uninstall_userId');
       localStorage.removeItem('extension_uninstall_timestamp');
+      localStorage.removeItem('extension_not_installed_logout');
+      localStorage.removeItem('extension_logout_userId');
+      localStorage.removeItem('extension_logout_timestamp');
       
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error: any) {
@@ -364,10 +372,13 @@ export function useAuth(): AuthState & AuthActions {
 
   const signInWithGoogle = async (useRedirect = false) => {
     try {
-      // Clear extension uninstall logout flags on manual login
+      // Clear all extension logout flags on manual login
       localStorage.removeItem('extension_uninstall_logout');
       localStorage.removeItem('extension_uninstall_userId');
       localStorage.removeItem('extension_uninstall_timestamp');
+      localStorage.removeItem('extension_not_installed_logout');
+      localStorage.removeItem('extension_logout_userId');
+      localStorage.removeItem('extension_logout_timestamp');
       
       const provider = new GoogleAuthProvider();
       

@@ -35,7 +35,7 @@ export default function ExtensionStatusIndicator() {
   const handleCheckPresence = async () => {
     const isPresent = await checkExtensionPresence();
     if (!isPresent) {
-      alert('Extension not found. Please install or enable the Requill extension.');
+      alert('Extension not found. Please install or enable the Requill extension.\n\nNote: If you are logged in and the extension is not installed, you will be automatically logged out for security.');
     } else {
       alert('Extension found and responding.');
     }

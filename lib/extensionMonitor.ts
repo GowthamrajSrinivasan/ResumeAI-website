@@ -35,6 +35,9 @@ export class ExtensionMonitor {
     lastHeartbeat: 0
   };
 
+  // Track if we've already logged out for missing extension
+  private hasLoggedOutForMissingExtension = false;
+
   // Callbacks
   public onExtensionUninstalled?: (userId: string) => void;
   public onExtensionStopped?: () => void;
@@ -66,7 +69,31 @@ export class ExtensionMonitor {
     // Check initial extension presence
     this.checkExtensionPresence();
     
+    // Set up periodic presence checking
+    this.startPeriodicPresenceCheck();
+    
     this.isInitialized = true;
+  }
+
+  // Periodic presence checking
+  private periodicPresenceTimer: NodeJS.Timeout | null = null;
+
+  private startPeriodicPresenceCheck(): void {
+    // Check extension presence every 60 seconds
+    this.periodicPresenceTimer = setInterval(() => {
+      // Only check if user is logged in
+      if (auth.currentUser) {
+        this.log('🔍 Periodic extension presence check');
+        this.checkExtensionPresence();
+      }
+    }, 60000); // 60 seconds
+  }
+
+  private stopPeriodicPresenceCheck(): void {
+    if (this.periodicPresenceTimer) {
+      clearInterval(this.periodicPresenceTimer);
+      this.periodicPresenceTimer = null;
+    }
   }
 
   // Destroy the monitor and cleanup
@@ -77,6 +104,9 @@ export class ExtensionMonitor {
     
     // Stop heartbeat
     this.stopHeartbeat();
+    
+    // Stop periodic presence check
+    this.stopPeriodicPresenceCheck();
     
     // Remove message listeners
     this.messageHandlers.forEach(handler => {
@@ -298,6 +328,7 @@ export class ExtensionMonitor {
     return new Promise((resolve) => {
       const timeout = setTimeout(() => {
         this.extensionStatus.isInstalled = false;
+        this.handleExtensionNotInstalled();
         resolve(false);
       }, 2000); // 2 second timeout
 
@@ -306,6 +337,7 @@ export class ExtensionMonitor {
           clearTimeout(timeout);
           window.removeEventListener('message', checkHandler);
           this.extensionStatus.isInstalled = true;
+          this.hasLoggedOutForMissingExtension = false; // Reset logout flag
           resolve(true);
         }
       };
@@ -318,6 +350,41 @@ export class ExtensionMonitor {
         timestamp: Date.now()
       }, '*');
     });
+  }
+
+  private async handleExtensionNotInstalled(): Promise<void> {
+    const currentUser = auth.currentUser;
+    
+    // Only logout if user is authenticated and we haven't already logged out for this reason
+    if (currentUser && !this.hasLoggedOutForMissingExtension) {
+      this.hasLoggedOutForMissingExtension = true;
+      
+      this.log('🚫 Extension not installed - logging out user:', currentUser.uid);
+      
+      try {
+        // Set flags to indicate logout reason
+        localStorage.setItem('extension_not_installed_logout', 'true');
+        localStorage.setItem('extension_logout_userId', currentUser.uid);
+        localStorage.setItem('extension_logout_timestamp', Date.now().toString());
+        
+        // Log the event
+        await this.logExtensionEvent('extension_not_installed_logout', {
+          userId: currentUser.uid,
+          reason: 'extension_not_installed'
+        });
+        
+        // Sign out user
+        await signOut(auth);
+        this.log('✅ User logged out due to missing extension');
+        
+        // Redirect to login page
+        if (typeof window !== 'undefined') {
+          window.location.href = '/login?reason=extension_not_installed';
+        }
+      } catch (error) {
+        console.error('❌ Error logging out user for missing extension:', error);
+      }
+    }
   }
 
   private handlePresenceResponse(data: any): void {
