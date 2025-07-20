@@ -4,8 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect, useState } from "react";
 import { Squirrel, Mail, ArrowRight } from "lucide-react";
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+// Removed direct Firestore imports - using API route instead
 
 export default function HomePage() {
   const { user, loading } = useAuth();
@@ -52,21 +51,32 @@ export default function HomePage() {
     setSubmitError('');
     
     try {
-      await addDoc(collection(db, 'waitlist'), {
-        email: email.trim().toLowerCase(),
-        timestamp: serverTimestamp(),
-        userAgent: navigator.userAgent,
-        source: 'landing_page',
-        ipAddress: null, // Could be added if needed
-        referrer: document.referrer || null
+      // Use API route for secure waitlist submission
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          source: 'landing_page',
+          userAgent: navigator.userAgent,
+          referrer: document.referrer || null
+        }),
       });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to join waitlist');
+      }
       
       setIsSubmitted(true);
       setEmail('');
-      console.log('✅ Email added to waitlist successfully');
+      console.log('✅ Email added to waitlist successfully:', data);
     } catch (error) {
       console.error('❌ Error adding email to waitlist:', error);
-      setSubmitError('Failed to join waitlist. Please try again.');
+      setSubmitError(error instanceof Error ? error.message : 'Failed to join waitlist. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
