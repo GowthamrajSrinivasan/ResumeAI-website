@@ -18,6 +18,7 @@ import {
 } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { extensionComm } from '@/lib/extensionCommunication';
+import { collection, addDoc } from 'firebase/firestore';
 
 // Type declaration for window extensions
 declare global {
@@ -123,9 +124,78 @@ export function useAuth(): AuthState & AuthActions {
     extensionComm.onUidCleared = () => {
       console.log('UID successfully cleared from extension');
     };
+
+    // Extension Uninstall Detection
+    const initializeExtensionUninstallDetection = () => {
+      // Listen for messages from the Chrome extension
+      const messageHandler = (event: MessageEvent) => {
+        // Security: Only accept messages from your own domain or extension
+        const allowedOrigins = [
+          window.location.origin,
+          'chrome-extension://' // Allow any chrome extension (you could be more specific)
+        ];
+
+        // Check if origin is allowed or if it's a chrome extension
+        const isAllowedOrigin = allowedOrigins.some(origin =>
+          event.origin === origin || event.origin.startsWith('chrome-extension://')
+        );
+
+        if (!isAllowedOrigin) {
+          console.log('Blocked message from unauthorized origin:', event.origin);
+          return;
+        }
+
+        // Handle extension uninstall notification
+        if (event.data.type === 'EXTENSION_UNINSTALLED') {
+          console.log('Extension uninstalled for user:', event.data.userId);
+          handleExtensionUninstall(event.data.userId, event.data.timestamp);
+        }
+      };
+
+      // Function to handle extension uninstall
+      const handleExtensionUninstall = (userId: string, timestamp: number) => {
+        try {
+          // 1. Log the event for analytics/debugging
+          console.log(`Extension uninstalled at ${new Date(timestamp)} for user: ${userId}`);
+
+          // 2. Log uninstall event to Firestore
+          addDoc(collection(db, 'extension_uninstalls'), {
+            userId: userId,
+            timestamp: serverTimestamp(),
+            originalTimestamp: timestamp,
+            userAgent: navigator.userAgent,
+            event: 'extension_uninstalled',
+            source: 'extension_content_script'
+          }).catch(error => {
+            console.error('Failed to log extension uninstall to Firestore:', error);
+          });
+
+          // 3. Check if this user is currently logged in
+          const currentUserId = user?.uid;
+          if (currentUserId === userId) {
+            // 4. Log out the user
+            signOut(auth).catch(error => {
+              console.error('Error during extension uninstall logout:', error);
+            });
+
+            // 5. Show notification to user (optional)
+            console.log('🚪 Extension was uninstalled - user has been logged out');
+          }
+
+        } catch (error) {
+          console.error('Error handling extension uninstall:', error);
+        }
+      };
+
+      window.addEventListener('message', messageHandler);
+      return () => window.removeEventListener('message', messageHandler);
+    };
+
+    const cleanupExtensionUninstallDetection = initializeExtensionUninstallDetection();
     
     return () => {
       extensionComm.destroy();
+      cleanupExtensionUninstallDetection();
     };
   }, []);
 
