@@ -4,7 +4,8 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect, useState } from "react";
 import { Squirrel, Mail, ArrowRight } from "lucide-react";
-// Removed direct Firestore imports - using API route instead
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export default function HomePage() {
   const { user, loading } = useAuth();
@@ -51,32 +52,68 @@ export default function HomePage() {
     setSubmitError('');
     
     try {
-      // Use API route for secure waitlist submission
-      const response = await fetch('/api/waitlist', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      // Try API route first, fallback to direct Firestore
+      let success = false;
+      
+      try {
+        const response = await fetch('/api/waitlist', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email.trim().toLowerCase(),
+            source: 'landing_page',
+            userAgent: navigator.userAgent,
+            referrer: document.referrer || null
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Email added to waitlist via API:', data);
+          success = true;
+        } else {
+          throw new Error('API route failed');
+        }
+      } catch (apiError) {
+        console.log('⚠️ API route failed, trying direct Firestore:', apiError);
+        
+        // Fallback to direct Firestore access
+        await addDoc(collection(db, 'waitlist'), {
           email: email.trim().toLowerCase(),
-          source: 'landing_page',
+          timestamp: serverTimestamp(),
           userAgent: navigator.userAgent,
-          referrer: document.referrer || null
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to join waitlist');
+          source: 'landing_page_fallback',
+          referrer: document.referrer || null,
+          isAnonymous: !user,
+          submittedAt: new Date().toISOString()
+        });
+        
+        console.log('✅ Email added to waitlist via Firestore fallback');
+        success = true;
       }
       
-      setIsSubmitted(true);
-      setEmail('');
-      console.log('✅ Email added to waitlist successfully:', data);
+      if (success) {
+        setIsSubmitted(true);
+        setEmail('');
+      }
+      
     } catch (error) {
       console.error('❌ Error adding email to waitlist:', error);
-      setSubmitError(error instanceof Error ? error.message : 'Failed to join waitlist. Please try again.');
+      
+      // Specific error handling
+      if (error instanceof Error) {
+        if (error.message.includes('Missing or insufficient permissions')) {
+          setSubmitError('Please try again later. If the issue persists, contact support.');
+        } else if (error.message.includes('network')) {
+          setSubmitError('Network error. Please check your connection and try again.');
+        } else {
+          setSubmitError('Failed to join waitlist. Please try again.');
+        }
+      } else {
+        setSubmitError('Failed to join waitlist. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
