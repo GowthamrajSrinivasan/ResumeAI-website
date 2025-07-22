@@ -7,7 +7,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Study Buddy - AI-Powered Learning",
+  title: "Requill - powered by OpenAI",
   description: "Your personal AI-powered study assistant for smarter learning.",
 };
 

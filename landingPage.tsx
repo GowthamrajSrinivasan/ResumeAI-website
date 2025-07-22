@@ -104,7 +104,7 @@ export default function HomePage() {
         <section id="features" className="py-16 px-4">
           <div className="container mx-auto">
             <div className="text-center mb-12">
-              <h3 className="text-4xl font-bold drop-shadow-md">Why You'll Love Study Buddy</h3>
+              <h3 className="text-4xl font-bold drop-shadow-md">Why You'll Love Requill</h3>
               <p className="text-gray-400 mt-2">Unlock your full potential with these powerful benefits.</p>
             </div>
             <div className="grid md:grid-cols-3 gap-10">
@@ -273,10 +273,10 @@ export default function HomePage() {
     {/* FAQ 1 */}
     <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
       <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-        What is Study Buddy?
+        What is Requill?
       </h4>
       <p className="text-gray-300 text-base">
-        Study Buddy is your personal AI-powered study assistant. It helps you understand, summarize, and quiz yourself on study materials using the latest AI technology, all in one modern and secure platform.
+        Requill is your personal AI-powered assistant. It helps you to summarize, and generate reply for LinkedIn contents using OpenAI technology, all in one modern and secure platform.
       </p>
       <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
         background: "radial-gradient(circle at 40% 30%, #4361ee22 0%, transparent 75%)"
@@ -288,7 +288,7 @@ export default function HomePage() {
         How does the AI personalize my study experience?
       </h4>
       <p className="text-gray-300 text-base">
-        Study Buddy learns from your uploaded materials and interactions to suggest quizzes, flashcards, and summaries tailored to your progress and study habits.
+        Requill uses AI to generate reply for LinkedIn contents.
       </p>
       <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
         background: "radial-gradient(circle at 65% 40%, #7209b722 0%, transparent 75%)"
@@ -309,10 +309,10 @@ export default function HomePage() {
     {/* FAQ 4 */}
     <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
       <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-        Can I use Study Buddy on multiple devices?
+        Can I use Requill on multiple devices?
       </h4>
       <p className="text-gray-300 text-base">
-        Absolutely! Study Buddy works seamlessly across web and mobile devices. Your study progress and materials sync automatically.
+        Requill is a chrome extension works on desktop only.
       </p>
       <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
         background: "radial-gradient(circle at 55% 20%, #4361ee22 0%, transparent 75%)"
@@ -397,7 +397,7 @@ export default function HomePage() {
     {/* Brand / Logo */}
     <div className="flex flex-col items-center md:items-start gap-2">
       <span className="text-2xl font-bold text-white tracking-tight">
-        Study Buddy
+        Requill
       </span>
       <span className="text-gray-400 text-sm">
         Your AI-powered study companion
@@ -449,7 +449,7 @@ export default function HomePage() {
     </div>
   </div>
   <div className="mt-8 text-center text-gray-500 text-sm">
-    © {new Date().getFullYear()} Study Buddy. All rights reserved.
+    © {new Date().getFullYear()} Requill. All rights reserved.
   </div>
 </footer>
 
