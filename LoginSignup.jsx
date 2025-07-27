@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Sparkles, Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react';
+import { useAuth } from './hooks/useAuth';
 
 export default function LoginSignup() {
   const [isLogin, setIsLogin] = useState(true);
@@ -11,6 +12,8 @@ export default function LoginSignup() {
     confirmPassword: ''
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { signIn, signUp } = useAuth();
 
   const handleInputChange = (e) => {
     setFormData({
@@ -22,11 +25,25 @@ export default function LoginSignup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+    setError('');
+
+    try {
+      if (isLogin) {
+        await signIn(formData.email, formData.password);
+      } else {
+        // Validate passwords match for signup
+        if (formData.password !== formData.confirmPassword) {
+          throw new Error('Passwords do not match');
+        }
+        await signUp(formData.email, formData.password, formData.name);
+      }
+      console.log(isLogin ? 'Login successful' : 'Signup successful');
+    } catch (error) {
+      setError(error.message);
+      console.error(isLogin ? 'Login error:' : 'Signup error:', error);
+    } finally {
       setIsLoading(false);
-      console.log(isLogin ? 'Login' : 'Signup', formData);
-    }, 1500);
+    }
   };
 
   const toggleMode = () => {
@@ -147,6 +164,13 @@ export default function LoginSignup() {
                         required={!isLogin}
                       />
                     </div>
+                  </div>
+                )}
+
+                {/* Error Message */}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+                    {error}
                   </div>
                 )}
 

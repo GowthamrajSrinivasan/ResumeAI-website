@@ -35,7 +35,7 @@ interface AuthState {
 
 interface AuthActions {
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, name?: string) => Promise<void>;
   signInWithGoogle: (useRedirect?: boolean) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -359,9 +359,32 @@ export function useAuth(): AuthState & AuthActions {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, name?: string) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Send welcome email after successful signup
+      try {
+        const response = await fetch('/api/send-welcome-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userEmail: email,
+            userName: name || userCredential.user.displayName
+          }),
+        });
+
+        if (!response.ok) {
+          console.error('Failed to send welcome email:', await response.text());
+        } else {
+          console.log('Welcome email sent successfully');
+        }
+      } catch (emailError) {
+        console.error('Error sending welcome email:', emailError);
+        // Don't throw error for email failure - account creation should still succeed
+      }
     } catch (error: any) {
       console.error('Error signing up:', error);
       // Provide user-friendly error messages
