@@ -93,6 +93,31 @@ const saveUserToFirestore = async (user: User) => {
       console.log('Firestore storage details:');
       console.log('  - userEmail:', user.email);
       console.log('  - userDetails:', userDetails);
+      
+      // Send welcome email for new users (all signup methods)
+      if (user.email) {
+        try {
+          const response = await fetch('/api/send-welcome-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userEmail: user.email,
+              userName: user.displayName || 'there'
+            }),
+          });
+
+          if (!response.ok) {
+            console.error('Failed to send welcome email:', await response.text());
+          } else {
+            console.log('Welcome email sent successfully to new user');
+          }
+        } catch (emailError) {
+          console.error('Error sending welcome email to new user:', emailError);
+          // Don't throw error for email failure
+        }
+      }
     }
   } catch (error) {
     console.error('Error saving user to Firestore:', error);
@@ -363,28 +388,8 @@ export function useAuth(): AuthState & AuthActions {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
-      // Send welcome email after successful signup
-      try {
-        const response = await fetch('/api/send-welcome-email', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userEmail: email,
-            userName: name || userCredential.user.displayName
-          }),
-        });
-
-        if (!response.ok) {
-          console.error('Failed to send welcome email:', await response.text());
-        } else {
-          console.log('Welcome email sent successfully');
-        }
-      } catch (emailError) {
-        console.error('Error sending welcome email:', emailError);
-        // Don't throw error for email failure - account creation should still succeed
-      }
+      // Welcome email will be sent automatically by saveUserToFirestore for new users
+      console.log('User account created successfully');
     } catch (error: any) {
       console.error('Error signing up:', error);
       // Provide user-friendly error messages
