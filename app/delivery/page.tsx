@@ -71,18 +71,54 @@ export default function ServiceDeliveryPage() {
               </div>
             </div>
 
-            {/* Service Delivery */}
+            {/* Digital Service - No Shipping */}
             <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                 background: "radial-gradient(circle at 60% 20%, #4cc9f022 0%, transparent 75%)"
               }} />
               <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">Service Delivery</h3>
-                <div className="text-gray-300">
-                  <p className="leading-relaxed mb-4">
-                    Requill is a digital product and is delivered electronically. There are no physical goods to be shipped, 
-                    and therefore, no shipping charges.
-                  </p>
+                <h3 className="text-2xl font-bold text-white mb-4">Digital Service - No Physical Shipping</h3>
+                <div className="space-y-4 text-gray-300">
+                  <div className="p-4 bg-green-900/30 rounded-lg border border-green-600 mb-6">
+                    <h4 className="text-lg font-semibold text-green-300 mb-2">🌐 100% Digital Service</h4>
+                    <p className="leading-relaxed text-green-200">
+                      <strong>Shipping is not applicable to our business.</strong> Requill is a completely digital AI-powered 
+                      software service delivered electronically through your web browser.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-3">What This Means:</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-start">
+                        <span className="font-bold text-blue-400 mr-3">•</span>
+                        <p><strong>No Physical Products:</strong> We do not manufacture, store, or ship any physical goods</p>
+                      </div>
+                      <div className="flex items-start">
+                        <span className="font-bold text-blue-400 mr-3">•</span>
+                        <p><strong>No Shipping Costs:</strong> There are never any shipping fees, handling charges, or delivery costs</p>
+                      </div>
+                      <div className="flex items-start">
+                        <span className="font-bold text-blue-400 mr-3">•</span>
+                        <p><strong>Instant Access:</strong> Service is available immediately upon account creation and payment</p>
+                      </div>
+                      <div className="flex items-start">
+                        <span className="font-bold text-blue-400 mr-3">•</span>
+                        <p><strong>Global Availability:</strong> Accessible worldwide without geographical shipping restrictions</p>
+                      </div>
+                      <div className="flex items-start">
+                        <span className="font-bold text-blue-400 mr-3">•</span>
+                        <p><strong>No Delivery Delays:</strong> No waiting for packages, postal services, or courier deliveries</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 p-4 bg-blue-900/30 rounded-lg border border-blue-600">
+                    <p className="text-sm text-blue-200">
+                      <strong>Business Model:</strong> We operate as a Software-as-a-Service (SaaS) company providing cloud-based AI tools. 
+                      All our services are delivered digitally through secure internet connections.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
