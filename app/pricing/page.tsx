@@ -311,14 +311,16 @@ export default function PricingPage() {
                 <ul className="space-y-1 text-gray-400 text-sm">
                   <li><a href="#about" className="hover:text-blue-400 transition">About</a></li>
                   <li><a href="#blog" className="hover:text-blue-400 transition">Blog</a></li>
-                  <li><a href="#contact" className="hover:text-blue-400 transition">Contact</a></li>
+                  <li><a href="/contact" className="hover:text-blue-400 transition">Contact</a></li>
                 </ul>
               </div>
               <div>
                 <h4 className="font-semibold text-gray-300 mb-2">Legal</h4>
                 <ul className="space-y-1 text-gray-400 text-sm">
-                  <li><a href="#privacy" className="hover:text-blue-400 transition">Privacy Policy</a></li>
-                  <li><a href="#terms" className="hover:text-blue-400 transition">Terms of Service</a></li>
+                  <li><a href="/privacy" className="hover:text-blue-400 transition">Privacy Policy</a></li>
+                  <li><a href="/terms" className="hover:text-blue-400 transition">Terms of Service</a></li>
+                  <li><a href="/refund" className="hover:text-blue-400 transition">Refund Policy</a></li>
+                  <li><a href="/contact" className="hover:text-blue-400 transition">Contact Us</a></li>
                 </ul>
               </div>
             </div>

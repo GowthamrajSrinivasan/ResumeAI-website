@@ -330,6 +330,8 @@ export default function PrivacyPolicyPage() {
                 <ul className="space-y-1 text-gray-400 text-sm">
                   <li><a href="/privacy" className="hover:text-blue-400 transition">Privacy Policy</a></li>
                   <li><a href="/terms" className="hover:text-blue-400 transition">Terms of Service</a></li>
+                  <li><a href="/refund" className="hover:text-blue-400 transition">Refund Policy</a></li>
+                  <li><a href="/contact" className="hover:text-blue-400 transition">Contact Us</a></li>
                 </ul>
               </div>
             </div>
