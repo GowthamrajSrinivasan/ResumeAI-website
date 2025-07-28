@@ -20,6 +20,7 @@ export default function HomePage() {
   
   // Video modal state
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   function getNextResetTime() {
     const now = new Date();
@@ -227,10 +228,23 @@ export default function HomePage() {
       <div className="flex justify-center mt-6">
         <button 
           onClick={() => setIsVideoModalOpen(true)}
-          className="flex items-center space-x-2 bg-transparent border-2 border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white font-semibold py-2 px-6 rounded-full transition duration-300 transform hover:scale-105"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className="group relative bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-6 rounded-2xl shadow-xl transition duration-300 transform hover:scale-105 flex items-center space-x-4 overflow-hidden"
         >
-          <Play className="h-5 w-5" />
-          <span>Show me a demo</span>
+          {/* Animated background effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[length:200%_100%] animate-gradient-x"></div>
+          
+          {/* Play icon with pulse effect */}
+          <div className="relative flex items-center justify-center w-12 h-12 bg-white/20 rounded-full backdrop-blur-sm group-hover:bg-white/30 transition-all duration-300">
+            <Play className={`w-6 h-6 text-white transform transition-transform duration-300 ${isHovered ? 'scale-110' : ''}`} fill="currentColor" />
+          </div>
+          
+          {/* Button text */}
+          <div className="relative flex flex-col items-start">
+            <span className="text-lg font-semibold">Watch Demo</span>
+            <span className="text-sm text-purple-100 group-hover:text-white transition-colors">Watch Tutorial Video</span>
+          </div>
         </button>
       </div>
     </div>
