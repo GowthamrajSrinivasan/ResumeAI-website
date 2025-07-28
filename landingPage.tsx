@@ -3,12 +3,14 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect, useState } from "react";
+import { Play, X } from "lucide-react";
 
 export default function HomePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [resetTime, setResetTime] = useState(getNextResetTime());
   const [timeLeft, setTimeLeft] = useState(getTimeRemaining(resetTime));
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   function getNextResetTime() {
     const now = new Date();
@@ -41,6 +43,25 @@ export default function HomePage() {
       router.push('/signup');
     }
   }, [user, loading, router]);
+
+  // Close modal with Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isVideoModalOpen) {
+        setIsVideoModalOpen(false);
+      }
+    };
+
+    if (isVideoModalOpen) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isVideoModalOpen]);
 
   if (loading || user) {
     return (
@@ -91,9 +112,18 @@ export default function HomePage() {
       <p className="text-lg md:text-xl max-w-2xl mx-auto mb-8 text-gray-300">
         Your personal AI-powered study partner is here to help you learn smarter, not harder. Ace your exams with powerful tools designed for modern students.
       </p>
-      <a href="/signup" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl transition duration-300 transform hover:scale-105">
-        Start my study transformation
-      </a>
+      <div className="flex flex-col items-center space-y-4">
+        <a href="/signup" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl transition duration-300 transform hover:scale-105">
+          Start my study transformation
+        </a>
+        <button 
+          onClick={() => setIsVideoModalOpen(true)}
+          className="flex items-center space-x-2 bg-transparent border-2 border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white font-semibold py-2 px-6 rounded-full transition duration-300 transform hover:scale-105"
+        >
+          <Play className="h-5 w-5" />
+          <span>Show me a demo</span>
+        </button>
+      </div>
     </div>
   </div>
 </section>
@@ -455,6 +485,51 @@ export default function HomePage() {
 </footer>
 
       </main>
+
+      {/* Video Demo Modal */}
+      {isVideoModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 backdrop-blur-sm">
+          <div className="relative w-full max-w-4xl mx-4 bg-gray-900 rounded-lg overflow-hidden shadow-2xl">
+            {/* Close Button */}
+            <button
+              onClick={() => setIsVideoModalOpen(false)}
+              className="absolute top-4 right-4 z-10 bg-black bg-opacity-50 hover:bg-opacity-75 text-white rounded-full p-2 transition-all duration-200"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            
+            {/* Video Container [For YOUR_VIDEO_ID replace 08U3DCcmQ5Q]*/}
+            <div className="relative pb-[56.25%] h-0 overflow-hidden">
+              <iframe
+                className="absolute top-0 left-0 w-full h-full"
+                src="https://www.youtube.com/embed/08U3DCcmQ5Q?autoplay=1&rel=0&modestbranding=1"
+                title="Requill Demo Video"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+            
+            {/* Modal Footer */}
+            <div className="p-4 bg-gray-800 text-center">
+              <p className="text-gray-300 text-sm">
+                Ready to get started? 
+                <a href="/signup" className="text-blue-400 hover:text-blue-300 ml-1 font-semibold">
+                  Sign up now
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Close modal when clicking outside */}
+      {isVideoModalOpen && (
+        <div 
+          className="fixed inset-0 z-40"
+          onClick={() => setIsVideoModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
