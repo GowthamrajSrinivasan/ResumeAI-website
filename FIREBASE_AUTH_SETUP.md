@@ -61,7 +61,7 @@ After enabling Email/Password authentication:
 
 ## Environment Variables
 
-Make sure your `.env.local` file has the correct Firebase configuration:
+Make sure your `.env` file has the correct Firebase configuration:
 
 ```env
 NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key_here

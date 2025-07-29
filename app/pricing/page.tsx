@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import PaymentButton from "../../components/PaymentButton";
 
 export default function PricingPage() {
   const [isAnnual, setIsAnnual] = useState(false);
@@ -168,12 +169,14 @@ export default function PricingPage() {
                     ))}
                   </ul>
 
-                  <button
-                    onClick={() => window.location.href = '/login'}
+                  <PaymentButton
+                    amount={isAnnual ? plans.pro.annualPrice : plans.pro.monthlyPrice}
+                    planName={plans.pro.name}
+                    planType={isAnnual ? 'annual' : 'monthly'}
                     className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg"
                   >
                     {plans.pro.buttonText}
-                  </button>
+                  </PaymentButton>
                 </div>
 
                 <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
