@@ -14,9 +14,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the expected signature
+    const razorpaySecret = process.env.RAZORPAY_SECRET;
+    if (!razorpaySecret) {
+      return NextResponse.json(
+        {
+          status: 'error',
+          message: 'Payment verification failed',
+          error: 'Razorpay secret not configured',
+        },
+        { status: 500 }
+      );
+    }
+    
     const body = razorpay_order_id + '|' + razorpay_payment_id;
     const expectedSignature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_SECRET!)
+      .createHmac('sha256', razorpaySecret)
       .update(body.toString())
       .digest('hex');
 
