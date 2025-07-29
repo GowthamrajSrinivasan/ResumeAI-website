@@ -18,14 +18,28 @@ function createRazorpayInstance() {
 export async function POST(request: NextRequest) {
   // Early return during build if env vars not set
   if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_SECRET) {
+    console.error('Razorpay environment variables not set:', {
+      key_id: process.env.RAZORPAY_KEY_ID ? 'SET' : 'MISSING',
+      secret: process.env.RAZORPAY_SECRET ? 'SET' : 'MISSING'
+    });
     return NextResponse.json(
-      { error: 'Payment service temporarily unavailable' },
+      { 
+        error: {
+          code: 'CONFIGURATION_ERROR',
+          description: 'Payment service is not properly configured',
+          source: 'server',
+          step: 'initialization',
+          reason: 'environment_variables_missing'
+        }
+      },
       { status: 503 }
     );
   }
 
   try {
     const { amount, currency = 'INR', receipt, notes } = await request.json();
+    
+    console.log('Creating order with:', { amount, currency, receipt, notes });
 
     // Validate required fields
     if (!amount || amount < 100) {

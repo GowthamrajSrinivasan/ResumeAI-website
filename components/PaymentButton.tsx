@@ -46,10 +46,25 @@ export default function PaymentButton({
         }),
       });
 
-      const orderData = await orderResponse.json();
-
+      // Check if response is OK before parsing JSON
       if (!orderResponse.ok) {
-        throw new Error(orderData.error?.description || 'Failed to create order');
+        const errorText = await orderResponse.text();
+        console.error('Order creation failed:', {
+          status: orderResponse.status,
+          statusText: orderResponse.statusText,
+          body: errorText
+        });
+        throw new Error(`Failed to create order: ${orderResponse.status} ${orderResponse.statusText}`);
+      }
+
+      let orderData;
+      try {
+        orderData = await orderResponse.json();
+      } catch (parseError) {
+        console.error('Failed to parse order response as JSON:', parseError);
+        const responseText = await orderResponse.text();
+        console.error('Response text:', responseText);
+        throw new Error('Invalid response from payment service');
       }
 
       // Load Razorpay script if not already loaded
@@ -86,6 +101,11 @@ export default function PaymentButton({
                 razorpay_signature: response.razorpay_signature,
               }),
             });
+
+            if (!verifyResponse.ok) {
+              console.error('Payment verification failed:', verifyResponse.status, verifyResponse.statusText);
+              throw new Error('Payment verification failed');
+            }
 
             const verifyData = await verifyResponse.json();
 
