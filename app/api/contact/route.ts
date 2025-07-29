@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { emailService } from '@/lib/emailService';
 
-export const dynamic = 'force-dynamic';
-
 interface ContactFormData {
   name: string;
   email: string;
