@@ -28,7 +28,9 @@
       "Bash(firebase functions:secrets:set:*)",
       "Bash(firebase functions:secrets:destroy:*)",
       "Bash(gcloud secrets versions destroy:*)",
-      "Bash(gcloud secrets versions list:*)"
+      "Bash(gcloud secrets versions list:*)",
+      "Bash(export FUNCTIONS_DISCOVERY_TIMEOUT=30)",
+      "Bash(firebase deploy:*)"
     ],
     "deny": []
   }
