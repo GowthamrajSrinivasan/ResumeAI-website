@@ -9,6 +9,21 @@ const db = getFirestore();
 // Export payment functions
 export {createOrder, verifyPayment, webhook, paymentTest} from "./payment";
 
+// Export analytics functions
+export {analyzePost, analyzeProfile} from "./analytics";
+
+// Export user management functions
+export {checkUserByEmail, getUserUsageData, updateUsageCount} from "./user-management";
+
+// Export AI services functions
+export {generateReply, processQueue} from "./ai-services";
+
+// Export dashboard functions
+export {getDashboard} from "./dashboard";
+
+// Export maintenance functions
+export {healthCheck, cleanupBehaviorData, cleanupMetrics} from "./maintenance";
+
 // Contact form handler
 export const contact = onRequest({cors: true}, async (req, res) => {
   if (req.method !== "POST") {
