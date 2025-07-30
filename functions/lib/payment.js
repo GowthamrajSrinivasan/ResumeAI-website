@@ -3,16 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.paymentTest = exports.webhook = exports.verifyPayment = exports.createOrder = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
-const functions = require("firebase-functions");
 const crypto = require("crypto");
 // Initialize Razorpay
 const Razorpay = require("razorpay");
 function createRazorpayInstance() {
-    var _a, _b;
-    const config = functions.config();
-    // Try Firebase config first, then fall back to environment variables
-    const keyId = ((_a = config.razorpay) === null || _a === void 0 ? void 0 : _a.key_id) || process.env.RAZORPAY_KEY_ID;
-    const keySecret = ((_b = config.razorpay) === null || _b === void 0 ? void 0 : _b.secret) || process.env.RAZORPAY_SECRET;
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_SECRET;
     if (!keyId || !keySecret) {
         throw new Error("Razorpay credentials not configured");
     }
@@ -22,7 +18,10 @@ function createRazorpayInstance() {
     });
 }
 // Create order handler
-exports.createOrder = (0, https_1.onRequest)({ cors: true }, async (req, res) => {
+exports.createOrder = (0, https_1.onRequest)({
+    cors: true,
+    secrets: ["RAZORPAY_KEY_ID", "RAZORPAY_SECRET"]
+}, async (req, res) => {
     if (req.method !== "POST") {
         res.status(405).json({ error: "Method not allowed" });
         return;
@@ -48,8 +47,10 @@ exports.createOrder = (0, https_1.onRequest)({ cors: true }, async (req, res) =>
     }
 });
 // Verify payment handler
-exports.verifyPayment = (0, https_1.onRequest)({ cors: true }, async (req, res) => {
-    var _a;
+exports.verifyPayment = (0, https_1.onRequest)({
+    cors: true,
+    secrets: ["RAZORPAY_SECRET"]
+}, async (req, res) => {
     if (req.method !== "POST") {
         res.status(405).json({ error: "Method not allowed" });
         return;
@@ -60,8 +61,7 @@ exports.verifyPayment = (0, https_1.onRequest)({ cors: true }, async (req, res) 
             res.status(400).json({ error: "Missing required fields" });
             return;
         }
-        const config = functions.config();
-        const keySecret = ((_a = config.razorpay) === null || _a === void 0 ? void 0 : _a.secret) || process.env.RAZORPAY_SECRET;
+        const keySecret = process.env.RAZORPAY_SECRET;
         if (!keySecret) {
             throw new Error("Razorpay secret not configured");
         }
@@ -92,8 +92,10 @@ exports.verifyPayment = (0, https_1.onRequest)({ cors: true }, async (req, res) 
     }
 });
 // Webhook handler
-exports.webhook = (0, https_1.onRequest)({ cors: true }, async (req, res) => {
-    var _a;
+exports.webhook = (0, https_1.onRequest)({
+    cors: true,
+    secrets: ["RAZORPAY_WEBHOOK_SECRET"]
+}, async (req, res) => {
     if (req.method !== "POST") {
         res.status(405).json({ error: "Method not allowed" });
         return;
@@ -105,8 +107,7 @@ exports.webhook = (0, https_1.onRequest)({ cors: true }, async (req, res) => {
             res.status(400).json({ error: "Missing signature" });
             return;
         }
-        const config = functions.config();
-        const webhookSecret = ((_a = config.razorpay) === null || _a === void 0 ? void 0 : _a.webhook_secret) || process.env.RAZORPAY_WEBHOOK_SECRET;
+        const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
         if (!webhookSecret) {
             throw new Error("Webhook secret not configured");
         }
@@ -130,22 +131,23 @@ exports.webhook = (0, https_1.onRequest)({ cors: true }, async (req, res) => {
     }
 });
 // Test handler
-exports.paymentTest = (0, https_1.onRequest)({ cors: true }, async (req, res) => {
-    var _a, _b, _c, _d;
+exports.paymentTest = (0, https_1.onRequest)({
+    cors: true,
+    secrets: ["RAZORPAY_KEY_ID", "RAZORPAY_SECRET", "RAZORPAY_WEBHOOK_SECRET", "NEXT_PUBLIC_RAZORPAY_KEY_ID"]
+}, async (req, res) => {
     if (req.method !== "GET") {
         res.status(405).json({ error: "Method not allowed" });
         return;
     }
     try {
-        const config = functions.config();
         res.status(200).json({
             status: "ok",
             message: "Payment API is working",
             env_check: {
-                razorpay_key_id: (((_a = config.razorpay) === null || _a === void 0 ? void 0 : _a.key_id) || process.env.RAZORPAY_KEY_ID) ? "SET" : "MISSING",
-                razorpay_secret: (((_b = config.razorpay) === null || _b === void 0 ? void 0 : _b.secret) || process.env.RAZORPAY_SECRET) ? "SET" : "MISSING",
-                razorpay_webhook_secret: (((_c = config.razorpay) === null || _c === void 0 ? void 0 : _c.webhook_secret) || process.env.RAZORPAY_WEBHOOK_SECRET) ? "SET" : "MISSING",
-                next_public_key_id: (((_d = config.razorpay) === null || _d === void 0 ? void 0 : _d.key_id) || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) ? "SET" : "MISSING",
+                razorpay_key_id: process.env.RAZORPAY_KEY_ID ? "SET" : "MISSING",
+                razorpay_secret: process.env.RAZORPAY_SECRET ? "SET" : "MISSING",
+                razorpay_webhook_secret: process.env.RAZORPAY_WEBHOOK_SECRET ? "SET" : "MISSING",
+                next_public_key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ? "SET" : "MISSING",
             },
         });
     }
