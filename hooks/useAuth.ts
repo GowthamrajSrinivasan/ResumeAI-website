@@ -19,6 +19,7 @@ import {
 import { auth, db } from '@/lib/firebase';
 import { extensionComm } from '@/lib/extensionCommunication';
 import { collection, addDoc } from 'firebase/firestore';
+import { FIREBASE_FUNCTIONS } from '@/lib/firebase-functions';
 
 // Type declaration for window extensions
 declare global {
@@ -97,7 +98,7 @@ const saveUserToFirestore = async (user: User) => {
       // Send welcome email for new users (all signup methods)
       if (user.email) {
         try {
-          const response = await fetch('/api/send-welcome-email', {
+          const response = await fetch(FIREBASE_FUNCTIONS.sendWelcomeEmail, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

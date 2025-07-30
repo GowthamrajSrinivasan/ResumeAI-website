@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { FIREBASE_FUNCTIONS } from '@/lib/firebase-functions';
 
 interface PaymentButtonProps {
   amount: number;
@@ -30,7 +31,7 @@ export default function PaymentButton({
       setIsLoading(true);
 
       // Create order on the server
-      const orderResponse = await fetch('/api/payment/create-order', {
+      const orderResponse = await fetch(FIREBASE_FUNCTIONS.createOrder, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,7 +91,7 @@ export default function PaymentButton({
         handler: async (response: any) => {
           try {
             // Verify payment on the server
-            const verifyResponse = await fetch('/api/payment/verify', {
+            const verifyResponse = await fetch(FIREBASE_FUNCTIONS.verifyPayment, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

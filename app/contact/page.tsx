@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import React, { useState } from "react";
 import { Sparkles, ArrowLeft, Mail, User, Phone, MessageSquare, Send } from "lucide-react";
+import { FIREBASE_FUNCTIONS } from '@/lib/firebase-functions';
 
 export default function ContactUsPage() {
   const router = useRouter();
@@ -28,7 +29,7 @@ export default function ContactUsPage() {
     setSubmitStatus('idle');
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch(FIREBASE_FUNCTIONS.contact, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
