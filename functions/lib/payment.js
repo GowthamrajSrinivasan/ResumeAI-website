@@ -32,17 +32,33 @@ exports.createOrder = (0, https_1.onRequest)({
             res.status(400).json({ error: "Amount is required" });
             return;
         }
+        // Log detailed secret information for debugging
+        logger.info("CreateOrder - Secret details", {
+            keyId: process.env.RAZORPAY_KEY_ID ? {
+                exists: true,
+                prefix: process.env.RAZORPAY_KEY_ID.substring(0, 12),
+                length: process.env.RAZORPAY_KEY_ID.length,
+                type: process.env.RAZORPAY_KEY_ID.startsWith('rzp_live_') ? 'LIVE' :
+                    process.env.RAZORPAY_KEY_ID.startsWith('rzp_test_') ? 'TEST' : 'UNKNOWN'
+            } : "MISSING",
+            keySecret: process.env.RAZORPAY_SECRET ? {
+                exists: true,
+                prefix: process.env.RAZORPAY_SECRET.substring(0, 8),
+                length: process.env.RAZORPAY_SECRET.length
+            } : "MISSING"
+        });
         const razorpay = createRazorpayInstance();
-        logger.info("Creating order with credentials", {
-            keyId: process.env.RAZORPAY_KEY_ID ? "SET" : "MISSING",
-            keySecret: process.env.RAZORPAY_SECRET ? "SET" : "MISSING"
+        logger.info("Razorpay instance created, attempting order creation", {
+            amount: amount,
+            currency: currency,
+            receipt: receipt || `receipt_${Date.now()}`
         });
         const order = await razorpay.orders.create({
             amount: amount * 100,
             currency,
             receipt: receipt || `receipt_${Date.now()}`,
         });
-        logger.info("Order created", { orderId: order.id, amount });
+        logger.info("Order created successfully", { orderId: order.id, amount });
         res.status(200).json(order);
     }
     catch (error) {
@@ -142,11 +158,31 @@ exports.paymentTest = (0, https_1.onRequest)({
     cors: true,
     secrets: ["RAZORPAY_KEY_ID", "RAZORPAY_SECRET", "RAZORPAY_WEBHOOK_SECRET", "NEXT_PUBLIC_RAZORPAY_KEY_ID"]
 }, async (req, res) => {
+    var _a, _b;
     if (req.method !== "GET") {
         res.status(405).json({ error: "Method not allowed" });
         return;
     }
     try {
+        // Test Razorpay instance creation
+        let razorpayInitialized = false;
+        let razorpayError = null;
+        try {
+            const razorpay = createRazorpayInstance();
+            razorpayInitialized = true;
+            // Try to make a simple API call to test credentials
+            try {
+                const payments = await razorpay.payments.all({ count: 1 });
+                logger.info("Razorpay API test successful", { paymentsCount: ((_a = payments.items) === null || _a === void 0 ? void 0 : _a.length) || 0 });
+            }
+            catch (apiError) {
+                logger.error("Razorpay API test failed:", apiError);
+                razorpayError = apiError instanceof Error ? apiError.message : String(apiError);
+            }
+        }
+        catch (initError) {
+            razorpayError = initError instanceof Error ? initError.message : String(initError);
+        }
         res.status(200).json({
             status: "ok",
             message: "Payment API is working",
@@ -156,6 +192,11 @@ exports.paymentTest = (0, https_1.onRequest)({
                 razorpay_webhook_secret: process.env.RAZORPAY_WEBHOOK_SECRET ? "SET" : "MISSING",
                 next_public_key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ? "SET" : "MISSING",
             },
+            razorpay_test: {
+                initialized: razorpayInitialized,
+                error: razorpayError,
+                key_id_prefix: ((_b = process.env.RAZORPAY_KEY_ID) === null || _b === void 0 ? void 0 : _b.substring(0, 8)) || "N/A"
+            }
         });
     }
     catch (error) {

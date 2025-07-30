@@ -37,28 +37,11 @@ export const createOrder = onRequest({
       return;
     }
 
-    // Log detailed secret information for debugging
-    logger.info("CreateOrder - Secret details", {
-      keyId: process.env.RAZORPAY_KEY_ID ? {
-        exists: true,
-        prefix: process.env.RAZORPAY_KEY_ID.substring(0, 12),
-        length: process.env.RAZORPAY_KEY_ID.length,
-        type: process.env.RAZORPAY_KEY_ID.startsWith('rzp_live_') ? 'LIVE' : 
-              process.env.RAZORPAY_KEY_ID.startsWith('rzp_test_') ? 'TEST' : 'UNKNOWN'
-      } : "MISSING",
-      keySecret: process.env.RAZORPAY_SECRET ? {
-        exists: true,
-        prefix: process.env.RAZORPAY_SECRET.substring(0, 8),
-        length: process.env.RAZORPAY_SECRET.length
-      } : "MISSING"
-    });
-
     const razorpay = createRazorpayInstance();
     
-    logger.info("Razorpay instance created, attempting order creation", {
-      amount: amount,
-      currency: currency,
-      receipt: receipt || `receipt_${Date.now()}`
+    logger.info("Creating order with credentials", {
+      keyId: process.env.RAZORPAY_KEY_ID ? "SET" : "MISSING",
+      keySecret: process.env.RAZORPAY_SECRET ? "SET" : "MISSING"
     });
     
     const order = await razorpay.orders.create({
@@ -67,7 +50,7 @@ export const createOrder = onRequest({
       receipt: receipt || `receipt_${Date.now()}`,
     });
 
-    logger.info("Order created successfully", {orderId: order.id, amount});
+    logger.info("Order created", {orderId: order.id, amount});
     res.status(200).json(order);
   } catch (error) {
     logger.error("Error creating order:", error);
