@@ -1,13 +1,16 @@
 import {onRequest} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
+import * as functions from "firebase-functions";
 import * as crypto from "crypto";
 
 // Initialize Razorpay
 const Razorpay = require("razorpay");
 
 function createRazorpayInstance() {
-  const keyId = process.env.RAZORPAY_KEY_ID;
-  const keySecret = process.env.RAZORPAY_SECRET;
+  const config = functions.config();
+  // Try Firebase config first, then fall back to environment variables
+  const keyId = config.razorpay?.key_id || process.env.RAZORPAY_KEY_ID;
+  const keySecret = config.razorpay?.secret || process.env.RAZORPAY_SECRET;
   
   if (!keyId || !keySecret) {
     throw new Error("Razorpay credentials not configured");
@@ -65,7 +68,8 @@ export const verifyPayment = onRequest({cors: true}, async (req, res) => {
       return;
     }
 
-    const keySecret = process.env.RAZORPAY_SECRET;
+    const config = functions.config();
+    const keySecret = config.razorpay?.secret || process.env.RAZORPAY_SECRET;
     if (!keySecret) {
       throw new Error("Razorpay secret not configured");
     }
@@ -113,7 +117,8 @@ export const webhook = onRequest({cors: true}, async (req, res) => {
       return;
     }
 
-    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+    const config = functions.config();
+    const webhookSecret = config.razorpay?.webhook_secret || process.env.RAZORPAY_WEBHOOK_SECRET;
     if (!webhookSecret) {
       throw new Error("Webhook secret not configured");
     }
@@ -145,14 +150,15 @@ export const paymentTest = onRequest({cors: true}, async (req, res) => {
   }
 
   try {
+    const config = functions.config();
     res.status(200).json({
       status: "ok",
       message: "Payment API is working",
       env_check: {
-        razorpay_key_id: process.env.RAZORPAY_KEY_ID ? "SET" : "MISSING",
-        razorpay_secret: process.env.RAZORPAY_SECRET ? "SET" : "MISSING",
-        razorpay_webhook_secret: process.env.RAZORPAY_WEBHOOK_SECRET ? "SET" : "MISSING",
-        next_public_key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ? "SET" : "MISSING",
+        razorpay_key_id: (config.razorpay?.key_id || process.env.RAZORPAY_KEY_ID) ? "SET" : "MISSING",
+        razorpay_secret: (config.razorpay?.secret || process.env.RAZORPAY_SECRET) ? "SET" : "MISSING",
+        razorpay_webhook_secret: (config.razorpay?.webhook_secret || process.env.RAZORPAY_WEBHOOK_SECRET) ? "SET" : "MISSING",
+        next_public_key_id: (config.razorpay?.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) ? "SET" : "MISSING",
       },
     });
   } catch (error) {

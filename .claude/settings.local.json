@@ -22,7 +22,9 @@
       "Bash(npm run dev:*)",
       "Bash(node:*)",
       "Bash(firebase functions:list:*)",
-      "Bash(firebase functions:config:get:*)"
+      "Bash(firebase functions:config:get:*)",
+      "Bash(firebase functions:log:*)",
+      "Bash(firebase functions:config:set:*)"
     ],
     "deny": []
   }
