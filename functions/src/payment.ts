@@ -39,6 +39,11 @@ export const createOrder = onRequest({
 
     const razorpay = createRazorpayInstance();
     
+    logger.info("Creating order with credentials", {
+      keyId: process.env.RAZORPAY_KEY_ID ? "SET" : "MISSING",
+      keySecret: process.env.RAZORPAY_SECRET ? "SET" : "MISSING"
+    });
+    
     const order = await razorpay.orders.create({
       amount: amount * 100, // Convert to paise
       currency,
@@ -49,7 +54,10 @@ export const createOrder = onRequest({
     res.status(200).json(order);
   } catch (error) {
     logger.error("Error creating order:", error);
-    res.status(500).json({error: "Failed to create order"});
+    res.status(500).json({
+      error: "Failed to create order",
+      details: error instanceof Error ? error.message : String(error)
+    });
   }
 });
 
