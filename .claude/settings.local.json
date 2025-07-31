@@ -32,7 +32,14 @@
       "Bash(export FUNCTIONS_DISCOVERY_TIMEOUT=60)",
       "Bash(firebase deploy:*)",
       "Bash(firebase functions:secrets:access:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(gcloud secrets versions access:*)",
+      "Bash(gcloud projects describe:*)",
+      "Bash(gcloud projects add-iam-policy-binding:*)",
+      "Bash(--member=serviceAccount:305540587803-compute@developer.gserviceaccount.com )",
+      "Bash(--role=roles/secretmanager.secretAccessor)",
+      "Bash(gcloud secrets list:*)",
+      "Bash(gcloud secrets delete:*)"
     ],
     "deny": []
   }

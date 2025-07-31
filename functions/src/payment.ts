@@ -174,7 +174,7 @@ export const webhook = onRequest({
 // Test handler
 export const paymentTest = onRequest({
   cors: true,
-  secrets: ["RAZORPAY_KEY_ID", "RAZORPAY_SECRET", "RAZORPAY_WEBHOOK_SECRET", "NEXT_PUBLIC_RAZORPAY_KEY_ID"]
+  secrets: ["RAZORPAY_KEY_ID", "RAZORPAY_SECRET", "RAZORPAY_WEBHOOK_SECRET"]
 }, async (req, res) => {
   if (req.method !== "GET") {
     res.status(405).json({error: "Method not allowed"});
@@ -209,7 +209,6 @@ export const paymentTest = onRequest({
         razorpay_key_id: process.env.RAZORPAY_KEY_ID ? "SET" : "MISSING",
         razorpay_secret: process.env.RAZORPAY_SECRET ? "SET" : "MISSING",
         razorpay_webhook_secret: process.env.RAZORPAY_WEBHOOK_SECRET ? "SET" : "MISSING",
-        next_public_key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ? "SET" : "MISSING",
       },
       razorpay_test: {
         initialized: razorpayInitialized,

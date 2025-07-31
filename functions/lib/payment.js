@@ -156,7 +156,7 @@ exports.webhook = (0, https_1.onRequest)({
 // Test handler
 exports.paymentTest = (0, https_1.onRequest)({
     cors: true,
-    secrets: ["RAZORPAY_KEY_ID", "RAZORPAY_SECRET", "RAZORPAY_WEBHOOK_SECRET", "NEXT_PUBLIC_RAZORPAY_KEY_ID"]
+    secrets: ["RAZORPAY_KEY_ID", "RAZORPAY_SECRET", "RAZORPAY_WEBHOOK_SECRET"]
 }, async (req, res) => {
     var _a, _b;
     if (req.method !== "GET") {
@@ -190,7 +190,6 @@ exports.paymentTest = (0, https_1.onRequest)({
                 razorpay_key_id: process.env.RAZORPAY_KEY_ID ? "SET" : "MISSING",
                 razorpay_secret: process.env.RAZORPAY_SECRET ? "SET" : "MISSING",
                 razorpay_webhook_secret: process.env.RAZORPAY_WEBHOOK_SECRET ? "SET" : "MISSING",
-                next_public_key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ? "SET" : "MISSING",
             },
             razorpay_test: {
                 initialized: razorpayInitialized,
