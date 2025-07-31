@@ -73,7 +73,7 @@ export const createOrder = onRequest({
     logger.error("Error creating order:", error);
     res.status(500).json({
       error: "Failed to create order",
-      details: error instanceof Error ? error.message : String(error)
+      details: error instanceof Error ? error.message : JSON.stringify(error)
     });
   }
 });
@@ -196,10 +196,10 @@ export const paymentTest = onRequest({
         logger.info("Razorpay API test successful", { paymentsCount: payments.items?.length || 0 });
       } catch (apiError) {
         logger.error("Razorpay API test failed:", apiError);
-        razorpayError = apiError instanceof Error ? apiError.message : String(apiError);
+        razorpayError = apiError instanceof Error ? apiError.message : JSON.stringify(apiError);
       }
     } catch (initError) {
-      razorpayError = initError instanceof Error ? initError.message : String(initError);
+      razorpayError = initError instanceof Error ? initError.message : JSON.stringify(initError);
     }
 
     res.status(200).json({
