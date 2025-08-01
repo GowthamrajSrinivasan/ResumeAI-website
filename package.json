@@ -4,7 +4,9 @@
   "description": "Independent login/signup page for Requill",
   "main": "index.html",
   "scripts": {
-    "dev": "next dev",
+    "generate-pricing": "node scripts/generate-pricing-config.js",
+    "prebuild": "npm run generate-pricing",
+    "dev": "npm run generate-pricing && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

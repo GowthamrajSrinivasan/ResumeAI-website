@@ -40,46 +40,31 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
   'BDT': '৳', 'NPR': '₨', 'MMK': 'K', 'KHR': '៛', 'LAK': '₭', 'BND': 'B$'
 };
 
-// Parse pricing configuration (embedded for now, could be loaded from file)
+// Load pricing configuration from generated file
 async function loadPricingConfig(): Promise<PricingConfig> {
   if (cachedPricingConfig) {
     return cachedPricingConfig;
   }
 
   try {
-    const config: PricingConfig = {
-      base_pricing: { monthly: 12, annual: 120 },
-      countries: {
-        'IN': { currency: 'INR', symbol: '₹', monthly: 2.99, annual: 4.99 },
-        'US': { currency: 'USD', symbol: '$', monthly: 3.99, annual: 39.99 },
-        'GB': { currency: 'GBP', symbol: '£', monthly: 9, annual: 90 },
-        'DE': { currency: 'EUR', symbol: '€', monthly: 10, annual: 100 },
-        'FR': { currency: 'EUR', symbol: '€', monthly: 10, annual: 100 },
-        'IT': { currency: 'EUR', symbol: '€', monthly: 10, annual: 100 },
-        'ES': { currency: 'EUR', symbol: '€', monthly: 10, annual: 100 },
-        'NL': { currency: 'EUR', symbol: '€', monthly: 10, annual: 100 },
-        'CA': { currency: 'CAD', symbol: 'C$', monthly: 3.99, annual: 39.99 },
-        'AU': { currency: 'AUD', symbol: 'A$', monthly: 18, annual: 180 },
-        'SG': { currency: 'SGD', symbol: 'S$', monthly: 16, annual: 160 },
-        'AE': { currency: 'AED', symbol: 'د.إ', monthly: 44, annual: 440 },
-        'JP': { currency: 'JPY', symbol: '¥', monthly: 1800, annual: 18000 },
-        'KR': { currency: 'KRW', symbol: '₩', monthly: 16000, annual: 160000 }
-      }
-    };
-    
-    cachedPricingConfig = config;
-    console.log('💰 Pricing configuration loaded with', Object.keys(config.countries).length, 'countries');
-    return config;
+    // Import the generated pricing configuration
+    const { PRICING_CONFIG } = await import('./pricing-config.generated');
+    cachedPricingConfig = PRICING_CONFIG;
+    console.log('💰 Pricing configuration loaded from pricing.md with', Object.keys(PRICING_CONFIG.countries).length, 'countries');
+    return PRICING_CONFIG;
   } catch (error) {
-    console.error('Failed to load pricing configuration:', error);
+    console.error('Failed to load pricing configuration from generated file:', error);
     // Fallback configuration
-    return {
+    const fallbackConfig: PricingConfig = {
       base_pricing: { monthly: 12, annual: 120 },
       countries: {
         'IN': { currency: 'INR', symbol: '₹', monthly: 2.99, annual: 4.99 },
         'US': { currency: 'USD', symbol: '$', monthly: 3.99, annual: 39.99 }
       }
     };
+    cachedPricingConfig = fallbackConfig;
+    console.warn('💰 Using fallback pricing configuration');
+    return fallbackConfig;
   }
 }
 
