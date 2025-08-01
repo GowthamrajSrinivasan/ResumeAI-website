@@ -18,12 +18,12 @@ base_pricing:
 IN:
   currency: INR
   symbol: ₹
-  monthly: 2.99
-  annual: 4.99
+  monthly: 199
+  annual: 1500
   notes: "Primary market - competitive local pricing"
 ```
 
-### United States (USD)
+### United State19s (USD)
 ```yaml
 US:
   currency: USD
