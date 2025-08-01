@@ -41,11 +41,12 @@ export default function PricingPage() {
       name: "Free",
       monthlyPrice: 0,
       annualPrice: 0,
+      subheading: "10 total usages to Generate AI‑powered :",
       features: [
-        "5 AI-generated posts per month",
-        "Basic message templates",
-        "Profile optimization suggestions",
-        "Limited language support",
+        "summaries and replies for LinkedIn posts",
+        "LinkedIn profile summary with personalised messages",
+        "LinkedIn Pulse articles summary and suggested reply",
+        "Automatic translation of non‑English content in response",
         "Email support"
       ],
       buttonText: "Get Started Free",
@@ -59,17 +60,16 @@ export default function PricingPage() {
       formattedMonthly: pricingData?.formattedMonthly || '$3.99',
       formattedAnnual: pricingData?.formattedAnnual || '$39.99',
       currency: pricingData?.currency,
+      subheading: "Leverage latest GenAI models from OpenAI for",
       features: [
-        "Unlimited AI-generated content",
-        "Advanced message personalization",
-        "Complete profile optimization",
-        "25+ language support",
+        "Unlimited Post summaries and replies",
+        "Unlimited LinkedIn profile summary with personalised messages",
+        "Unlimited LinkedIn Pulse articles summary and suggested reply",
+        "Automatic translation of non‑English content in response",
         "Priority customer support",
-        "Analytics and insights",
-        "Custom templates",
-        "Export content history"
+        "Unlock future features at no additional cost."
       ],
-      buttonText: "Start Pro Trial",
+      buttonText: "Upgrade to Pro",
       popular: true
     }
   };
@@ -150,10 +150,27 @@ export default function PricingPage() {
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold text-white mb-2">{plans.free.name}</h3>
                     <div className="mb-4">
-                      <span className="text-4xl font-extrabold text-white">$0</span>
-                      <span className="text-gray-400 ml-1">/month</span>
+                      {priceLoading ? (
+                        <div className="animate-pulse">
+                          <div className="h-10 bg-gray-600 rounded w-16 mx-auto mb-2"></div>
+                          <div className="h-4 bg-gray-600 rounded w-12 mx-auto"></div>
+                        </div>
+                      ) : (
+                        <>
+                          <span className="text-4xl font-extrabold text-white">
+                            {pricingData ? `${pricingData.currency.symbol}0` : '$0'}
+                          </span>
+                          <span className="text-gray-400 ml-1">/month</span>
+                        </>
+                      )}
                     </div>
                     <p className="text-gray-300">Perfect for getting started</p>
+                  </div>
+
+                  <div className="mb-6">
+                    <h4 className="text-lg font-semibold text-white mb-4 text-center">
+                      {plans.free.subheading}
+                    </h4>
                   </div>
 
                   <ul className="space-y-3 mb-8">
@@ -180,14 +197,14 @@ export default function PricingPage() {
 
               {/* Pro Plan */}
               <div className="relative rounded-2xl border border-purple-500 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
-                {/* Popular Badge */}
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
-                  <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
-                    Most Popular
-                  </span>
-                </div>
+                <div className="relative z-10">
+                  {/* Popular Badge - moved inside */}
+                  <div className="flex justify-center mb-4">
+                    <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
+                      Most Popular
+                    </span>
+                  </div>
 
-                <div className="relative z-10 pt-4">
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold text-white mb-2">{plans.pro.name}</h3>
                     <div className="mb-4">
@@ -223,6 +240,12 @@ export default function PricingPage() {
                         Auto-converted to {pricingData.currency.name}
                       </p>
                     )}
+                  </div>
+
+                  <div className="mb-6">
+                    <h4 className="text-lg font-semibold text-white mb-4 text-center">
+                      {plans.pro.subheading}
+                    </h4>
                   </div>
 
                   <ul className="space-y-3 mb-8">
@@ -276,7 +299,7 @@ export default function PricingPage() {
                     Is there a free trial for Pro?
                   </h4>
                   <p className="text-gray-300 text-sm">
-                    Yes! We offer a 7-day free trial for the Pro plan. No credit card required to start your trial.
+                    No! We offer 10 usages of the Pro version for free.
                   </p>
                   <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                     background: "radial-gradient(circle at 60% 40%, #7209b722 0%, transparent 75%)"
@@ -288,7 +311,7 @@ export default function PricingPage() {
                     What payment methods do you accept?
                   </h4>
                   <p className="text-gray-300 text-sm">
-                    We accept all major credit cards (Visa, MasterCard, American Express) and PayPal for your convenience.
+                    We accept UPI and all major Debit and Credit cards (Visa, MasterCard, American Express) for your convenience.
                   </p>
                   <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                     background: "radial-gradient(circle at 40% 60%, #4cc9f022 0%, transparent 75%)"
@@ -300,7 +323,7 @@ export default function PricingPage() {
                     Do you offer refunds?
                   </h4>
                   <p className="text-gray-300 text-sm">
-                    Yes, we offer a 30-day money-back guarantee. If you're not satisfied, contact us for a full refund.
+                    Yes, we offer a 30-day money-back guarantee. If you're not satisfied, contact us for a refund.
                   </p>
                   <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                     background: "radial-gradient(circle at 65% 30%, #4361ee22 0%, transparent 75%)"
@@ -308,19 +331,6 @@ export default function PricingPage() {
                 </div>
               </div>
             </div>
-
-            {/* Pricing Source Information */}
-            {pricingData && (
-              <div className="mt-12 text-center">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 rounded-full text-blue-200 text-sm">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
-                  {pricingData.pricingSource === 'manual' 
-                    ? `Manual pricing for ${pricingData.currency.name}`
-                    : `Converted from USD to ${pricingData.currency.name}`
-                  }
-                </div>
-              </div>
-            )}
           </div>
         </section>
 
@@ -330,7 +340,7 @@ export default function PricingPage() {
             {/* Text */}
             <div className="z-10 flex-1">
               <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
-                Ready to transform<br />your LinkedIn game?
+                It's time to Level Up !
               </h2>
               <div className="flex items-center gap-2 mt-2">
                 <span className="flex text-yellow-400 text-xl">
@@ -340,7 +350,7 @@ export default function PricingPage() {
                     </svg>
                   ))}
                 </span>
-                <span className="text-gray-300 font-medium ml-2">Trusted by 10,000+ professionals</span>
+                <span className="text-gray-300 font-medium ml-2">Leverage AI to help you focus more on high impact work<br />Create more impact with Requill with lesser time</span>
               </div>
             </div>
 
