@@ -87,11 +87,18 @@ export default function PaymentButton({
         });
       }
 
-      const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_xxxxxxxxxxxxxxxx';
+      // Get Razorpay key from order response
+      const razorpayKeyId = orderData.razorpay_key_id;
+      
+      if (!razorpayKeyId) {
+        throw new Error('Razorpay key not configured in server response');
+      }
+
+      console.log('Using Razorpay key from server:', razorpayKeyId.substring(0, 12) + '...');
 
       // Configure Razorpay options with user prefill
       const options = {
-        key: razorpayKey,
+        key: razorpayKeyId,
         amount: orderData.amount,
         currency: orderData.currency,
         name: 'Requill',

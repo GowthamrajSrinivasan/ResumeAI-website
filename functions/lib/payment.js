@@ -20,7 +20,7 @@ function createRazorpayInstance() {
 // Create order handler
 exports.createOrder = (0, https_1.onRequest)({
     cors: true,
-    secrets: ["RAZORPAY_KEY_ID", "RAZORPAY_SECRET"]
+    secrets: ["RAZORPAY_KEY_ID", "RAZORPAY_SECRET", "NEXT_PUBLIC_RAZORPAY_KEY_ID"]
 }, async (req, res) => {
     if (req.method !== "POST") {
         res.status(405).json({ error: "Method not allowed" });
@@ -59,7 +59,7 @@ exports.createOrder = (0, https_1.onRequest)({
             receipt: receipt || `receipt_${Date.now()}`,
         });
         logger.info("Order created successfully", { orderId: order.id, amount });
-        res.status(200).json(order);
+        res.status(200).json(Object.assign(Object.assign({}, order), { razorpay_key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID }));
     }
     catch (error) {
         logger.error("Error creating order:", error);
