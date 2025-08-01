@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUsageCount = exports.getUserUsageData = exports.checkUserByEmail = void 0;
+exports.upgradeToPremium = exports.updateUsageCount = exports.getUserUsageData = exports.checkUserByEmail = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 const firestore_1 = require("firebase-admin/firestore");
@@ -127,6 +127,68 @@ exports.updateUsageCount = (0, https_1.onRequest)({ cors: true }, async (req, re
     catch (error) {
         logger.error("Error updating usage count:", error);
         res.status(500).json({ error: "Failed to update usage count" });
+    }
+});
+// Upgrade user to premium function
+exports.upgradeToPremium = (0, https_1.onRequest)({ cors: true }, async (req, res) => {
+    if (req.method !== "POST") {
+        res.status(405).json({ error: "Method not allowed" });
+        return;
+    }
+    try {
+        const { userId, userEmail, paymentId, orderId, planType } = req.body;
+        if (!userId || !userEmail) {
+            res.status(400).json({ error: "User ID and email are required" });
+            return;
+        }
+        logger.info("Upgrading user to premium", { userId, userEmail, paymentId, orderId, planType });
+        // Update user document in Firestore
+        const userRef = db.collection("users").doc(userId);
+        const userDoc = await userRef.get();
+        if (!userDoc.exists) {
+            res.status(404).json({ error: "User not found" });
+            return;
+        }
+        // Calculate subscription end date
+        const now = new Date();
+        const subscriptionEnd = new Date();
+        if (planType === 'annual') {
+            subscriptionEnd.setFullYear(now.getFullYear() + 1);
+        }
+        else {
+            subscriptionEnd.setMonth(now.getMonth() + 1);
+        }
+        // Update user to premium
+        await userRef.update({
+            isPremium: true,
+            subscriptionType: planType,
+            subscriptionStart: now,
+            subscriptionEnd: subscriptionEnd,
+            paymentId: paymentId,
+            orderId: orderId,
+            updatedAt: now
+        });
+        // Log the premium upgrade
+        await db.collection("premiumUpgrades").add({
+            userId: userId,
+            userEmail: userEmail,
+            paymentId: paymentId,
+            orderId: orderId,
+            planType: planType,
+            subscriptionStart: now,
+            subscriptionEnd: subscriptionEnd,
+            createdAt: now
+        });
+        logger.info("User upgraded to premium successfully", { userId, userEmail, planType });
+        res.status(200).json({
+            success: true,
+            message: "User upgraded to premium successfully",
+            subscriptionEnd: subscriptionEnd.toISOString()
+        });
+    }
+    catch (error) {
+        logger.error("Error upgrading user to premium:", error);
+        res.status(500).json({ error: "Failed to upgrade user to premium" });
     }
 });
 //# sourceMappingURL=user-management.js.map

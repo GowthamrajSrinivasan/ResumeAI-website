@@ -28,6 +28,7 @@ export default function PaymentButton({
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
   
+  // Debug logs
   console.log('PaymentButton loaded - User:', user?.email);
 
   const handlePayment = async () => {
@@ -53,6 +54,7 @@ export default function PaymentButton({
         }),
       });
 
+      // Check if response is OK before parsing JSON
       if (!orderResponse.ok) {
         const errorText = await orderResponse.text();
         console.error('Order creation failed:', {
@@ -63,11 +65,14 @@ export default function PaymentButton({
         throw new Error(`Failed to create order: ${orderResponse.status} ${orderResponse.statusText}`);
       }
 
-      const orderData = await orderResponse.json();
-      const razorpayKeyId = orderData.razorpay_key_id;
-      
-      if (!razorpayKeyId) {
-        throw new Error('Razorpay key not configured in server response');
+      let orderData;
+      try {
+        orderData = await orderResponse.json();
+      } catch (parseError) {
+        console.error('Failed to parse order response as JSON:', parseError);
+        const responseText = await orderResponse.text();
+        console.error('Response text:', responseText);
+        throw new Error('Invalid response from payment service');
       }
 
       // Load Razorpay script if not already loaded
@@ -76,7 +81,17 @@ export default function PaymentButton({
         script.src = 'https://checkout.razorpay.com/v1/checkout.js';
         script.async = true;
         document.body.appendChild(script);
-        await new Promise((resolve) => { script.onload = resolve; });
+
+        await new Promise((resolve) => {
+          script.onload = resolve;
+        });
+      }
+
+      // Get Razorpay key from order response
+      const razorpayKeyId = orderData.razorpay_key_id;
+      
+      if (!razorpayKeyId) {
+        throw new Error('Razorpay key not configured in server response');
       }
 
       console.log('Using Razorpay key from server:', razorpayKeyId.substring(0, 12) + '...');
@@ -92,17 +107,16 @@ export default function PaymentButton({
         prefill: {
           name: user?.displayName || user?.email?.split('@')[0] || 'Customer',
           email: user?.email || '',
-          contact: ''
+          contact: '' // Phone number if available
         },
         handler: async (response: any) => {
-          console.log('✅ Payment successful! Processing...', response);
-          
-          // IMPORTANT: Don't throw errors in the handler to prevent "Payment Failed" message
           try {
-            console.log('🔍 Verifying payment...');
+            // Verify payment on the server
             const verifyResponse = await fetch(FIREBASE_FUNCTIONS.verifyPayment, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: {
+                'Content-Type': 'application/json',
+              },
               body: JSON.stringify({
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
@@ -111,59 +125,22 @@ export default function PaymentButton({
             });
 
             if (!verifyResponse.ok) {
-              console.error('❌ Payment verification failed:', verifyResponse.status);
-              alert('Payment verification failed. Please contact support.');
-              return;
+              console.error('Payment verification failed:', verifyResponse.status, verifyResponse.statusText);
+              throw new Error('Payment verification failed');
             }
 
             const verifyData = await verifyResponse.json();
-            console.log('🔍 Verification result:', verifyData);
 
-            if (verifyData.verified) {
-              console.log('✅ Payment verified! Upgrading user...');
-              
-              if (user) {
-                const upgradeResponse = await fetch(FIREBASE_FUNCTIONS.upgradeToPremium, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    userId: user.uid,
-                    userEmail: user.email,
-                    paymentId: response.razorpay_payment_id,
-                    orderId: response.razorpay_order_id,
-                    planType: planType
-                  }),
-                });
-
-                if (!upgradeResponse.ok) {
-                  console.error('❌ Failed to upgrade user:', upgradeResponse.status);
-                  alert('Payment successful but upgrade failed. Please contact support.');
-                  return;
-                }
-
-                const upgradeData = await upgradeResponse.json();
-                console.log('🚀 Upgrade result:', upgradeData);
-                
-                if (upgradeData.success) {
-                  console.log('🎉 User upgraded successfully! Redirecting to LinkedIn...');
-                  setTimeout(() => {
-                    window.location.href = 'https://www.linkedin.com/';
-                  }, 1000);
-                } else {
-                  console.error('❌ Upgrade failed:', upgradeData);
-                  alert('Payment successful but upgrade failed. Please contact support.');
-                }
-              } else {
-                console.error('❌ No user logged in');
-                alert('Payment successful but no user found. Please contact support.');
-              }
+            if (verifyData.status === 'success') {
+              // Redirect to success page with payment details
+              window.location.href = `/payment/success?payment_id=${response.razorpay_payment_id}&order_id=${response.razorpay_order_id}`;
             } else {
-              console.error('❌ Payment verification failed:', verifyData);
-              alert('Payment verification failed. Please contact support.');
+              // Redirect to failure page
+              window.location.href = '/payment/failed';
             }
           } catch (error) {
-            console.error('❌ Payment processing error:', error);
-            alert('Payment processing error. Please contact support.');
+            console.error('Payment verification error:', error);
+            alert('Payment verification failed. Please contact support.');
           }
         },
         notes: {
