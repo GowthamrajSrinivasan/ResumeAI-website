@@ -139,16 +139,26 @@ export const webhook = onRequest({
   }
 
   try {
-    const body = JSON.stringify(req.body);
+    // Get raw body for signature verification
+    const body = req.rawBody ? req.rawBody.toString() : JSON.stringify(req.body);
     const signature = req.headers["x-razorpay-signature"] as string;
     
+    logger.info("Webhook received", {
+      hasRawBody: !!req.rawBody,
+      bodyLength: body.length,
+      signaturePresent: !!signature,
+      bodyPreview: body.substring(0, 100)
+    });
+    
     if (!signature) {
+      logger.warn("Missing webhook signature");
       res.status(400).json({error: "Missing signature"});
       return;
     }
 
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
     if (!webhookSecret) {
+      logger.error("Webhook secret not configured");
       throw new Error("Webhook secret not configured");
     }
 
@@ -157,12 +167,18 @@ export const webhook = onRequest({
       .update(body)
       .digest("hex");
 
+    logger.info("Signature verification", {
+      expected: expectedSignature,
+      received: signature,
+      match: expectedSignature === signature
+    });
+
     if (expectedSignature === signature) {
-      logger.info("Webhook verified", {event: req.body.event});
+      logger.info("Webhook verified successfully", {event: req.body?.event});
       // Process webhook event here
       res.status(200).json({status: "ok"});
     } else {
-      logger.warn("Webhook verification failed");
+      logger.warn("Webhook verification failed - signature mismatch");
       res.status(400).json({error: "Invalid signature"});
     }
   } catch (error) {
