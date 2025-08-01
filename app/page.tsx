@@ -3,7 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect, useState } from "react";
-import { Squirrel, Mail, ArrowRight, Play, X } from "lucide-react";
+import { Mail, ArrowRight, Play, X } from "lucide-react";
+import { RiQuillPenAiFill } from "react-icons/ri";
 // Using API route only for waitlist submissions
 
 export default function HomePage() {
@@ -128,48 +129,13 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-radial text-gray-200 overflow-x-hidden">
-      {/* Sticky Header */}
-      {/* <header className="sticky top-0 z-30 w-full flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 py-4 px-4 shadow-xl text-white rounded-b-2xl backdrop-blur-lg bg-opacity-90">
-        <h1 className="text-3xl md:text-4xl font-extrabold mb-1 text-center">
-          Hurry! Grab Today <span className="bg-white bg-clip-text text-transparent">Limited Time Offer</span>
-        </h1>
-        <p className="text-lg md:text-xl mb-2 text-center">
-          Offer resets in:
-          <span className="ml-2 font-mono font-bold bg-black bg-opacity-30 px-3 py-1 rounded-xl">
-            {`${String(timeLeft.hours).padStart(2, "0")}:${String(timeLeft.minutes).padStart(2, "0")}:${String(timeLeft.seconds).padStart(2, "0")}`}
-          </span>
-        </p>
-        {!isSubmitted ? (
-          <form onSubmit={submitToWaitlist} className="mt-2 flex flex-col sm:flex-row gap-2 items-center">
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="pl-10 pr-4 py-2 rounded-lg text-black font-medium w-64 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                disabled={isSubmitting}
-              />
-            </div>
-            <button 
-              type="submit"
-              disabled={isSubmitting}
-              className="px-6 py-2 bg-yellow-400 hover:bg-yellow-300 text-black font-bold rounded-lg shadow-md transition duration-300 disabled:opacity-50 flex items-center gap-2"
-            >
-              {isSubmitting ? 'Joining...' : 'Join Waitlist'}
-              {!isSubmitting && <ArrowRight className="h-4 w-4" />}
-            </button>
-          </form>
-        ) : (
-          <div className="mt-2 px-6 py-2 bg-green-400 text-black font-bold rounded-lg shadow-md">
-            ✅ You're on the waitlist!
-          </div>
-        )}
-        {submitError && (
-          <p className="mt-1 text-red-300 text-sm">{submitError}</p>
-        )}
-      </header> */}
+      {/* Header */}
+      <header className="sticky top-0 z-30 w-full flex items-center justify-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 py-4 px-4 shadow-xl text-white rounded-b-2xl backdrop-blur-lg bg-opacity-90">
+        <div className="flex items-center space-x-2">
+          <RiQuillPenAiFill className="h-6 w-6 text-white" />
+          <h1 className="text-xl font-extrabold">Requill - powered by OpenAI</h1>
+        </div>
+      </header>
 
       {/* Main Content */}
       <main className="relative">
@@ -270,7 +236,7 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <h4 className="text-2xl font-bold mb-3 z-10 relative">Effortless LinkedIn Engagement</h4>
-                <p className="text-gray-400 mb-6 z-10 relative">Busy executive, marketing lead, or job seeker? Our extension helps you stay consistently active on LinkedIn by summarizing posts and crafting personalized replies—so you can maintain your presence without spending hours online.</p>
+                <p className="text-gray-400 mb-6 z-10 relative">Busy executive, marketing lead, or job seeker? Requill helps you stay consistently active on LinkedIn without spending hours online.</p>
                 <ul className="space-y-4 z-10 relative">
                   <li className="flex items-start">
                     <span className="font-bold text-blue-400 mr-2">&#10003;</span>

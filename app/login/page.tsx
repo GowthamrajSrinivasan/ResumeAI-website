@@ -167,7 +167,7 @@ export default function LoginPage() {
                   </h3>
                 </div>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  Busy executive, marketing lead, or job seeker? Our extension helps you stay consistently active on LinkedIn by summarizing posts and crafting personalized replies—so you can maintain your presence without spending hours online.
+                Busy executive, marketing lead, or job seeker? Requill helps you stay consistently active on LinkedIn without spending hours online.
                 </p>
               </div>
             </div>
@@ -181,12 +181,11 @@ export default function LoginPage() {
                     <Zap className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-white">
-                    Others Are Leveling Up—Why Not You?
+                  It's Time to Level Up!
                   </h3>
                 </div>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  Many professionals are automating their content interactions. With our free tool, you can do it faster, better, and more authentically, freeing you to focus on the creative, complex, and high-impact work that matters most.
-                </p>
+                Many professionals are automating their content interactions. With Requill, you can do it faster, better, and more authentically, freeing you to focus on the creative, complex, and high-impact work that matters most.                </p>
               </div>
             </div>
 
