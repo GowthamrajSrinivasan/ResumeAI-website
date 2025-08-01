@@ -191,7 +191,7 @@ export default function HomePage() {
         </span>
       </h2>
       <p className="text-lg md:text-xl max-w-2xl mx-auto mb-8 text-gray-300">
-        Stop guessing what works and let AI do the heavy lifting. Create engaging posts, write personalized messages, and optimize your profile in seconds. Unlock your true networking potential and land your next opportunity faster.
+      Land your next opportunity faster by leveraging best GenAI models -Unlimited AI‑powered summaries, personalized replies and profile insights in seconds— to uplift your networking potential.
       </p>
       {!isSubmitted ? (
         <form onSubmit={submitToWaitlist} className="flex flex-col sm:flex-row gap-4 items-center justify-center">
@@ -299,21 +299,21 @@ export default function HomePage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h4 className="text-2xl font-bold mb-3 z-10 relative">Others Are Leveling Up—Why Not You?</h4>
-                <p className="text-gray-400 mb-6 z-10 relative">Many professionals are automating their content interactions. With our free tool, you can do it faster, better, and more authentically, freeing you to focus on the creative, complex, and high-impact work that matters most.</p>
+                <h4 className="text-2xl font-bold mb-3 z-10 relative">✨ It's Time to Level Up!</h4>
+                <p className="text-gray-400 mb-6 z-10 relative">Many professionals are automating their content interactions. With Requill, you can do it faster, better, and more authentically, freeing you to focus on the creative, complex, and high-impact work that matters most.</p>
                 <ul className="space-y-4 z-10 relative">
                   <li className="flex items-start">
                     <span className="font-bold text-indigo-400 mr-2">&#10003;</span>
                     <div>
-                    <h5 className="font-semibold">Faster & Better Automation</h5>
-                    <p className="text-gray-500 text-sm">Outperform competitors with superior AI-powered interactions.</p>
+                      <h5 className="font-semibold">Faster, Smarter Automation</h5>
+                      <p className="text-gray-500 text-sm">Create AI‑powered summaries and replies in seconds.</p>
                     </div>
                   </li>
                   <li className="flex items-start">
                     <span className="font-bold text-indigo-400 mr-2">&#10003;</span>
                     <div>
-                      <h5 className="font-semibold">Focus on High-Impact Work</h5>
-                      <p className="text-gray-500 text-sm">Free up time for creative and strategic initiatives.</p>
+                      <h5 className="font-semibold">Focus Where It Counts</h5>
+                      <p className="text-gray-500 text-sm">Spend less time on routine tasks and more on high‑impact strategy.</p>
                     </div>
                   </li>
                 </ul>
@@ -393,16 +393,16 @@ export default function HomePage() {
     <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 flex flex-col items-center transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
       <div className="mb-6">
         <div className="bg-white/10 rounded-xl p-4 shadow-md flex items-center justify-center">
-          {/* Download Icon */}
+          {/* Detective Icon */}
           <svg className="h-10 w-10 text-blue-200" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v12m0 0l-5-5m5 5l5-5" />
-            <rect width="18" height="14" x="3" y="7" rx="4" stroke="currentColor" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
           </svg>
         </div>
       </div>
-      <h4 className="text-xl font-semibold mb-2 text-white">Data portability</h4>
+      <h4 className="text-xl font-semibold mb-2 text-white">🕵️ Anonymous AI Processing</h4>
       <p className="text-gray-300 text-center text-base">
-        You can export all your data anytime in Markdown format, putting the power of portability and accessibility directly in your hands.
+        Your data is never shared with OpenAI or any third party for processing.
       </p>
       <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
         background: "radial-gradient(circle at 60% 20%, #4cc9f022 0%, transparent 75%)"
@@ -412,17 +412,15 @@ export default function HomePage() {
     <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 flex flex-col items-center transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
       <div className="mb-6">
         <div className="bg-white/10 rounded-xl p-4 shadow-md flex items-center justify-center">
-          {/* Database Icon */}
+          {/* Shield Icon */}
           <svg className="h-10 w-10 text-blue-200" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <ellipse cx="12" cy="6" rx="8" ry="3" stroke="currentColor" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
           </svg>
         </div>
       </div>
-      <h4 className="text-xl font-semibold mb-2 text-white">Privacy Focused</h4>
+      <h4 className="text-xl font-semibold mb-2 text-white">🛡 Enterprise‑Grade Privacy</h4>
       <p className="text-gray-300 text-center text-base">
-        Augmented Browsing is local first, your knowledge base is stored securely in the cloud.
+        Powered by Google's secure, world‑class server infrastructure.
       </p>
       <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
         background: "radial-gradient(circle at 65% 40%, #7209b722 0%, transparent 75%)"
@@ -501,10 +499,10 @@ export default function HomePage() {
     {/* FAQ 6 */}
     <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
       <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-        How much does Requill cost?
+      What personal data does Requill store?
       </h4>
       <p className="text-gray-300 text-base">
-        We offer a free version with basic features and premium plans starting at $9.99/month for unlimited content generation, advanced templates, and priority support.
+      Requill only stores the email address linked to your account and your usage counts. No other personal data is collected or stored.
       </p>
       <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
         background: "radial-gradient(circle at 65% 70%, #7209b722 0%, transparent 75%)"
@@ -521,15 +519,7 @@ export default function HomePage() {
         Supercharge your LinkedIn<br />grow your network
       </h2>
       <div className="flex items-center gap-2 mt-2">
-        {/* 5 stars */}
-        <span className="flex text-yellow-400 text-xl">
-          {[...Array(5)].map((_, i) => (
-            <svg key={i} className="h-6 w-6" fill="currentColor" viewBox="0 0 20 20">
-              <polygon points="10,1.5 12.95,7.18 19.21,7.79 14.11,12.15 15.63,18.31 10,15.1 4.37,18.31 5.89,12.15 0.79,7.79 7.05,7.18" />
-            </svg>
-          ))}
-        </span>
-        <span className="text-gray-300 font-medium ml-2">Rated 4.9 on Product Hunt</span>
+        <span className="text-gray-300 font-medium ml-2"> Your AI-powered LinkedIn companion</span>
       </div>
     </div>
 
