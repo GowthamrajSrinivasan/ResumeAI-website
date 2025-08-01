@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { FIREBASE_FUNCTIONS } from '@/lib/firebase-functions';
+import { useAuth } from '@/hooks/useAuth';
 
 interface PaymentButtonProps {
   amount: number;
@@ -25,14 +26,13 @@ export default function PaymentButton({
   children 
 }: PaymentButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
   
-  // Log immediately when component loads
-  console.log('🔥 PaymentButton component loaded!');
-  console.log('🔥 Current environment variable:', process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID);
+  // Debug logs
+  console.log('PaymentButton loaded - User:', user?.email);
 
   const handlePayment = async () => {
-    console.log('🚀 PaymentButton handlePayment started');
-    console.log('🔑 Environment check - NEXT_PUBLIC_RAZORPAY_KEY_ID:', process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID);
+    console.log('Starting payment for user:', user?.email);
     
     try {
       setIsLoading(true);
@@ -87,14 +87,9 @@ export default function PaymentButton({
         });
       }
 
-      // Debug: Log the environment variable value
-      console.log('NEXT_PUBLIC_RAZORPAY_KEY_ID from process.env:', process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID);
-      console.log('All NEXT_PUBLIC env vars:', Object.keys(process.env).filter(key => key.startsWith('NEXT_PUBLIC')));
-      
       const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_xxxxxxxxxxxxxxxx';
-      console.log('Final Razorpay key being used:', razorpayKey);
 
-      // Configure Razorpay options
+      // Configure Razorpay options with user prefill
       const options = {
         key: razorpayKey,
         amount: orderData.amount,
@@ -102,6 +97,11 @@ export default function PaymentButton({
         name: 'Requill',
         description: `${planName} Plan - ${planType}`,
         order_id: orderData.id,
+        prefill: {
+          name: user?.displayName || user?.email?.split('@')[0] || 'Customer',
+          email: user?.email || '',
+          contact: '' // Phone number if available
+        },
         handler: async (response: any) => {
           try {
             // Verify payment on the server
