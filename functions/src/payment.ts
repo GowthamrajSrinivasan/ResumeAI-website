@@ -215,6 +215,75 @@ export const getConfig = onRequest({
   }
 });
 
+// Create payment link handler
+export const createPaymentLink = onRequest({
+  cors: true,
+  secrets: ["RAZORPAY_KEY_ID", "RAZORPAY_SECRET"]
+}, async (req, res) => {
+  if (req.method !== "POST") {
+    res.status(405).json({error: "Method not allowed"});
+    return;
+  }
+
+  try {
+    const {amount, currency = "INR", description, customer_email, customer_name, plan_name} = req.body;
+
+    if (!amount) {
+      res.status(400).json({error: "Amount is required"});
+      return;
+    }
+
+    const razorpay = createRazorpayInstance();
+    
+    const paymentLinkData = {
+      amount: amount * 100, // Convert to paise
+      currency,
+      accept_partial: false,
+      description: description || `Payment for ${plan_name || 'Requill'} Plan`,
+      customer: {
+        name: customer_name || "Customer",
+        email: customer_email || "",
+      },
+      notify: {
+        sms: false,
+        email: true
+      },
+      reminder_enable: true,
+      notes: {
+        plan: plan_name || "unknown",
+        created_via: "executivesAI_checkout"
+      },
+      callback_url: "https://your-domain.com/payment-success",
+      callback_method: "get"
+    };
+
+    logger.info("Creating payment link", {
+      amount: paymentLinkData.amount,
+      currency: paymentLinkData.currency,
+      description: paymentLinkData.description
+    });
+    
+    const paymentLink = await razorpay.paymentLink.create(paymentLinkData);
+
+    logger.info("Payment link created successfully", {
+      id: paymentLink.id,
+      short_url: paymentLink.short_url
+    });
+
+    res.status(200).json({
+      id: paymentLink.id,
+      short_url: paymentLink.short_url,
+      payment_link: paymentLink
+    });
+  } catch (error) {
+    logger.error("Error creating payment link:", error);
+    res.status(500).json({
+      error: "Failed to create payment link",
+      details: error instanceof Error ? error.message : JSON.stringify(error)
+    });
+  }
+});
+
 // Test handler
 export const paymentTest = onRequest({
   cors: true,

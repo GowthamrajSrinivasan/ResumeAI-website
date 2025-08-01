@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.paymentTest = exports.getConfig = exports.webhook = exports.verifyPayment = exports.createOrder = void 0;
+exports.paymentTest = exports.createPaymentLink = exports.getConfig = exports.webhook = exports.verifyPayment = exports.createOrder = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 const crypto = require("crypto");
@@ -119,32 +119,47 @@ exports.webhook = (0, https_1.onRequest)({
     cors: true,
     secrets: ["RAZORPAY_WEBHOOK_SECRET"]
 }, async (req, res) => {
+    var _a;
     if (req.method !== "POST") {
         res.status(405).json({ error: "Method not allowed" });
         return;
     }
     try {
-        const body = JSON.stringify(req.body);
+        // Get raw body for signature verification
+        const body = req.rawBody ? req.rawBody.toString() : JSON.stringify(req.body);
         const signature = req.headers["x-razorpay-signature"];
+        logger.info("Webhook received", {
+            hasRawBody: !!req.rawBody,
+            bodyLength: body.length,
+            signaturePresent: !!signature,
+            bodyPreview: body.substring(0, 100)
+        });
         if (!signature) {
+            logger.warn("Missing webhook signature");
             res.status(400).json({ error: "Missing signature" });
             return;
         }
         const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
         if (!webhookSecret) {
+            logger.error("Webhook secret not configured");
             throw new Error("Webhook secret not configured");
         }
         const expectedSignature = crypto
             .createHmac("sha256", webhookSecret)
             .update(body)
             .digest("hex");
+        logger.info("Signature verification", {
+            expected: expectedSignature,
+            received: signature,
+            match: expectedSignature === signature
+        });
         if (expectedSignature === signature) {
-            logger.info("Webhook verified", { event: req.body.event });
+            logger.info("Webhook verified successfully", { event: (_a = req.body) === null || _a === void 0 ? void 0 : _a.event });
             // Process webhook event here
             res.status(200).json({ status: "ok" });
         }
         else {
-            logger.warn("Webhook verification failed");
+            logger.warn("Webhook verification failed - signature mismatch");
             res.status(400).json({ error: "Invalid signature" });
         }
     }
@@ -176,6 +191,67 @@ exports.getConfig = (0, https_1.onRequest)({
     catch (error) {
         logger.error("Error getting config:", error);
         res.status(500).json({ error: "Failed to get configuration" });
+    }
+});
+// Create payment link handler
+exports.createPaymentLink = (0, https_1.onRequest)({
+    cors: true,
+    secrets: ["RAZORPAY_KEY_ID", "RAZORPAY_SECRET"]
+}, async (req, res) => {
+    if (req.method !== "POST") {
+        res.status(405).json({ error: "Method not allowed" });
+        return;
+    }
+    try {
+        const { amount, currency = "INR", description, customer_email, customer_name, plan_name } = req.body;
+        if (!amount) {
+            res.status(400).json({ error: "Amount is required" });
+            return;
+        }
+        const razorpay = createRazorpayInstance();
+        const paymentLinkData = {
+            amount: amount * 100,
+            currency,
+            accept_partial: false,
+            description: description || `Payment for ${plan_name || 'Requill'} Plan`,
+            customer: {
+                name: customer_name || "Customer",
+                email: customer_email || "",
+            },
+            notify: {
+                sms: false,
+                email: true
+            },
+            reminder_enable: true,
+            notes: {
+                plan: plan_name || "unknown",
+                created_via: "executivesAI_checkout"
+            },
+            callback_url: "https://your-domain.com/payment-success",
+            callback_method: "get"
+        };
+        logger.info("Creating payment link", {
+            amount: paymentLinkData.amount,
+            currency: paymentLinkData.currency,
+            description: paymentLinkData.description
+        });
+        const paymentLink = await razorpay.paymentLink.create(paymentLinkData);
+        logger.info("Payment link created successfully", {
+            id: paymentLink.id,
+            short_url: paymentLink.short_url
+        });
+        res.status(200).json({
+            id: paymentLink.id,
+            short_url: paymentLink.short_url,
+            payment_link: paymentLink
+        });
+    }
+    catch (error) {
+        logger.error("Error creating payment link:", error);
+        res.status(500).json({
+            error: "Failed to create payment link",
+            details: error instanceof Error ? error.message : JSON.stringify(error)
+        });
     }
 });
 // Test handler

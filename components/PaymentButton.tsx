@@ -80,9 +80,16 @@ export default function PaymentButton({
         });
       }
 
+      // Debug: Log the environment variable value
+      console.log('NEXT_PUBLIC_RAZORPAY_KEY_ID from process.env:', process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID);
+      console.log('All NEXT_PUBLIC env vars:', Object.keys(process.env).filter(key => key.startsWith('NEXT_PUBLIC')));
+      
+      const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_xxxxxxxxxxxxxxxx';
+      console.log('Final Razorpay key being used:', razorpayKey);
+
       // Configure Razorpay options
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_xxxxxxxxxxxxxxxx', // Use your test key here
+        key: razorpayKey,
         amount: orderData.amount,
         currency: orderData.currency,
         name: 'Requill',
