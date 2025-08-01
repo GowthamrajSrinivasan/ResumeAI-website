@@ -50,15 +50,15 @@ async function loadPricingConfig(): Promise<PricingConfig> {
     const config: PricingConfig = {
       base_pricing: { monthly: 12, annual: 120 },
       countries: {
-        'IN': { currency: 'INR', symbol: '₹', monthly: 999, annual: 9999 },
-        'US': { currency: 'USD', symbol: '$', monthly: 12, annual: 120 },
+        'IN': { currency: 'INR', symbol: '₹', monthly: 2.99, annual: 4.99 },
+        'US': { currency: 'USD', symbol: '$', monthly: 3.99, annual: 39.99 },
         'GB': { currency: 'GBP', symbol: '£', monthly: 9, annual: 90 },
         'DE': { currency: 'EUR', symbol: '€', monthly: 10, annual: 100 },
         'FR': { currency: 'EUR', symbol: '€', monthly: 10, annual: 100 },
         'IT': { currency: 'EUR', symbol: '€', monthly: 10, annual: 100 },
         'ES': { currency: 'EUR', symbol: '€', monthly: 10, annual: 100 },
         'NL': { currency: 'EUR', symbol: '€', monthly: 10, annual: 100 },
-        'CA': { currency: 'CAD', symbol: 'C$', monthly: 15, annual: 150 },
+        'CA': { currency: 'CAD', symbol: 'C$', monthly: 3.99, annual: 39.99 },
         'AU': { currency: 'AUD', symbol: 'A$', monthly: 18, annual: 180 },
         'SG': { currency: 'SGD', symbol: 'S$', monthly: 16, annual: 160 },
         'AE': { currency: 'AED', symbol: 'د.إ', monthly: 44, annual: 440 },
@@ -76,8 +76,8 @@ async function loadPricingConfig(): Promise<PricingConfig> {
     return {
       base_pricing: { monthly: 12, annual: 120 },
       countries: {
-        'IN': { currency: 'INR', symbol: '₹', monthly: 999, annual: 9999 },
-        'US': { currency: 'USD', symbol: '$', monthly: 12, annual: 120 }
+        'IN': { currency: 'INR', symbol: '₹', monthly: 2.99, annual: 4.99 },
+        'US': { currency: 'USD', symbol: '$', monthly: 3.99, annual: 39.99 }
       }
     };
   }

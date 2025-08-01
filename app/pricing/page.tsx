@@ -1,10 +1,40 @@
 "use client";
 
-import React, { useState } from "react";
-import PaymentButton from "../../components/PaymentButton";
+import React, { useState, useEffect } from "react";
+import PaymentButton from "../../components/PaymentButtonWithCurrency";
+import { getLocalizedPricing, PlanPricing } from "@/lib/currency-service";
 
 export default function PricingPage() {
   const [isAnnual, setIsAnnual] = useState(false);
+  const [pricingData, setPricingData] = useState<PlanPricing | null>(null);
+  const [priceLoading, setPriceLoading] = useState(true);
+
+  // Load localized pricing from configuration
+  useEffect(() => {
+    const loadPricing = async () => {
+      try {
+        setPriceLoading(true);
+        const pricing = await getLocalizedPricing();
+        setPricingData(pricing);
+        console.log('💰 Pricing page loaded:', pricing);
+      } catch (error) {
+        console.error('Failed to load pricing:', error);
+        // Fallback pricing
+        setPricingData({
+          monthly: 3.99,
+          annual: 39.99,
+          currency: { code: 'USD', symbol: '$', name: 'US Dollar' },
+          formattedMonthly: '$3.99',
+          formattedAnnual: '$39.99',
+          pricingSource: 'manual'
+        });
+      } finally {
+        setPriceLoading(false);
+      }
+    };
+
+    loadPricing();
+  }, []);
 
   const plans = {
     free: {
@@ -23,8 +53,12 @@ export default function PricingPage() {
     },
     pro: {
       name: "Pro",
-      monthlyPrice: 9.99,
-      annualPrice: 99.99,
+      // Use dynamic pricing from configuration
+      monthlyPrice: pricingData?.monthly || 3.99,
+      annualPrice: pricingData?.annual || 39.99,
+      formattedMonthly: pricingData?.formattedMonthly || '$3.99',
+      formattedAnnual: pricingData?.formattedAnnual || '$39.99',
+      currency: pricingData?.currency,
       features: [
         "Unlimited AI-generated content",
         "Advanced message personalization",
@@ -40,6 +74,11 @@ export default function PricingPage() {
     }
   };
 
+  // Calculate savings percentage
+  const savingsPercentage = pricingData 
+    ? Math.round(((pricingData.monthly * 12 - pricingData.annual) / (pricingData.monthly * 12)) * 100)
+    : 17;
+
   return (
     <div className="min-h-screen bg-gradient-radial text-gray-200 overflow-x-hidden">
       {/* Header */}
@@ -50,6 +89,11 @@ export default function PricingPage() {
         <p className="text-lg md:text-xl mb-2 text-center">
           Unlock your LinkedIn potential with our AI-powered tools
         </p>
+        {pricingData && pricingData.pricingSource === 'auto-converted' && (
+          <p className="text-sm text-white/80 mb-2 text-center">
+            Pricing in {pricingData.currency.name} ({pricingData.currency.code})
+          </p>
+        )}
         <button 
           onClick={() => window.location.href = '/'}
           className="mt-1 px-6 py-2 bg-white/20 hover:bg-white/30 text-white font-bold rounded-xl shadow-md transition duration-300"
@@ -90,9 +134,9 @@ export default function PricingPage() {
                 <span className={`text-lg font-medium ml-3 ${isAnnual ? 'text-white' : 'text-gray-400'}`}>
                   Annual
                 </span>
-                {isAnnual && (
+                {isAnnual && pricingData && (
                   <span className="ml-2 px-2 py-1 bg-green-500 text-white text-xs font-bold rounded-full">
-                    Save 17%
+                    Save {savingsPercentage}%
                   </span>
                 )}
               </div>
@@ -147,17 +191,38 @@ export default function PricingPage() {
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold text-white mb-2">{plans.pro.name}</h3>
                     <div className="mb-4">
-                      <span className="text-4xl font-extrabold text-white">
-                        ${isAnnual ? (plans.pro.annualPrice / 12).toFixed(2) : plans.pro.monthlyPrice}
-                      </span>
-                      <span className="text-gray-400 ml-1">/month</span>
-                      {isAnnual && (
-                        <div className="text-sm text-gray-400">
-                          Billed annually (${plans.pro.annualPrice}/year)
+                      {priceLoading ? (
+                        <div className="animate-pulse">
+                          <div className="h-10 bg-gray-600 rounded w-24 mx-auto mb-2"></div>
+                          <div className="h-4 bg-gray-600 rounded w-16 mx-auto"></div>
                         </div>
+                      ) : (
+                        <>
+                          <span className="text-4xl font-extrabold text-white">
+                            {isAnnual 
+                              ? (pricingData ? 
+                                  `${pricingData.currency.symbol}${(pricingData.annual / 12).toFixed(2)}` : 
+                                  `$${(plans.pro.annualPrice / 12).toFixed(2)}`)
+                              : (pricingData ? 
+                                  pricingData.formattedMonthly : 
+                                  `$${plans.pro.monthlyPrice}`)
+                            }
+                          </span>
+                          <span className="text-gray-400 ml-1">/month</span>
+                          {isAnnual && (
+                            <div className="text-sm text-gray-400">
+                              Billed annually ({pricingData ? pricingData.formattedAnnual : `$${plans.pro.annualPrice}`}/year)
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                     <p className="text-gray-300">For serious LinkedIn professionals</p>
+                    {pricingData && pricingData.pricingSource === 'auto-converted' && (
+                      <p className="text-xs text-blue-400 mt-2">
+                        Auto-converted to {pricingData.currency.name}
+                      </p>
+                    )}
                   </div>
 
                   <ul className="space-y-3 mb-8">
@@ -169,14 +234,19 @@ export default function PricingPage() {
                     ))}
                   </ul>
 
-                  <PaymentButton
-                    amount={isAnnual ? plans.pro.annualPrice : plans.pro.monthlyPrice}
-                    planName={plans.pro.name}
-                    planType={isAnnual ? 'annual' : 'monthly'}
-                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg"
-                  >
-                    {plans.pro.buttonText}
-                  </PaymentButton>
+                  {priceLoading ? (
+                    <div className="w-full bg-gray-600 animate-pulse text-white font-bold py-3 px-6 rounded-lg">
+                      Loading pricing...
+                    </div>
+                  ) : (
+                    <PaymentButton
+                      planName={plans.pro.name}
+                      planType={isAnnual ? 'annual' : 'monthly'}
+                      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg"
+                    >
+                      {plans.pro.buttonText}
+                    </PaymentButton>
+                  )}
                 </div>
 
                 <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
@@ -238,6 +308,19 @@ export default function PricingPage() {
                 </div>
               </div>
             </div>
+
+            {/* Pricing Source Information */}
+            {pricingData && (
+              <div className="mt-12 text-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 rounded-full text-blue-200 text-sm">
+                  <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
+                  {pricingData.pricingSource === 'manual' 
+                    ? `Manual pricing for ${pricingData.currency.name}`
+                    : `Converted from USD to ${pricingData.currency.name}`
+                  }
+                </div>
+              </div>
+            )}
           </div>
         </section>
 
