@@ -153,7 +153,11 @@ export default function HomePage() {
       <h2 className="text-4xl md:text-6xl font-extrabold mb-4 text-white drop-shadow-lg">
         Supercharge Your{' '}
         <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-          LinkedIn Presence with AI
+          LinkedIn
+        </span>{' '}
+        Presence{' '}
+        <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+          with AI
         </span>
       </h2>
       <p className="text-lg md:text-xl max-w-2xl mx-auto mb-8 text-gray-300">
