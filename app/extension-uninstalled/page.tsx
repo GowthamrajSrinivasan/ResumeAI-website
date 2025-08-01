@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
-import { useAuth } from '@/hooks/useAuth';
 
 export default function ExtensionUninstalled() {
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
@@ -13,8 +12,8 @@ export default function ExtensionUninstalled() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   
-  // Initialize useAuth to enable extension uninstall detection and login/logout handling
-  const { user, loading } = useAuth();
+  // Note: Not using useAuth() hook to prevent any potential redirects
+  // We'll use Firebase Auth directly when needed
 
   useEffect(() => {
     // Log the uninstall event
@@ -77,14 +76,15 @@ export default function ExtensionUninstalled() {
     try {
       if (currentUser) {
         // User is authenticated - save to Firestore
-        await addDoc(collection(db, 'extension_feedback'), {
+        await addDoc(collection(db, 'user_feedback'), {
           feedback: feedback.trim(),
           type: 'uninstall',
           timestamp: serverTimestamp(),
           userAgent: navigator.userAgent,
           url: window.location.href,
           source: 'extension_uninstall_page',
-          userId: currentUser.uid
+          userId: currentUser.uid,
+          userEmail: currentUser.email
         });
         console.log('✅ Feedback submitted to Firestore');
       } else {
