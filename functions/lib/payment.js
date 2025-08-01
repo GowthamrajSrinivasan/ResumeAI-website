@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.paymentTest = exports.webhook = exports.verifyPayment = exports.createOrder = void 0;
+exports.paymentTest = exports.getConfig = exports.webhook = exports.verifyPayment = exports.createOrder = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 const crypto = require("crypto");
@@ -151,6 +151,31 @@ exports.webhook = (0, https_1.onRequest)({
     catch (error) {
         logger.error("Error processing webhook:", error);
         res.status(500).json({ error: "Webhook processing failed" });
+    }
+});
+// Config handler - serves public configuration
+exports.getConfig = (0, https_1.onRequest)({
+    cors: true,
+    secrets: ["NEXT_PUBLIC_RAZORPAY_KEY_ID"]
+}, async (req, res) => {
+    if (req.method !== "GET") {
+        res.status(405).json({ error: "Method not allowed" });
+        return;
+    }
+    try {
+        const razorpayKeyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+        if (!razorpayKeyId) {
+            logger.error("NEXT_PUBLIC_RAZORPAY_KEY_ID not configured");
+            res.status(500).json({ error: "Configuration not available" });
+            return;
+        }
+        res.status(200).json({
+            razorpay_key_id: razorpayKeyId
+        });
+    }
+    catch (error) {
+        logger.error("Error getting config:", error);
+        res.status(500).json({ error: "Failed to get configuration" });
     }
 });
 // Test handler
