@@ -25,8 +25,15 @@ export default function PaymentButton({
   children 
 }: PaymentButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Log immediately when component loads
+  console.log('🔥 PaymentButton component loaded!');
+  console.log('🔥 Current environment variable:', process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID);
 
   const handlePayment = async () => {
+    console.log('🚀 PaymentButton handlePayment started');
+    console.log('🔑 Environment check - NEXT_PUBLIC_RAZORPAY_KEY_ID:', process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID);
+    
     try {
       setIsLoading(true);
 
