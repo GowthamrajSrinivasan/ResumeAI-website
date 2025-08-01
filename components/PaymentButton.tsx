@@ -136,11 +136,6 @@ export default function PaymentButton({
             alert('Payment verification failed. Please contact support.');
           }
         },
-        prefill: {
-          name: '',
-          email: '',
-          contact: '',
-        },
         notes: {
           plan: planName,
           type: planType,
