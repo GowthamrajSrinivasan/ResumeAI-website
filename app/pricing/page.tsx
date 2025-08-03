@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import PaymentButton from "../../components/PaymentButtonWithCurrency";
 import { getLocalizedPricing, PlanPricing } from "@/lib/currency-service";
+import { Star, Rocket, BrainCircuit, TrendingUp } from "lucide-react";
 
 export default function PricingPage() {
   const [isAnnual, setIsAnnual] = useState(false);
@@ -339,11 +340,25 @@ export default function PricingPage() {
           <div className="relative max-w-5xl mx-auto rounded-2xl bg-[#181c28]/80 backdrop-blur-md border border-blue-900 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between px-6 md:px-14 py-10 overflow-hidden group">
             {/* Text */}
             <div className="z-10 flex-1">
-              <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
-                It's time to <br />Level Up !
-              </h2>
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-gray-300 font-medium ml-2">Leverage AI to help you focus more on high impact work<br />Create more impact with Requill with lesser time</span>
+              <div className="flex items-center gap-3 mb-6">
+                <Rocket className="w-8 h-8 md:w-12 md:h-12 text-blue-400" />
+                <h2 className="text-3xl md:text-5xl font-extrabold text-white leading-tight">
+                  It's time to <br />
+                  <span className="flex items-center gap-2">
+                    Level Up 
+                    <Star className="w-8 h-8 md:w-12 md:h-12 text-yellow-400 fill-current" />
+                  </span>
+                </h2>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <BrainCircuit className="w-6 h-6 text-blue-400 flex-shrink-0" />
+                  <span className="text-gray-300 font-medium">Leverage AI to help you focus more on high impact work</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <TrendingUp className="w-6 h-6 text-green-400 flex-shrink-0" />
+                  <span className="text-gray-300 font-medium">Create more impact with Requill with lesser time</span>
+                </div>
               </div>
             </div>
 
