@@ -60,7 +60,7 @@ export default function PricingPage() {
       formattedMonthly: pricingData?.formattedMonthly || '$3.99',
       formattedAnnual: pricingData?.formattedAnnual || '$39.99',
       currency: pricingData?.currency,
-      subheading: "Leverage latest GenAI models from OpenAI for",
+      subheading: "Leverage latest OpenAI models",
       features: [
         "Unlimited Post summaries and replies",
         "Unlimited LinkedIn profile summary with personalised messages",
@@ -340,16 +340,9 @@ export default function PricingPage() {
             {/* Text */}
             <div className="z-10 flex-1">
               <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
-                It's time to Level Up !
+                It's time to <br />Level Up !
               </h2>
               <div className="flex items-center gap-2 mt-2">
-                <span className="flex text-yellow-400 text-xl">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="h-6 w-6" fill="currentColor" viewBox="0 0 20 20">
-                      <polygon points="10,1.5 12.95,7.18 19.21,7.79 14.11,12.15 15.63,18.31 10,15.1 4.37,18.31 5.89,12.15 0.79,7.79 7.05,7.18" />
-                    </svg>
-                  ))}
-                </span>
                 <span className="text-gray-300 font-medium ml-2">Leverage AI to help you focus more on high impact work<br />Create more impact with Requill with lesser time</span>
               </div>
             </div>
