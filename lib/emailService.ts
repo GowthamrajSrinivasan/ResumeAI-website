@@ -1,5 +1,3 @@
-import nodemailer from 'nodemailer';
-
 interface EmailConfig {
   to: string;
   subject: string;
@@ -8,35 +6,60 @@ interface EmailConfig {
 }
 
 class EmailService {
-  private transporter: nodemailer.Transporter;
+  private apiKey: string;
+  private apiUrl: string;
+  private fromEmail: string;
+  private fromName: string;
 
   constructor() {
-    this.transporter = nodemailer.createTransport({
-      host: "smtp.zeptomail.in",
-      port: 587,
-      secure: false,
-      auth: {
-        user: "emailapikey",
-        pass: process.env.ZEPTO_MAIL_API_KEY || ""
-      }
-    });
+    this.apiKey = process.env.ZEPTO_MAIL_API_KEY || "";
+    this.apiUrl = "https://api.zeptomail.in/v1.1/email";
+    this.fromEmail = process.env.ZEPTO_MAIL_FROM_EMAIL || 'noreply@requill.executivesai.pro';
+    this.fromName = process.env.ZEPTO_MAIL_FROM_NAME || 'Requill Team';
   }
 
   async sendEmail(config: EmailConfig): Promise<boolean> {
     try {
-      const mailOptions = {
-        from: `"${process.env.ZEPTO_MAIL_FROM_NAME || 'Requill Team'}" <${process.env.ZEPTO_MAIL_FROM_EMAIL || 'noreply@requill.executivesai.pro'}>`,
-        to: config.to,
-        subject: config.subject,
-        html: config.html,
-        text: config.text
+      const payload = {
+        "from": {
+          "address": this.fromEmail,
+          "name": this.fromName
+        },
+        "to": [
+          {
+            "email_address": {
+              "address": config.to,
+              "name": config.to.split('@')[0]
+            }
+          }
+        ],
+        "subject": config.subject,
+        "htmlbody": config.html,
+        "track_clicks": true,
+        "track_opens": true
       };
 
-      const info = await this.transporter.sendMail(mailOptions);
-      console.log('Email sent successfully:', info.messageId);
+      const response = await fetch(this.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Zoho-enczapikey ${this.apiKey}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('ZeptoMail API error:', response.status, errorText);
+        return false;
+      }
+
+      const result = await response.json();
+      console.log('Email sent successfully via ZeptoMail:', result);
       return true;
     } catch (error) {
-      console.error('Error sending email:', error);
+      console.error('Error sending email via ZeptoMail:', error);
       return false;
     }
   }
@@ -145,3 +168,4 @@ The Requill Team
 }
 
 export const emailService = new EmailService();
+export { EmailService };
