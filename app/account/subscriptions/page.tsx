@@ -7,6 +7,7 @@ import { FIREBASE_FUNCTIONS } from '@/lib/firebase-functions';
 import { getLocalizedPricing, PlanPricing } from '@/lib/currency-service';
 import PaymentButton from '@/components/PaymentButtonWithCurrency';
 import { extensionComm } from '@/lib/extensionCommunication';
+import { chromeStorageReader, ChromeUserData } from '@/lib/chromeStorageReader';
 
 interface UserProfile {
   // Basic user info
@@ -74,9 +75,66 @@ function SubscriptionsPageContent() {
   const [error, setError] = useState<string>('');
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [chromeStorageData, setChromeStorageData] = useState<any>(null);
+  const [chromeUserData, setChromeUserData] = useState<ChromeUserData | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [authStateChecked, setAuthStateChecked] = useState(false);
   const [redirectTimeoutId, setRedirectTimeoutId] = useState<NodeJS.Timeout | null>(null);
+
+  // Handle Chrome extension visits first
+  useEffect(() => {
+    const handleChromeExtensionData = async () => {
+      try {
+        // Check if this is a visit from Chrome extension
+        if (chromeStorageReader.isFromExtension()) {
+          console.log('🔗 Detected visit from Chrome extension, attempting to read user data...');
+          
+          const chromeUserData = await chromeStorageReader.handleExtensionVisit();
+          
+          if (chromeUserData) {
+            console.log('✅ Chrome extension user data loaded:', chromeUserData);
+            setChromeUserData(chromeUserData);
+            
+            // Set minimal user profile data to prevent loading issues
+            if (!userProfile) {
+              setUserProfile({
+                uid: chromeUserData.uid,
+                userEmail: chromeUserData.email,
+                displayName: chromeUserData.displayName,
+                isPremium: chromeUserData.isPremium || false,
+                planType: chromeUserData.planType || 'free',
+                subscriptionStatus: chromeUserData.subscriptionStatus as any || 'active',
+                usage: {
+                  totalUsage: chromeUserData.usageCount || 0,
+                  monthlyUsage: 0,
+                  quotaLimit: chromeUserData.isPremium ? -1 : 10
+                }
+              });
+            }
+            
+            // Store in extension comm data as well for compatibility
+            setChromeStorageData({
+              available: true,
+              authenticated: true,
+              uid: chromeUserData.uid,
+              email: chromeUserData.email,
+              displayName: chromeUserData.displayName,
+              isPremium: chromeUserData.isPremium,
+              usageCount: chromeUserData.usageCount
+            });
+          } else {
+            console.warn('⚠️ No user data found in Chrome extension storage');
+            setChromeStorageData({ available: false, authenticated: false });
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error handling Chrome extension data:', error);
+        setChromeStorageData({ available: false, error: true, message: error });
+      }
+    };
+
+    // Run immediately when component mounts
+    handleChromeExtensionData();
+  }, []);
 
   useEffect(() => {
     console.log('Subscription page useEffect:', { 
@@ -92,9 +150,15 @@ function SubscriptionsPageContent() {
       return; // Still loading auth state
     }
     
-    // If we have a user, clear any existing timeout and proceed with data loading
-    if (!loading && user) {
-      console.log('User found, loading subscription data:', user.email);
+    // If we have a user OR Chrome extension data, clear any existing timeout and proceed with data loading
+    if (!loading && (user || chromeUserData)) {
+      const effectiveUser = user || { 
+        email: chromeUserData?.email, 
+        uid: chromeUserData?.uid,
+        displayName: chromeUserData?.displayName 
+      };
+      
+      console.log('User found (Firebase or Chrome), loading subscription data:', effectiveUser.email);
       
       // Clear any existing redirect timeout since we found a user
       if (redirectTimeoutId) {
@@ -153,7 +217,7 @@ function SubscriptionsPageContent() {
       console.log('User logged out, redirecting to login');
       router.push('/login');
     }
-  }, [user, loading, router, authStateChecked, redirectTimeoutId]);
+  }, [user, loading, router, authStateChecked, redirectTimeoutId, chromeUserData]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -173,7 +237,20 @@ function SubscriptionsPageContent() {
 
   const loadSubscriptionData = async () => {
     try {
-      console.log('Starting comprehensive data loading...');
+      // Determine effective user (Firebase or Chrome extension)
+      const effectiveUser = user || { 
+        uid: chromeUserData?.uid, 
+        email: chromeUserData?.email,
+        displayName: chromeUserData?.displayName 
+      };
+      
+      if (!effectiveUser.uid || !effectiveUser.email) {
+        console.error('No valid user data available for loading subscription data');
+        setPageLoading(false);
+        return;
+      }
+      
+      console.log('Starting comprehensive data loading for:', effectiveUser.email);
       setPageLoading(true);
       
       // Start all data loading operations in parallel for better performance
@@ -207,7 +284,7 @@ function SubscriptionsPageContent() {
         fetch(FIREBASE_FUNCTIONS.getUserProfile, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user?.uid }),
+          body: JSON.stringify({ userId: effectiveUser.uid }),
         }),
         new Promise<Response>((_, reject) => setTimeout(() => reject(new Error('API Timeout')), 10000))
       ]).then(async (profileResponse) => {
@@ -218,25 +295,36 @@ function SubscriptionsPageContent() {
           setUserProfile(profileData.userProfile);
         } else {
           console.error('User profile API failed:', profileResponse.status, profileResponse.statusText);
-          // Set minimal user profile
+          // Set minimal user profile using effective user or Chrome data
           setUserProfile({
-            isPremium: false,
-            planType: 'free',
-            subscriptionStatus: 'expired',
-            userEmail: user?.email || undefined,
-            displayName: user?.displayName || user?.email?.split('@')[0] || undefined,
-            uid: user?.uid || undefined
+            isPremium: chromeUserData?.isPremium || false,
+            planType: chromeUserData?.planType || 'free',
+            subscriptionStatus: (chromeUserData?.subscriptionStatus as any) || 'expired',
+            userEmail: effectiveUser.email || undefined,
+            displayName: effectiveUser.displayName || effectiveUser.email?.split('@')[0] || undefined,
+            uid: effectiveUser.uid || undefined,
+            usage: chromeUserData ? {
+              totalUsage: chromeUserData.usageCount || 0,
+              monthlyUsage: 0,
+              quotaLimit: chromeUserData.isPremium ? -1 : 10
+            } : undefined
           });
         }
       }).catch((profileError) => {
         console.error('Error loading user profile:', profileError);
+        // Set fallback user profile using Chrome data if available
         setUserProfile({
-          isPremium: false,
-          planType: 'free',
-          subscriptionStatus: 'expired',
-          userEmail: user?.email || undefined,
-          displayName: user?.displayName || user?.email?.split('@')[0] || undefined,
-          uid: user?.uid || undefined
+          isPremium: chromeUserData?.isPremium || false,
+          planType: chromeUserData?.planType || 'free',
+          subscriptionStatus: (chromeUserData?.subscriptionStatus as any) || 'expired',
+          userEmail: effectiveUser.email || undefined,
+          displayName: effectiveUser.displayName || effectiveUser.email?.split('@')[0] || undefined,
+          uid: effectiveUser.uid || undefined,
+          usage: chromeUserData ? {
+            totalUsage: chromeUserData.usageCount || 0,
+            monthlyUsage: 0,
+            quotaLimit: chromeUserData.isPremium ? -1 : 10
+          } : undefined
         });
       });
       dataLoadingPromises.push(profilePromise);
@@ -247,7 +335,7 @@ function SubscriptionsPageContent() {
         fetch(FIREBASE_FUNCTIONS.getBillingHistory, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user?.uid, limit: 10 }),
+          body: JSON.stringify({ userId: effectiveUser.uid, limit: 10 }),
         }),
         new Promise<Response>((_, reject) => setTimeout(() => reject(new Error('API Timeout')), 10000))
       ]).then(async (billingResponse) => {
@@ -335,14 +423,27 @@ function SubscriptionsPageContent() {
     } catch (err) {
       console.error('Error in loadSubscriptionData:', err);
       setError('Failed to load some subscription data');
-      // Set minimal fallback data
+      
+      // Redeclare effectiveUser in catch block
+      const effectiveUser = user || { 
+        uid: chromeUserData?.uid, 
+        email: chromeUserData?.email,
+        displayName: chromeUserData?.displayName 
+      };
+      
+      // Set minimal fallback data using Chrome data if available
       setUserProfile({
-        isPremium: false,
-        planType: 'free',
-        subscriptionStatus: 'expired',
-        userEmail: user?.email || undefined,
-        displayName: user?.displayName || user?.email?.split('@')[0] || undefined,
-        uid: user?.uid || undefined
+        isPremium: chromeUserData?.isPremium || false,
+        planType: chromeUserData?.planType || 'free',
+        subscriptionStatus: (chromeUserData?.subscriptionStatus as any) || 'expired',
+        userEmail: effectiveUser.email || undefined,
+        displayName: effectiveUser.displayName || effectiveUser.email?.split('@')[0] || undefined,
+        uid: effectiveUser.uid || undefined,
+        usage: chromeUserData ? {
+          totalUsage: chromeUserData.usageCount || 0,
+          monthlyUsage: 0,
+          quotaLimit: chromeUserData.isPremium ? -1 : 10
+        } : undefined
       });
       setBillingHistory([]);
     } finally {
@@ -353,11 +454,12 @@ function SubscriptionsPageContent() {
 
   const handleCancelSubscription = async () => {
     try {
+      const effectiveUser = user || { uid: chromeUserData?.uid };
       const response = await fetch(FIREBASE_FUNCTIONS.cancelSubscription, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          userId: user?.uid,
+          userId: effectiveUser.uid,
           reason: 'User requested cancellation'
         }),
       });
@@ -379,7 +481,7 @@ function SubscriptionsPageContent() {
   };
 
   // Show loading state while authentication is being determined
-  if (loading || (!user && !authStateChecked)) {
+  if (loading || (!user && !chromeUserData && !authStateChecked)) {
     return (
       <div className="min-h-screen bg-gradient-radial text-gray-200 flex items-center justify-center">
         <div className="flex items-center">
@@ -392,7 +494,7 @@ function SubscriptionsPageContent() {
     );
   }
 
-  if (!user) {
+  if (!user && !chromeUserData) {
     return (
       <div className="min-h-screen bg-gradient-radial text-gray-200 flex items-center justify-center">
         <div className="text-center">
@@ -671,7 +773,7 @@ function SubscriptionsPageContent() {
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-400">Email</span>
-                    <span className="text-white text-right break-all max-w-48">{userProfile.userEmail || user?.email}</span>
+                    <span className="text-white text-right break-all max-w-48">{userProfile.userEmail || user?.email || chromeUserData?.email}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Display Name</span>
@@ -767,7 +869,7 @@ function SubscriptionsPageContent() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Account Since</span>
-                  <span className="text-white">{user?.metadata?.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString() : 'N/A'}</span>
+                  <span className="text-white">{user?.metadata?.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString() : chromeUserData?.createdAt ? new Date(chromeUserData.createdAt).toLocaleDateString() : 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Plan</span>
