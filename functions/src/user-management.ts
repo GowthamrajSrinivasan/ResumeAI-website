@@ -150,7 +150,7 @@ export const upgradeToPremium = onRequest({cors: true}, async (req, res) => {
   }
 
   try {
-    const {userId, userEmail, paymentId, orderId, planType} = req.body;
+    const {userId, userEmail, paymentId, orderId, planType, paymentDetails} = req.body;
 
     if (!userId || !userEmail) {
       res.status(400).json({error: "User ID and email are required"});
@@ -197,7 +197,13 @@ export const upgradeToPremium = onRequest({cors: true}, async (req, res) => {
       planType: planType,
       subscriptionStart: now,
       subscriptionEnd: subscriptionEnd,
-      createdAt: now
+      upgradedAt: now,
+      createdAt: now,
+      // Include payment details for billing history
+      amount: paymentDetails?.amount || 999,
+      currency: paymentDetails?.currency || "INR",
+      formattedAmount: paymentDetails?.formattedAmount,
+      pricingSource: paymentDetails?.pricingSource
     });
 
     logger.info("User upgraded to premium successfully", {userId, userEmail, planType});
@@ -209,5 +215,185 @@ export const upgradeToPremium = onRequest({cors: true}, async (req, res) => {
   } catch (error) {
     logger.error("Error upgrading user to premium:", error);
     res.status(500).json({error: "Failed to upgrade user to premium"});
+  }
+});
+
+// Cancel subscription handler
+export const cancelSubscription = onRequest({
+  cors: true
+}, async (req, res) => {
+  if (req.method !== "POST") {
+    res.status(405).json({error: "Method not allowed"});
+    return;
+  }
+
+  try {
+    const {userId, reason} = req.body;
+
+    if (!userId) {
+      res.status(400).json({error: "User ID is required"});
+      return;
+    }
+
+    logger.info("Cancelling subscription", {userId, reason});
+
+    // Update user document to mark subscription as cancelled
+    const userRef = db.collection("users").doc(userId);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      res.status(404).json({error: "User not found"});
+      return;
+    }
+
+    const userData = userDoc.data();
+    if (!userData) {
+      res.status(404).json({error: "User data not found"});
+      return;
+    }
+
+    const now = new Date();
+    const premiumEndDate = userData.premiumEndDate || new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+    await userRef.update({
+      subscriptionStatus: "cancelled",
+      cancelledAt: now,
+      cancellationReason: reason || "User requested",
+      // Keep premium access until end of billing period
+      premiumEndDate: premiumEndDate,
+      updatedAt: now
+    });
+
+    // Log the cancellation
+    await db.collection("subscriptionCancellations").add({
+      userId: userId,
+      userEmail: userData.userEmail,
+      cancelledAt: now,
+      reason: reason || "User requested",
+      planType: userData.planType || "premium",
+      originalStartDate: userData.premiumStartDate,
+      accessEndsAt: premiumEndDate
+    });
+
+    logger.info("Subscription cancelled successfully", {userId});
+    res.status(200).json({
+      success: true,
+      message: "Subscription cancelled successfully",
+      accessEndsAt: premiumEndDate
+    });
+  } catch (error) {
+    logger.error("Error cancelling subscription:", error);
+    res.status(500).json({error: "Failed to cancel subscription"});
+  }
+});
+
+// Get billing history handler
+export const getBillingHistory = onRequest({
+  cors: true
+}, async (req, res) => {
+  if (req.method !== "POST") {
+    res.status(405).json({error: "Method not allowed"});
+    return;
+  }
+
+  try {
+    const {userId, limit = 10} = req.body;
+
+    if (!userId) {
+      res.status(400).json({error: "User ID is required"});
+      return;
+    }
+
+    logger.info("Getting billing history", {userId, limit});
+
+    // Get premium upgrades (payments) for this user
+    const upgradesRef = db.collection("premiumUpgrades")
+      .where("userId", "==", userId)
+      .orderBy("upgradedAt", "desc")
+      .limit(limit);
+
+    const upgradesSnapshot = await upgradesRef.get();
+    const billingHistory = upgradesSnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        date: (data.upgradedAt || data.createdAt).toDate(),
+        amount: data.amount || 999, // Default amount if not stored
+        currency: data.currency || "INR",
+        status: "paid",
+        description: `${data.planType || "Premium"} Plan`,
+        paymentId: data.paymentId,
+        orderId: data.orderId,
+        formattedAmount: data.formattedAmount
+      };
+    });
+
+    logger.info("Retrieved billing history", {userId, count: billingHistory.length});
+    res.status(200).json({
+      success: true,
+      billingHistory: billingHistory
+    });
+  } catch (error) {
+    logger.error("Error getting billing history:", error);
+    res.status(500).json({error: "Failed to get billing history"});
+  }
+});
+
+// Update subscription plan handler
+export const updateSubscriptionPlan = onRequest({
+  cors: true
+}, async (req, res) => {
+  if (req.method !== "POST") {
+    res.status(405).json({error: "Method not allowed"});
+    return;
+  }
+
+  try {
+    const {userId, newPlanType, paymentId, orderId} = req.body;
+
+    if (!userId || !newPlanType) {
+      res.status(400).json({error: "User ID and new plan type are required"});
+      return;
+    }
+
+    logger.info("Updating subscription plan", {userId, newPlanType});
+
+    // Update user document
+    const userRef = db.collection("users").doc(userId);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      res.status(404).json({error: "User not found"});
+      return;
+    }
+
+    const now = new Date();
+    await userRef.update({
+      planType: newPlanType,
+      lastPlanChange: now,
+      lastPaymentId: paymentId,
+      lastOrderId: orderId,
+      updatedAt: now
+    });
+
+    // Log the plan change
+    await db.collection("planChanges").add({
+      userId: userId,
+      userEmail: userDoc.data()?.userEmail,
+      oldPlan: userDoc.data()?.planType,
+      newPlan: newPlanType,
+      changedAt: now,
+      paymentId: paymentId,
+      orderId: orderId
+    });
+
+    logger.info("Subscription plan updated successfully", {userId, newPlanType});
+    res.status(200).json({
+      success: true,
+      message: "Subscription plan updated successfully"
+    });
+  } catch (error) {
+    logger.error("Error updating subscription plan:", error);
+    res.status(500).json({error: "Failed to update subscription plan"});
   }
 });

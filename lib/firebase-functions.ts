@@ -25,6 +25,9 @@ export const FIREBASE_FUNCTIONS = {
   getUserUsageData: `${FUNCTIONS_BASE_URL}/getUserUsageData`,
   updateUsageCount: `${FUNCTIONS_BASE_URL}/updateUsageCount`,
   upgradeToPremium: `${FUNCTIONS_BASE_URL}/upgradeToPremium`,
+  cancelSubscription: `${FUNCTIONS_BASE_URL}/cancelSubscription`,
+  getBillingHistory: `${FUNCTIONS_BASE_URL}/getBillingHistory`,
+  updateSubscriptionPlan: `${FUNCTIONS_BASE_URL}/updateSubscriptionPlan`,
   
   // AI services functions
   generateReply: `${FUNCTIONS_BASE_URL}/generateReply`,

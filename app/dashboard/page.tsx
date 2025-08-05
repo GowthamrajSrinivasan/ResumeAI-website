@@ -56,6 +56,13 @@ export default function DashboardPage() {
               <span className="text-gray-700">{user.email}</span>
             </div>
             <button
+              onClick={() => router.push('/account/subscriptions')}
+              className="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors"
+            >
+              <Crown className="h-4 w-4" />
+              <span>Manage Subscription</span>
+            </button>
+            <button
               onClick={handleLogout}
               className="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:text-red-600 transition-colors"
             >

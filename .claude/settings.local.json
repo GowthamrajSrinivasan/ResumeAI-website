@@ -41,7 +41,8 @@
       "Bash(gcloud secrets list:*)",
       "Bash(gcloud secrets delete:*)",
       "Bash(npm run generate-pricing:*)",
-      "Bash(timeout 15 npm run dev)"
+      "Bash(timeout 15 npm run dev)",
+      "Bash(npm run:*)"
     ],
     "deny": []
   }
