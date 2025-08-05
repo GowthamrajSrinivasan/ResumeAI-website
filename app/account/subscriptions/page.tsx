@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { FIREBASE_FUNCTIONS } from '@/lib/firebase-functions';
 import { getLocalizedPricing, PlanPricing } from '@/lib/currency-service';
@@ -63,9 +63,10 @@ interface BillingHistory {
   orderId?: string;
 }
 
-export default function SubscriptionsPage() {
+function SubscriptionsPageContent() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [billingHistory, setBillingHistory] = useState<BillingHistory[]>([]);
   const [pricingData, setPricingData] = useState<PlanPricing | null>(null);
@@ -74,24 +75,48 @@ export default function SubscriptionsPage() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [chromeStorageData, setChromeStorageData] = useState<any>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [authStateChecked, setAuthStateChecked] = useState(false);
 
   useEffect(() => {
     console.log('Subscription page useEffect:', { 
       loading, 
       user: !!user, 
       userEmail: user?.email,
-      userUid: user?.uid 
+      userUid: user?.uid,
+      authStateChecked
     });
     
-    if (!loading && !user) {
-      console.log('No user found, redirecting to login');
-      // Add a small delay to ensure the auth state has fully loaded
-      setTimeout(() => {
-        router.push('/login');
-      }, 100);
-      return;
+    // Wait for Firebase Auth to fully initialize
+    if (loading) {
+      return; // Still loading auth state
     }
     
+    // Mark that we've checked the auth state at least once
+    if (!authStateChecked) {
+      setAuthStateChecked(true);
+      
+      // If no user after auth state is loaded, wait a bit more for potential restoration
+      if (!user) {
+        // Check if this navigation came from extension (which might need more time)
+        const fromExtension = searchParams.get('from') === 'extension';
+        const waitTime = fromExtension ? 3000 : 1500; // Wait longer if from extension
+        
+        console.log(`No user found after auth state loaded, waiting ${waitTime}ms for potential restoration...`, {
+          fromExtension,
+          searchParams: Object.fromEntries(searchParams.entries())
+        });
+        setTimeout(() => {
+          // Double-check after additional wait time
+          if (!user) {
+            console.log('No user found after restoration wait, redirecting to login');
+            router.push('/login?returnTo=' + encodeURIComponent('/account/subscriptions'));
+          }
+        }, waitTime);
+        return;
+      }
+    }
+    
+    // If we have a user, proceed with data loading
     if (!loading && user) {
       console.log('Loading subscription data for user:', user.email);
       // Wrap data loading in try-catch for additional safety
@@ -103,7 +128,13 @@ export default function SubscriptionsPage() {
         setPageLoading(false);
       }
     }
-  }, [user, loading, router]);
+    
+    // Handle case where user becomes null after being authenticated
+    if (!loading && !user && authStateChecked) {
+      console.log('User logged out, redirecting to login');
+      router.push('/login');
+    }
+  }, [user, loading, router, authStateChecked]);
 
   const retryDataLoading = () => {
     setError('');
@@ -319,12 +350,14 @@ export default function SubscriptionsPage() {
   };
 
   // Show loading state while authentication is being determined
-  if (loading) {
+  if (loading || (!user && !authStateChecked)) {
     return (
       <div className="min-h-screen bg-gradient-radial text-gray-200 flex items-center justify-center">
         <div className="flex items-center">
           <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
-          <span className="ml-3">Loading authentication...</span>
+          <span className="ml-3">
+            {loading ? 'Loading authentication...' : 'Restoring session...'}
+          </span>
         </div>
       </div>
     );
@@ -775,5 +808,24 @@ export default function SubscriptionsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-gradient-radial text-gray-200 flex items-center justify-center">
+      <div className="flex items-center">
+        <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+        <span className="ml-3">Loading subscription page...</span>
+      </div>
+    </div>
+  );
+}
+
+export default function SubscriptionsPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <SubscriptionsPageContent />
+    </Suspense>
   );
 }
