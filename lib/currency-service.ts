@@ -282,7 +282,7 @@ export interface PlanPricing {
   currency: CurrencyInfo;
   formattedMonthly: string;
   formattedAnnual: string;
-  pricingSource: 'manual' | 'auto-converted';
+  pricingSource: 'manual' | 'auto-converted' | 'fallback';
 }
 
 export async function getLocalizedPricing(): Promise<PlanPricing> {

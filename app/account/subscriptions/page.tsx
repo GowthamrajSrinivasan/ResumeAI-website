@@ -40,52 +40,107 @@ export default function SubscriptionsPage() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   useEffect(() => {
+    console.log('Subscription page useEffect:', { loading, user: !!user });
     if (!loading && user) {
+      console.log('Loading subscription data for user:', user.email);
       loadSubscriptionData();
+    } else if (!loading && !user) {
+      console.log('No user found, setting pageLoading to false');
+      setPageLoading(false);
     }
   }, [user, loading]);
 
   const loadSubscriptionData = async () => {
     try {
+      console.log('Starting loadSubscriptionData...');
       setPageLoading(true);
       
-      // Load pricing data
-      const pricing = await getLocalizedPricing();
-      setPricingData(pricing);
+      // Load pricing data with timeout
+      console.log('Loading pricing data...');
+      try {
+        const pricing = await Promise.race([
+          getLocalizedPricing(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+        ]);
+        setPricingData(pricing as PlanPricing);
+        console.log('Pricing data loaded:', pricing);
+      } catch (pricingError) {
+        console.error('Pricing load failed:', pricingError);
+        // Set fallback pricing
+        setPricingData({
+          monthly: 999,
+          annual: 9999,
+          currency: { code: 'INR', symbol: '₹', name: 'Indian Rupee' },
+          formattedMonthly: '₹999',
+          formattedAnnual: '₹9,999',
+          pricingSource: 'fallback'
+        });
+      }
 
-      // Load user subscription data
-      const response = await fetch(FIREBASE_FUNCTIONS.getDashboard, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user?.uid }),
-      });
+      // Load user subscription data with timeout
+      console.log('Loading user subscription data...');
+      const response = await Promise.race([
+        fetch(FIREBASE_FUNCTIONS.getDashboard, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user?.uid }),
+        }),
+        new Promise<Response>((_, reject) => setTimeout(() => reject(new Error('API Timeout')), 10000))
+      ]);
 
+      console.log('Dashboard response status:', response.status);
       if (response.ok) {
         const dashboardData = await response.json();
+        console.log('Dashboard data:', dashboardData);
         setSubscription({
           isPremium: dashboardData.user?.isPremium || false,
           planType: dashboardData.user?.planType || 'free',
           premiumStartDate: dashboardData.user?.premiumStartDate ? new Date(dashboardData.user.premiumStartDate) : undefined,
           status: dashboardData.user?.isPremium ? 'active' : 'expired'
         });
+      } else {
+        console.error('Dashboard API failed:', response.status, response.statusText);
+        // Set default subscription data if API fails
+        setSubscription({
+          isPremium: false,
+          planType: 'free',
+          status: 'expired'
+        });
       }
 
-      // Load billing history
-      const billingResponse = await fetch(FIREBASE_FUNCTIONS.getBillingHistory, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user?.uid, limit: 10 }),
-      });
+      // Load billing history with timeout
+      console.log('Loading billing history...');
+      const billingResponse = await Promise.race([
+        fetch(FIREBASE_FUNCTIONS.getBillingHistory, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user?.uid, limit: 10 }),
+        }),
+        new Promise<Response>((_, reject) => setTimeout(() => reject(new Error('API Timeout')), 10000))
+      ]);
 
+      console.log('Billing response status:', billingResponse.status);
       if (billingResponse.ok) {
         const billingData = await billingResponse.json();
+        console.log('Billing data:', billingData);
         setBillingHistory(billingData.billingHistory || []);
+      } else {
+        console.error('Billing API failed:', billingResponse.status, billingResponse.statusText);
+        setBillingHistory([]);
       }
 
     } catch (err) {
+      console.error('Error in loadSubscriptionData:', err);
       setError('Failed to load subscription data');
-      console.error(err);
+      // Set default data even on error
+      setSubscription({
+        isPremium: false,
+        planType: 'free',
+        status: 'expired'
+      });
+      setBillingHistory([]);
     } finally {
+      console.log('Setting pageLoading to false');
       setPageLoading(false);
     }
   };
@@ -117,10 +172,11 @@ export default function SubscriptionsPage() {
     }
   };
 
-  if (loading || pageLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-radial text-gray-200 flex items-center justify-center">
         <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+        <span className="ml-3">Loading authentication...</span>
       </div>
     );
   }
@@ -181,9 +237,15 @@ export default function SubscriptionsPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+        {pageLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+            <span className="ml-3 text-gray-300">Loading subscription data...</span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Content */}
+            <div className="lg:col-span-2 space-y-8">
             {/* Current Plan Information */}
             <div className="bg-[#181c28]/80 backdrop-blur-md border border-gray-700 rounded-2xl p-6">
               <h2 className="text-xl font-semibold text-white mb-4 flex items-center">
@@ -437,6 +499,7 @@ export default function SubscriptionsPage() {
             </div>
           </div>
         </div>
+        )}
       </div>
 
       {/* Cancel Confirmation Modal */}
