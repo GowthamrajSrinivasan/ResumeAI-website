@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { FIREBASE_FUNCTIONS } from '@/lib/firebase-functions';
 import { getLocalizedPricing, PlanPricing } from '@/lib/currency-service';
@@ -32,6 +33,7 @@ interface BillingHistory {
 
 export default function SubscriptionsPage() {
   const { user, loading } = useAuth();
+  const router = useRouter();
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [billingHistory, setBillingHistory] = useState<BillingHistory[]>([]);
   const [pricingData, setPricingData] = useState<PlanPricing | null>(null);
@@ -40,15 +42,27 @@ export default function SubscriptionsPage() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   useEffect(() => {
-    console.log('Subscription page useEffect:', { loading, user: !!user });
+    console.log('Subscription page useEffect:', { 
+      loading, 
+      user: !!user, 
+      userEmail: user?.email,
+      userUid: user?.uid 
+    });
+    
+    if (!loading && !user) {
+      console.log('No user found, redirecting to login');
+      // Add a small delay to ensure the auth state has fully loaded
+      setTimeout(() => {
+        router.push('/login');
+      }, 100);
+      return;
+    }
+    
     if (!loading && user) {
       console.log('Loading subscription data for user:', user.email);
       loadSubscriptionData();
-    } else if (!loading && !user) {
-      console.log('No user found, setting pageLoading to false');
-      setPageLoading(false);
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   const loadSubscriptionData = async () => {
     try {
@@ -172,11 +186,14 @@ export default function SubscriptionsPage() {
     }
   };
 
+  // Show loading state while authentication is being determined
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-radial text-gray-200 flex items-center justify-center">
-        <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
-        <span className="ml-3">Loading authentication...</span>
+        <div className="flex items-center">
+          <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+          <span className="ml-3">Loading authentication...</span>
+        </div>
       </div>
     );
   }
@@ -188,7 +205,7 @@ export default function SubscriptionsPage() {
           <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
           <p className="text-gray-400 mb-6">Please log in to manage your subscription.</p>
           <button
-            onClick={() => window.location.href = '/login'}
+            onClick={() => router.push('/login')}
             className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg"
           >
             Go to Login
@@ -221,7 +238,7 @@ export default function SubscriptionsPage() {
               <p className="text-gray-400 mt-2">Control your plan, billing, and account settings</p>
             </div>
             <button
-              onClick={() => window.location.href = '/dashboard'}
+              onClick={() => router.push('/dashboard')}
               className="text-blue-400 hover:text-blue-300"
             >
               ← Back to Dashboard
