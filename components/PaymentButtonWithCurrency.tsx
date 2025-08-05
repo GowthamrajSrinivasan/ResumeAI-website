@@ -203,9 +203,9 @@ export default function PaymentButton({
                 console.log('🚀 Upgrade result:', upgradeData);
                 
                 if (upgradeData.success) {
-                  console.log('🎉 User upgraded successfully! Redirecting to LinkedIn...');
+                  console.log('🎉 User upgraded successfully! Redirecting to success page...');
                   setTimeout(() => {
-                    window.location.href = 'https://www.linkedin.com/';
+                    window.location.href = `/payment/success?payment_id=${response.razorpay_payment_id}&order_id=${response.razorpay_order_id}&plan_type=${planType}`;
                   }, 1000);
                 } else {
                   console.error('❌ Upgrade failed:', upgradeData);
