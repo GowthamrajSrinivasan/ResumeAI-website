@@ -76,6 +76,7 @@ function SubscriptionsPageContent() {
   const [chromeStorageData, setChromeStorageData] = useState<any>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [authStateChecked, setAuthStateChecked] = useState(false);
+  const [redirectTimeoutId, setRedirectTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     console.log('Subscription page useEffect:', { 
@@ -89,6 +90,33 @@ function SubscriptionsPageContent() {
     // Wait for Firebase Auth to fully initialize
     if (loading) {
       return; // Still loading auth state
+    }
+    
+    // If we have a user, clear any existing timeout and proceed with data loading
+    if (!loading && user) {
+      console.log('User found, loading subscription data:', user.email);
+      
+      // Clear any existing redirect timeout since we found a user
+      if (redirectTimeoutId) {
+        console.log('Clearing existing redirect timeout since user is found');
+        clearTimeout(redirectTimeoutId);
+        setRedirectTimeoutId(null);
+      }
+      
+      // Mark that we've successfully checked auth state
+      if (!authStateChecked) {
+        setAuthStateChecked(true);
+      }
+      
+      // Wrap data loading in try-catch for additional safety
+      try {
+        loadSubscriptionData();
+      } catch (error) {
+        console.error('Error in loadSubscriptionData useEffect:', error);
+        setError('Failed to initialize data loading');
+        setPageLoading(false);
+      }
+      return;
     }
     
     // Mark that we've checked the auth state at least once
@@ -105,36 +133,37 @@ function SubscriptionsPageContent() {
           fromExtension,
           searchParams: Object.fromEntries(searchParams.entries())
         });
-        setTimeout(() => {
-          // Double-check after additional wait time
+        
+        const timeoutId = setTimeout(() => {
+          // Double-check after additional wait time - only redirect if still no user
           if (!user) {
             console.log('No user found after restoration wait, redirecting to login');
             router.push('/login?returnTo=' + encodeURIComponent('/account/subscriptions'));
           }
         }, waitTime);
+        
+        // Store timeout ID so we can clear it if user appears
+        setRedirectTimeoutId(timeoutId);
         return;
       }
     }
     
-    // If we have a user, proceed with data loading
-    if (!loading && user) {
-      console.log('Loading subscription data for user:', user.email);
-      // Wrap data loading in try-catch for additional safety
-      try {
-        loadSubscriptionData();
-      } catch (error) {
-        console.error('Error in loadSubscriptionData useEffect:', error);
-        setError('Failed to initialize data loading');
-        setPageLoading(false);
-      }
-    }
-    
-    // Handle case where user becomes null after being authenticated
+    // Handle case where user becomes null after being authenticated (logout)
     if (!loading && !user && authStateChecked) {
       console.log('User logged out, redirecting to login');
       router.push('/login');
     }
-  }, [user, loading, router, authStateChecked]);
+  }, [user, loading, router, authStateChecked, redirectTimeoutId]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (redirectTimeoutId) {
+        console.log('Cleaning up redirect timeout on unmount');
+        clearTimeout(redirectTimeoutId);
+      }
+    };
+  }, [redirectTimeoutId]);
 
   const retryDataLoading = () => {
     setError('');
