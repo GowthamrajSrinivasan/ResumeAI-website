@@ -22,6 +22,7 @@ export const FIREBASE_FUNCTIONS = {
   
   // User management functions
   checkUserByEmail: `${FUNCTIONS_BASE_URL}/checkUserByEmail`,
+  getUserProfile: `${FUNCTIONS_BASE_URL}/getUserProfile`,
   getUserUsageData: `${FUNCTIONS_BASE_URL}/getUserUsageData`,
   updateUsageCount: `${FUNCTIONS_BASE_URL}/updateUsageCount`,
   upgradeToPremium: `${FUNCTIONS_BASE_URL}/upgradeToPremium`,

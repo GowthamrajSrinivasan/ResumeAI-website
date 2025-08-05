@@ -49,6 +49,120 @@ export const checkUserByEmail = onRequest({cors: true}, async (req, res) => {
   }
 });
 
+// Get comprehensive user profile function
+export const getUserProfile = onRequest({cors: true}, async (req, res) => {
+  if (req.method !== "POST") {
+    res.status(405).json({error: "Method not allowed"});
+    return;
+  }
+
+  try {
+    const {userId} = req.body;
+
+    if (!userId) {
+      res.status(400).json({error: "User ID is required"});
+      return;
+    }
+
+    logger.info("Getting user profile", {userId});
+
+    // Get user document from Firestore
+    const userRef = db.collection("users").doc(userId);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      res.status(404).json({error: "User not found"});
+      return;
+    }
+
+    const userData = userDoc.data();
+    
+    // Get usage data
+    const usageRef = db.collection("usage").doc(userId);
+    const usageDoc = await usageRef.get();
+    const usageData = usageDoc.exists ? usageDoc.data() : null;
+
+    // Get recent activity
+    const activityRef = db.collection("user_activity")
+      .where("userId", "==", userId)
+      .orderBy("timestamp", "desc")
+      .limit(5);
+    const activitySnapshot = await activityRef.get();
+    const recentActivity = activitySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      timestamp: doc.data().timestamp.toDate()
+    }));
+
+    // Get premium upgrade history
+    const upgradesRef = db.collection("premiumUpgrades")
+      .where("userId", "==", userId)
+      .orderBy("upgradedAt", "desc")
+      .limit(3);
+    const upgradesSnapshot = await upgradesRef.get();
+    const upgradeHistory = upgradesSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      upgradedAt: (doc.data().upgradedAt || doc.data().createdAt).toDate()
+    }));
+
+    const userProfile = {
+      // Basic user info
+      uid: userData?.uid,
+      userEmail: userData?.userEmail,
+      userDetails: userData?.userDetails,
+      displayName: userData?.userDetails?.displayName || userData?.displayName,
+      photoURL: userData?.userDetails?.photoURL || userData?.photoURL,
+      emailVerified: userData?.userDetails?.emailVerified || userData?.emailVerified,
+      
+      // Account timestamps
+      createdAt: userData?.createdAt?.toDate(),
+      updatedAt: userData?.updatedAt?.toDate(),
+      lastLoginAt: userData?.lastLoginAt?.toDate(),
+      
+      // Premium status
+      isPremium: userData?.isPremium || false,
+      planType: userData?.planType || 'free',
+      premiumStartDate: userData?.premiumStartDate?.toDate(),
+      premiumEndDate: userData?.premiumEndDate?.toDate(),
+      subscriptionStatus: userData?.subscriptionStatus || 'active',
+      
+      // Payment info
+      lastPaymentId: userData?.lastPaymentId,
+      lastOrderId: userData?.lastOrderId,
+      
+      // Usage data
+      usage: {
+        totalUsage: usageData?.totalUsage || 0,
+        monthlyUsage: usageData?.monthlyUsage || 0,
+        lastUsed: usageData?.lastUsed?.toDate(),
+        quotaLimit: usageData?.quotaLimit || (userData?.isPremium ? -1 : 5),
+        quotaReset: usageData?.quotaReset?.toDate()
+      },
+      
+      // Activity and history
+      recentActivity: recentActivity,
+      upgradeHistory: upgradeHistory,
+      
+      // Provider data
+      providerData: userData?.providerData || [],
+      
+      // Extension data (if available)
+      extensionInstalled: userData?.extensionInstalled || false,
+      lastExtensionSync: userData?.lastExtensionSync?.toDate()
+    };
+
+    logger.info("User profile retrieved successfully", {userId, isPremium: userProfile.isPremium});
+    res.status(200).json({
+      success: true,
+      userProfile: userProfile
+    });
+  } catch (error) {
+    logger.error("Error getting user profile:", error);
+    res.status(500).json({error: "Failed to get user profile"});
+  }
+});
+
 // Get user usage data function
 export const getUserUsageData = onRequest({cors: true}, async (req, res) => {
   if (req.method !== "GET") {

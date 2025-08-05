@@ -6,16 +6,48 @@ import { useAuth } from '@/hooks/useAuth';
 import { FIREBASE_FUNCTIONS } from '@/lib/firebase-functions';
 import { getLocalizedPricing, PlanPricing } from '@/lib/currency-service';
 import PaymentButton from '@/components/PaymentButtonWithCurrency';
+import { extensionComm } from '@/lib/extensionCommunication';
 
-interface UserSubscription {
+interface UserProfile {
+  // Basic user info
+  uid?: string;
+  userEmail?: string;
+  displayName?: string;
+  photoURL?: string;
+  emailVerified?: boolean;
+  
+  // Account timestamps
+  createdAt?: Date;
+  updatedAt?: Date;
+  lastLoginAt?: Date;
+  
+  // Premium status
   isPremium: boolean;
   planType?: string;
   premiumStartDate?: Date;
   premiumEndDate?: Date;
-  nextBillingDate?: Date;
-  nextBillingAmount?: number;
-  currency?: string;
-  status?: 'active' | 'cancelled' | 'expired' | 'paused';
+  subscriptionStatus?: 'active' | 'cancelled' | 'expired' | 'paused';
+  
+  // Payment info
+  lastPaymentId?: string;
+  lastOrderId?: string;
+  
+  // Usage data
+  usage?: {
+    totalUsage: number;
+    monthlyUsage: number;
+    lastUsed?: Date;
+    quotaLimit: number;
+    quotaReset?: Date;
+  };
+  
+  // Activity and history
+  recentActivity?: any[];
+  upgradeHistory?: any[];
+  
+  // Extension data
+  extensionInstalled?: boolean;
+  lastExtensionSync?: Date;
 }
 
 interface BillingHistory {
@@ -34,12 +66,14 @@ interface BillingHistory {
 export default function SubscriptionsPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [subscription, setSubscription] = useState<UserSubscription | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [billingHistory, setBillingHistory] = useState<BillingHistory[]>([]);
   const [pricingData, setPricingData] = useState<PlanPricing | null>(null);
   const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [chromeStorageData, setChromeStorageData] = useState<any>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     console.log('Subscription page useEffect:', { 
@@ -60,25 +94,40 @@ export default function SubscriptionsPage() {
     
     if (!loading && user) {
       console.log('Loading subscription data for user:', user.email);
-      loadSubscriptionData();
+      // Wrap data loading in try-catch for additional safety
+      try {
+        loadSubscriptionData();
+      } catch (error) {
+        console.error('Error in loadSubscriptionData useEffect:', error);
+        setError('Failed to initialize data loading');
+        setPageLoading(false);
+      }
     }
   }, [user, loading, router]);
 
+  const retryDataLoading = () => {
+    setError('');
+    setRetryCount(prev => prev + 1);
+    loadSubscriptionData();
+  };
+
   const loadSubscriptionData = async () => {
     try {
-      console.log('Starting loadSubscriptionData...');
+      console.log('Starting comprehensive data loading...');
       setPageLoading(true);
       
-      // Load pricing data with timeout
+      // Start all data loading operations in parallel for better performance
+      const dataLoadingPromises = [];
+
+      // 1. Load pricing data with timeout
       console.log('Loading pricing data...');
-      try {
-        const pricing = await Promise.race([
-          getLocalizedPricing(),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
-        ]);
+      const pricingPromise = Promise.race([
+        getLocalizedPricing(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+      ]).then((pricing) => {
         setPricingData(pricing as PlanPricing);
         console.log('Pricing data loaded:', pricing);
-      } catch (pricingError) {
+      }).catch((pricingError) => {
         console.error('Pricing load failed:', pricingError);
         // Set fallback pricing
         setPricingData({
@@ -89,68 +138,151 @@ export default function SubscriptionsPage() {
           formattedAnnual: '₹9,999',
           pricingSource: 'fallback'
         });
-      }
+      });
+      dataLoadingPromises.push(pricingPromise);
 
-      // Load user subscription data with timeout
-      console.log('Loading user subscription data...');
-      const response = await Promise.race([
-        fetch(FIREBASE_FUNCTIONS.getDashboard, {
+      // 2. Load comprehensive user profile from Firestore
+      console.log('Loading comprehensive user profile...');
+      const profilePromise = Promise.race([
+        fetch(FIREBASE_FUNCTIONS.getUserProfile, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: user?.uid }),
         }),
         new Promise<Response>((_, reject) => setTimeout(() => reject(new Error('API Timeout')), 10000))
-      ]);
-
-      console.log('Dashboard response status:', response.status);
-      if (response.ok) {
-        const dashboardData = await response.json();
-        console.log('Dashboard data:', dashboardData);
-        setSubscription({
-          isPremium: dashboardData.user?.isPremium || false,
-          planType: dashboardData.user?.planType || 'free',
-          premiumStartDate: dashboardData.user?.premiumStartDate ? new Date(dashboardData.user.premiumStartDate) : undefined,
-          status: dashboardData.user?.isPremium ? 'active' : 'expired'
-        });
-      } else {
-        console.error('Dashboard API failed:', response.status, response.statusText);
-        // Set default subscription data if API fails
-        setSubscription({
+      ]).then(async (profileResponse) => {
+        console.log('User profile response status:', profileResponse.status);
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          console.log('User profile data:', profileData);
+          setUserProfile(profileData.userProfile);
+        } else {
+          console.error('User profile API failed:', profileResponse.status, profileResponse.statusText);
+          // Set minimal user profile
+          setUserProfile({
+            isPremium: false,
+            planType: 'free',
+            subscriptionStatus: 'expired',
+            userEmail: user?.email || undefined,
+            displayName: user?.displayName || user?.email?.split('@')[0] || undefined,
+            uid: user?.uid || undefined
+          });
+        }
+      }).catch((profileError) => {
+        console.error('Error loading user profile:', profileError);
+        setUserProfile({
           isPremium: false,
           planType: 'free',
-          status: 'expired'
+          subscriptionStatus: 'expired',
+          userEmail: user?.email || undefined,
+          displayName: user?.displayName || user?.email?.split('@')[0] || undefined,
+          uid: user?.uid || undefined
         });
-      }
+      });
+      dataLoadingPromises.push(profilePromise);
 
-      // Load billing history with timeout
+      // 3. Load billing history
       console.log('Loading billing history...');
-      const billingResponse = await Promise.race([
+      const billingPromise = Promise.race([
         fetch(FIREBASE_FUNCTIONS.getBillingHistory, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: user?.uid, limit: 10 }),
         }),
         new Promise<Response>((_, reject) => setTimeout(() => reject(new Error('API Timeout')), 10000))
-      ]);
-
-      console.log('Billing response status:', billingResponse.status);
-      if (billingResponse.ok) {
-        const billingData = await billingResponse.json();
-        console.log('Billing data:', billingData);
-        setBillingHistory(billingData.billingHistory || []);
-      } else {
-        console.error('Billing API failed:', billingResponse.status, billingResponse.statusText);
+      ]).then(async (billingResponse) => {
+        console.log('Billing response status:', billingResponse.status);
+        if (billingResponse.ok) {
+          const billingData = await billingResponse.json();
+          console.log('Billing data:', billingData);
+          setBillingHistory(billingData.billingHistory || []);
+        } else {
+          console.error('Billing API failed:', billingResponse.status, billingResponse.statusText);
+          setBillingHistory([]);
+        }
+      }).catch((billingError) => {
+        console.error('Error loading billing history:', billingError);
         setBillingHistory([]);
+      });
+      dataLoadingPromises.push(billingPromise);
+
+      // Wait for all critical data to load (don't wait for extension)
+      await Promise.allSettled(dataLoadingPromises);
+      console.log('Core data loading completed');
+
+      // 4. Try to get Chrome extension data (non-blocking)
+      console.log('Attempting to get Chrome extension data...');
+      try {
+        if (typeof window !== 'undefined') {
+          // Initialize extension communication
+          extensionComm.initialize();
+          
+          // Set up handlers for extension responses
+          extensionComm.onExtensionAuthenticated = (uid: string) => {
+            console.log('Extension is authenticated with uid:', uid);
+            setChromeStorageData({ uid, authenticated: true });
+          };
+          
+          extensionComm.onExtensionUnauthenticated = () => {
+            console.log('Extension is not authenticated');
+            setChromeStorageData({ authenticated: false });
+          };
+          
+          extensionComm.onExtensionAvailable = (data: any) => {
+            console.log('Extension is available:', data);
+            setChromeStorageData({ ...data, available: true });
+          };
+          
+          extensionComm.onExtensionUnavailable = () => {
+            console.log('Extension is not available');
+            setChromeStorageData({ available: false });
+          };
+          
+          // Request extension status and UID
+          extensionComm.checkExtensionStatus();
+          extensionComm.getUid();
+          
+          // Wait for extension response (with timeout)
+          const timeoutHandle = setTimeout(() => {
+            console.log('Extension data timeout reached');
+            if (!chromeStorageData) {
+              setChromeStorageData({ available: false, timeout: true });
+            }
+          }, 3000);
+          
+          // Clear timeout if we get a response
+          const originalOnExtensionAvailable = extensionComm.onExtensionAvailable;
+          extensionComm.onExtensionAvailable = (data: any) => {
+            clearTimeout(timeoutHandle);
+            originalOnExtensionAvailable.call(extensionComm, data);
+            console.log('Extension is available:', data);
+            setChromeStorageData({ ...data, available: true });
+          };
+          
+          const originalOnExtensionUnavailable = extensionComm.onExtensionUnavailable;
+          extensionComm.onExtensionUnavailable = () => {
+            clearTimeout(timeoutHandle);
+            originalOnExtensionUnavailable.call(extensionComm);
+            console.log('Extension is not available');
+            setChromeStorageData({ available: false });
+          };
+        }
+      } catch (extensionError) {
+        console.error('Error communicating with extension:', extensionError);
+        setChromeStorageData({ error: true, message: extensionError });
       }
 
     } catch (err) {
       console.error('Error in loadSubscriptionData:', err);
-      setError('Failed to load subscription data');
-      // Set default data even on error
-      setSubscription({
+      setError('Failed to load some subscription data');
+      // Set minimal fallback data
+      setUserProfile({
         isPremium: false,
         planType: 'free',
-        status: 'expired'
+        subscriptionStatus: 'expired',
+        userEmail: user?.email || undefined,
+        displayName: user?.displayName || user?.email?.split('@')[0] || undefined,
+        uid: user?.uid || undefined
       });
       setBillingHistory([]);
     } finally {
@@ -215,8 +347,8 @@ export default function SubscriptionsPage() {
     );
   }
 
-  const currentPlan = subscription?.isPremium ? 'Premium' : 'Free';
-  const planBenefits = subscription?.isPremium ? [
+  const currentPlan = userProfile?.isPremium ? 'Premium' : 'Free';
+  const planBenefits = userProfile?.isPremium ? [
     'Unlimited AI-powered LinkedIn replies',
     'Advanced analytics and insights',
     'Priority customer support',
@@ -250,7 +382,15 @@ export default function SubscriptionsPage() {
       <div className="max-w-6xl mx-auto px-4 py-8">
         {error && (
           <div className="bg-red-500/20 border border-red-500 rounded-lg p-4 mb-6">
-            <p className="text-red-400">{error}</p>
+            <div className="flex items-center justify-between">
+              <p className="text-red-400">{error}</p>
+              <button
+                onClick={retryDataLoading}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm transition-colors"
+              >
+                Retry {retryCount > 0 && `(${retryCount})`}
+              </button>
+            </div>
           </div>
         )}
 
@@ -277,14 +417,14 @@ export default function SubscriptionsPage() {
                   <div>
                     <h3 className="text-lg font-medium text-white">{currentPlan} Plan</h3>
                     <p className="text-gray-400 text-sm">
-                      {subscription?.isPremium 
-                        ? `Active since ${subscription.premiumStartDate?.toLocaleDateString()}`
+                      {userProfile?.isPremium 
+                        ? `Active since ${userProfile.premiumStartDate?.toLocaleDateString()}`
                         : 'Free tier with basic features'
                       }
                     </p>
                   </div>
                   <div className="text-right">
-                    {subscription?.isPremium && (
+                    {userProfile?.isPremium && (
                       <>
                         <div className="text-2xl font-bold text-green-400">
                           {pricingData?.formattedMonthly || '₹999'}/month
@@ -323,7 +463,7 @@ export default function SubscriptionsPage() {
               </h2>
 
               <div className="space-y-4">
-                {!subscription?.isPremium ? (
+                {!userProfile?.isPremium ? (
                   <div className="space-y-4">
                     <p className="text-gray-300">Upgrade to Premium to unlock all features:</p>
                     <div className="flex flex-wrap gap-3">
@@ -433,17 +573,17 @@ export default function SubscriptionsPage() {
                   <div>
                     <div className="text-white font-medium">Current Status</div>
                     <div className="text-gray-400 text-sm">
-                      {subscription?.isPremium ? 'Active Premium Subscription' : 'Free Plan'}
+                      {userProfile?.isPremium ? 'Active Premium Subscription' : 'Free Plan'}
                     </div>
                   </div>
                   <div className={`px-3 py-1 rounded-full text-sm ${
-                    subscription?.isPremium ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'
+                    userProfile?.isPremium ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'
                   }`}>
-                    {subscription?.isPremium ? 'Active' : 'Free'}
+                    {userProfile?.isPremium ? 'Active' : 'Free'}
                   </div>
                 </div>
 
-                {subscription?.isPremium && (
+                {userProfile?.isPremium && (
                   <div className="pt-4 border-t border-gray-700">
                     <button
                       onClick={() => setShowCancelConfirm(true)}
@@ -462,6 +602,71 @@ export default function SubscriptionsPage() {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* Account Details */}
+            {userProfile && (
+              <div className="bg-[#181c28]/80 backdrop-blur-md border border-gray-700 rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Account Details</h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Email</span>
+                    <span className="text-white text-right break-all max-w-48">{userProfile.userEmail || user?.email}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Display Name</span>
+                    <span className="text-white">{userProfile.displayName || 'Not set'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Email Verified</span>
+                    <span className={userProfile.emailVerified ? 'text-green-400' : 'text-yellow-400'}>
+                      {userProfile.emailVerified ? 'Yes' : 'No'}
+                    </span>
+                  </div>
+                  {userProfile.usage && (
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Total Usage</span>
+                        <span className="text-white">{userProfile.usage.totalUsage}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Monthly Quota</span>
+                        <span className="text-white">
+                          {userProfile.usage.quotaLimit === -1 ? 'Unlimited' : userProfile.usage.quotaLimit}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                  {chromeStorageData && (
+                    <>
+                      <div className="pt-2 border-t border-gray-700">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Extension Status</span>
+                          <span className={`text-sm ${
+                            chromeStorageData.available && chromeStorageData.authenticated 
+                              ? 'text-green-400' 
+                              : chromeStorageData.available 
+                                ? 'text-yellow-400' 
+                                : 'text-red-400'
+                          }`}>
+                            {chromeStorageData.available && chromeStorageData.authenticated 
+                              ? 'Connected & Authenticated' 
+                              : chromeStorageData.available 
+                                ? 'Available (Not Logged In)' 
+                                : 'Not Available'}
+                          </span>
+                        </div>
+                        {chromeStorageData.uid && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">Extension UID</span>
+                            <span className="text-white text-xs">{chromeStorageData.uid.substring(0, 8)}...</span>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Account & Legal */}
             <div className="bg-[#181c28]/80 backdrop-blur-md border border-gray-700 rounded-2xl p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Account & Legal</h3>
@@ -508,10 +713,34 @@ export default function SubscriptionsPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Status</span>
-                  <span className={subscription?.isPremium ? 'text-green-400' : 'text-gray-400'}>
-                    {subscription?.isPremium ? 'Premium' : 'Free'}
+                  <span className={userProfile?.isPremium ? 'text-green-400' : 'text-gray-400'}>
+                    {userProfile?.isPremium ? 'Premium' : 'Free'}
                   </span>
                 </div>
+                {userProfile?.usage && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Usage This Month</span>
+                    <span className="text-white">{userProfile.usage.monthlyUsage || 0}</span>
+                  </div>
+                )}
+                {chromeStorageData && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Extension</span>
+                    <span className={`text-sm ${
+                      chromeStorageData.available && chromeStorageData.authenticated 
+                        ? 'text-green-400' 
+                        : chromeStorageData.available 
+                          ? 'text-yellow-400' 
+                          : 'text-red-400'
+                    }`}>
+                      {chromeStorageData.available && chromeStorageData.authenticated 
+                        ? 'Connected' 
+                        : chromeStorageData.available 
+                          ? 'Not Logged In' 
+                          : 'Not Available'}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

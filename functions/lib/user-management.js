@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateSubscriptionPlan = exports.getBillingHistory = exports.cancelSubscription = exports.upgradeToPremium = exports.updateUsageCount = exports.getUserUsageData = exports.checkUserByEmail = void 0;
+exports.updateSubscriptionPlan = exports.getBillingHistory = exports.cancelSubscription = exports.upgradeToPremium = exports.updateUsageCount = exports.getUserUsageData = exports.getUserProfile = exports.checkUserByEmail = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 const firestore_1 = require("firebase-admin/firestore");
@@ -45,6 +45,95 @@ exports.checkUserByEmail = (0, https_1.onRequest)({ cors: true }, async (req, re
     catch (error) {
         logger.error("Error checking user:", error);
         res.status(500).json({ error: "Failed to check user" });
+    }
+});
+// Get comprehensive user profile function
+exports.getUserProfile = (0, https_1.onRequest)({ cors: true }, async (req, res) => {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+    if (req.method !== "POST") {
+        res.status(405).json({ error: "Method not allowed" });
+        return;
+    }
+    try {
+        const { userId } = req.body;
+        if (!userId) {
+            res.status(400).json({ error: "User ID is required" });
+            return;
+        }
+        logger.info("Getting user profile", { userId });
+        // Get user document from Firestore
+        const userRef = db.collection("users").doc(userId);
+        const userDoc = await userRef.get();
+        if (!userDoc.exists) {
+            res.status(404).json({ error: "User not found" });
+            return;
+        }
+        const userData = userDoc.data();
+        // Get usage data
+        const usageRef = db.collection("usage").doc(userId);
+        const usageDoc = await usageRef.get();
+        const usageData = usageDoc.exists ? usageDoc.data() : null;
+        // Get recent activity
+        const activityRef = db.collection("user_activity")
+            .where("userId", "==", userId)
+            .orderBy("timestamp", "desc")
+            .limit(5);
+        const activitySnapshot = await activityRef.get();
+        const recentActivity = activitySnapshot.docs.map(doc => (Object.assign(Object.assign({ id: doc.id }, doc.data()), { timestamp: doc.data().timestamp.toDate() })));
+        // Get premium upgrade history
+        const upgradesRef = db.collection("premiumUpgrades")
+            .where("userId", "==", userId)
+            .orderBy("upgradedAt", "desc")
+            .limit(3);
+        const upgradesSnapshot = await upgradesRef.get();
+        const upgradeHistory = upgradesSnapshot.docs.map(doc => (Object.assign(Object.assign({ id: doc.id }, doc.data()), { upgradedAt: (doc.data().upgradedAt || doc.data().createdAt).toDate() })));
+        const userProfile = {
+            // Basic user info
+            uid: userData === null || userData === void 0 ? void 0 : userData.uid,
+            userEmail: userData === null || userData === void 0 ? void 0 : userData.userEmail,
+            userDetails: userData === null || userData === void 0 ? void 0 : userData.userDetails,
+            displayName: ((_a = userData === null || userData === void 0 ? void 0 : userData.userDetails) === null || _a === void 0 ? void 0 : _a.displayName) || (userData === null || userData === void 0 ? void 0 : userData.displayName),
+            photoURL: ((_b = userData === null || userData === void 0 ? void 0 : userData.userDetails) === null || _b === void 0 ? void 0 : _b.photoURL) || (userData === null || userData === void 0 ? void 0 : userData.photoURL),
+            emailVerified: ((_c = userData === null || userData === void 0 ? void 0 : userData.userDetails) === null || _c === void 0 ? void 0 : _c.emailVerified) || (userData === null || userData === void 0 ? void 0 : userData.emailVerified),
+            // Account timestamps
+            createdAt: (_d = userData === null || userData === void 0 ? void 0 : userData.createdAt) === null || _d === void 0 ? void 0 : _d.toDate(),
+            updatedAt: (_e = userData === null || userData === void 0 ? void 0 : userData.updatedAt) === null || _e === void 0 ? void 0 : _e.toDate(),
+            lastLoginAt: (_f = userData === null || userData === void 0 ? void 0 : userData.lastLoginAt) === null || _f === void 0 ? void 0 : _f.toDate(),
+            // Premium status
+            isPremium: (userData === null || userData === void 0 ? void 0 : userData.isPremium) || false,
+            planType: (userData === null || userData === void 0 ? void 0 : userData.planType) || 'free',
+            premiumStartDate: (_g = userData === null || userData === void 0 ? void 0 : userData.premiumStartDate) === null || _g === void 0 ? void 0 : _g.toDate(),
+            premiumEndDate: (_h = userData === null || userData === void 0 ? void 0 : userData.premiumEndDate) === null || _h === void 0 ? void 0 : _h.toDate(),
+            subscriptionStatus: (userData === null || userData === void 0 ? void 0 : userData.subscriptionStatus) || 'active',
+            // Payment info
+            lastPaymentId: userData === null || userData === void 0 ? void 0 : userData.lastPaymentId,
+            lastOrderId: userData === null || userData === void 0 ? void 0 : userData.lastOrderId,
+            // Usage data
+            usage: {
+                totalUsage: (usageData === null || usageData === void 0 ? void 0 : usageData.totalUsage) || 0,
+                monthlyUsage: (usageData === null || usageData === void 0 ? void 0 : usageData.monthlyUsage) || 0,
+                lastUsed: (_j = usageData === null || usageData === void 0 ? void 0 : usageData.lastUsed) === null || _j === void 0 ? void 0 : _j.toDate(),
+                quotaLimit: (usageData === null || usageData === void 0 ? void 0 : usageData.quotaLimit) || ((userData === null || userData === void 0 ? void 0 : userData.isPremium) ? -1 : 5),
+                quotaReset: (_k = usageData === null || usageData === void 0 ? void 0 : usageData.quotaReset) === null || _k === void 0 ? void 0 : _k.toDate()
+            },
+            // Activity and history
+            recentActivity: recentActivity,
+            upgradeHistory: upgradeHistory,
+            // Provider data
+            providerData: (userData === null || userData === void 0 ? void 0 : userData.providerData) || [],
+            // Extension data (if available)
+            extensionInstalled: (userData === null || userData === void 0 ? void 0 : userData.extensionInstalled) || false,
+            lastExtensionSync: (_l = userData === null || userData === void 0 ? void 0 : userData.lastExtensionSync) === null || _l === void 0 ? void 0 : _l.toDate()
+        };
+        logger.info("User profile retrieved successfully", { userId, isPremium: userProfile.isPremium });
+        res.status(200).json({
+            success: true,
+            userProfile: userProfile
+        });
+    }
+    catch (error) {
+        logger.error("Error getting user profile:", error);
+        res.status(500).json({ error: "Failed to get user profile" });
     }
 });
 // Get user usage data function
