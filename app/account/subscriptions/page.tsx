@@ -199,10 +199,12 @@ function SubscriptionsPageContent() {
         });
         
         const timeoutId = setTimeout(() => {
-          // Double-check after additional wait time - only redirect if still no user
-          if (!user) {
+          // Double-check after additional wait time - only redirect if still no user AND no Chrome data
+          if (!user && !chromeUserData) {
             console.log('No user found after restoration wait, redirecting to login');
             router.push('/login?returnTo=' + encodeURIComponent('/account/subscriptions'));
+          } else {
+            console.log('Chrome user data available, skipping redirect:', chromeUserData);
           }
         }, waitTime);
         
@@ -213,7 +215,7 @@ function SubscriptionsPageContent() {
     }
     
     // Handle case where user becomes null after being authenticated (logout)
-    if (!loading && !user && authStateChecked) {
+    if (!loading && !user && !chromeUserData && authStateChecked) {
       console.log('User logged out, redirecting to login');
       router.push('/login');
     }
