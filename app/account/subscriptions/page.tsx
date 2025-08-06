@@ -85,10 +85,16 @@ function SubscriptionsPageContent() {
     const handleChromeExtensionData = async () => {
       try {
         // Check if this is a visit from Chrome extension
+        console.log('🔗 Checking if visit is from Chrome extension...');
+        console.log('URL search params:', window.location.search);
+        console.log('isFromExtension():', chromeStorageReader.isFromExtension());
+        
         if (chromeStorageReader.isFromExtension()) {
           console.log('🔗 Detected visit from Chrome extension, attempting to read user data...');
           
           const chromeUserData = await chromeStorageReader.handleExtensionVisit();
+          
+          console.log('Chrome storage data result:', chromeUserData);
           
           if (chromeUserData) {
             console.log('✅ Chrome extension user data loaded:', chromeUserData);
@@ -123,8 +129,11 @@ function SubscriptionsPageContent() {
             });
           } else {
             console.warn('⚠️ No user data found in Chrome extension storage');
+            console.log('Chrome storage available?', chromeStorageReader.isChromeStorageAvailable());
             setChromeStorageData({ available: false, authenticated: false });
           }
+        } else {
+          console.log('🔗 Not from extension, skipping Chrome storage read');
         }
       } catch (error) {
         console.error('❌ Error handling Chrome extension data:', error);
@@ -191,7 +200,7 @@ function SubscriptionsPageContent() {
       if (!user) {
         // Check if this navigation came from extension (which might need more time)
         const fromExtension = searchParams.get('from') === 'extension';
-        const waitTime = fromExtension ? 3000 : 1500; // Wait longer if from extension
+        const waitTime = fromExtension ? 5000 : 1500; // Wait longer if from extension - increased to 5s
         
         console.log(`No user found after auth state loaded, waiting ${waitTime}ms for potential restoration...`, {
           fromExtension,
@@ -200,11 +209,17 @@ function SubscriptionsPageContent() {
         
         const timeoutId = setTimeout(() => {
           // Double-check after additional wait time - only redirect if still no user AND no Chrome data
+          console.log('Timeout reached. Checking user state:', { 
+            user: !!user, 
+            chromeUserData: !!chromeUserData,
+            authStateChecked
+          });
+          
           if (!user && !chromeUserData) {
             console.log('No user found after restoration wait, redirecting to login');
             router.push('/login?returnTo=' + encodeURIComponent('/account/subscriptions'));
           } else {
-            console.log('Chrome user data available, skipping redirect:', chromeUserData);
+            console.log('User or Chrome data available, skipping redirect. User:', !!user, 'Chrome data:', !!chromeUserData);
           }
         }, waitTime);
         
@@ -217,7 +232,9 @@ function SubscriptionsPageContent() {
     // Handle case where user becomes null after being authenticated (logout)
     if (!loading && !user && !chromeUserData && authStateChecked) {
       console.log('User logged out, redirecting to login');
-      router.push('/login');
+      console.log('chromeUserData:', chromeUserData);
+
+      //router.push('/login');
     }
   }, [user, loading, router, authStateChecked, redirectTimeoutId, chromeUserData]);
 
