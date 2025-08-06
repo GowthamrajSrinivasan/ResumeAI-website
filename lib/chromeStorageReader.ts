@@ -137,29 +137,49 @@ export class ChromeStorageReader {
         console.log('📨 ChromeStorageReader received message:', event.data);
         console.log('📨 Message type:', event.data.type);
         
-        // Handle UID_RESPONSE from existing extension (matches your extension's format)
+        // Handle UID_RESPONSE from existing extension (matches actual Chrome storage format)
         if (event.data.type === 'UID_RESPONSE') {
           console.log('🎉 ChromeStorageReader: Received UID_RESPONSE from extension:', event.data);
           window.removeEventListener('message', messageHandler);
           clearTimeout(timeoutId);
           
-          // Check if we got complete user data (matches your extension's format)
-          if (event.data.uid && event.data.email) {
-            console.log('✅ ChromeStorageReader: Complete user data received');
+          // Parse the actual Chrome storage structure we observed
+          let userData = null;
+          
+          if (event.data.uid) {
+            console.log('✅ ChromeStorageReader: UID found in response:', event.data.uid);
             
-            this.userData = {
+            // Look for user data in the format we actually received
+            const userKey = `user_${event.data.uid}`;
+            const userDataFromStorage = event.data[userKey] || event.data;
+            
+            console.log('📋 ChromeStorageReader: Parsing user data:', {
               uid: event.data.uid,
-              email: event.data.email,
-              displayName: event.data.displayName || 'User',
-              photoURL: event.data.photoURL,
-              usageCount: event.data.usageCount || 0,
-              isPremium: event.data.isPremium || false,
-              planType: event.data.planType,
-              subscriptionStatus: event.data.subscriptionStatus,
-              createdAt: event.data.createdAt,
-              lastUsageUpdate: event.data.lastUsageUpdate
+              userKey: userKey,
+              userDataFromStorage: userDataFromStorage,
+              directProps: {
+                isPremium: event.data.isPremium || userDataFromStorage?.isPremium,
+                usageCount: event.data.usageCount || userDataFromStorage?.usageCount,
+                email: event.data.email || userDataFromStorage?.email,
+                displayName: event.data.displayName || userDataFromStorage?.displayName
+              }
+            });
+            
+            userData = {
+              uid: event.data.uid,
+              email: event.data.email || userDataFromStorage?.email || 'unknown@extension.local',
+              displayName: event.data.displayName || userDataFromStorage?.displayName || 'Extension User',
+              photoURL: event.data.photoURL || userDataFromStorage?.photoURL,
+              usageCount: event.data.usageCount || userDataFromStorage?.usageCount || 0,
+              isPremium: event.data.isPremium || userDataFromStorage?.isPremium || false,
+              planType: event.data.planType || userDataFromStorage?.planType || (event.data.isPremium || userDataFromStorage?.isPremium ? 'premium' : 'free'),
+              subscriptionStatus: event.data.subscriptionStatus || userDataFromStorage?.subscriptionStatus || 'active',
+              createdAt: event.data.createdAt || userDataFromStorage?.createdAt,
+              lastUsageUpdate: event.data.lastUsageUpdate || userDataFromStorage?.lastUsageUpdate
             };
             
+            console.log('✅ ChromeStorageReader: Successfully parsed user data:', userData);
+            this.userData = userData;
             this.isInitialized = true;
             resolve(this.userData);
             
@@ -169,32 +189,10 @@ export class ChromeStorageReader {
             resolve(null);
             
           } else {
-            console.warn('⚠️ ChromeStorageReader: Incomplete user data received');
-            console.log('📋 ChromeStorageReader: Available data:', event.data);
-            
-            // Still try with partial data if we have UID (matches your extension logic)
-            if (event.data.uid) {
-              this.userData = {
-                uid: event.data.uid,
-                email: event.data.email || 'Unknown',
-                displayName: event.data.displayName || 'User',
-                photoURL: event.data.photoURL,
-                usageCount: event.data.usageCount || 0,
-                isPremium: event.data.isPremium || false,
-                planType: event.data.planType || 'free',
-                subscriptionStatus: event.data.subscriptionStatus || 'active',
-                createdAt: event.data.createdAt,
-                lastUsageUpdate: event.data.lastUsageUpdate
-              };
-              
-              console.log('🔄 ChromeStorageReader: Using partial data for authentication');
-              this.isInitialized = true;
-              resolve(this.userData);
-            } else {
-              console.warn('⚠️ ChromeStorageReader: No user ID found, cannot authenticate');
-              this.isInitialized = true;
-              resolve(null);
-            }
+            console.warn('⚠️ ChromeStorageReader: No UID found in response');
+            console.log('📋 ChromeStorageReader: Full response data:', event.data);
+            this.isInitialized = true;
+            resolve(null);
           }
         }
         // Handle EXTENSION_STATUS_RESPONSE that might contain user data

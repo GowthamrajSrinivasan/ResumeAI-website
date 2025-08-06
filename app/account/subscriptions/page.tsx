@@ -155,50 +155,47 @@ function SubscriptionsPageContent() {
             if (event.data?.type === "UID_RESPONSE") {
               console.log('🎉 SUBSCRIPTION: Processing UID_RESPONSE:', event.data);
               
-              // Check if we got complete user data
-              if (event.data.uid && event.data.email) {
-                console.log('✅ SUBSCRIPTION: Complete user data received - proceeding with authentication');
+              // Parse the actual Chrome storage structure (based on the actual data format)
+              if (event.data.uid) {
+                console.log('✅ SUBSCRIPTION: UID found, parsing user data...');
+                
+                // Look for user data in the format we actually received: user_${uid}
+                const userKey = `user_${event.data.uid}`;
+                const userDataFromStorage = event.data[userKey] || event.data;
+                
+                console.log('📋 SUBSCRIPTION: Parsing data structure:', {
+                  uid: event.data.uid,
+                  userKey: userKey,
+                  userDataFromStorage: userDataFromStorage,
+                  directProps: {
+                    isPremium: event.data.isPremium || userDataFromStorage?.isPremium,
+                    usageCount: event.data.usageCount || userDataFromStorage?.usageCount,
+                    authExpiry: userDataFromStorage?.authExpiry
+                  }
+                });
                 
                 const userData = {
                   uid: event.data.uid,
-                  email: event.data.email,
-                  displayName: event.data.displayName || 'User',
-                  usageCount: event.data.usageCount || 0,
-                  isPremium: event.data.isPremium || false,
-                  createdAt: event.data.createdAt,
-                  lastUsageUpdate: event.data.lastUsageUpdate,
-                  planType: event.data.planType || (event.data.isPremium ? 'premium' : 'free'),
-                  subscriptionStatus: event.data.subscriptionStatus || 'active'
+                  email: event.data.email || userDataFromStorage?.email || 'unknown@extension.local',
+                  displayName: event.data.displayName || userDataFromStorage?.displayName || 'Extension User',
+                  usageCount: event.data.usageCount || userDataFromStorage?.usageCount || 0,
+                  isPremium: event.data.isPremium || userDataFromStorage?.isPremium || false,
+                  createdAt: event.data.createdAt || userDataFromStorage?.createdAt,
+                  lastUsageUpdate: event.data.lastUsageUpdate || userDataFromStorage?.lastUsageUpdate,
+                  planType: event.data.planType || userDataFromStorage?.planType || (event.data.isPremium || userDataFromStorage?.isPremium ? 'premium' : 'free'),
+                  subscriptionStatus: event.data.subscriptionStatus || userDataFromStorage?.subscriptionStatus || 'active'
                 };
                 
+                console.log('✅ SUBSCRIPTION: Successfully parsed user data:', userData);
                 setChromeUserData(userData);
-                console.log('✅ Chrome extension user data loaded:', userData);
                 
               } else if (event.data.error) {
                 console.error('❌ SUBSCRIPTION: Error from extension:', event.data.error);
                 setChromeStorageData({ available: false, error: true, message: event.data.error });
               } else {
-                console.warn('⚠️ SUBSCRIPTION: Incomplete user data received');
-                console.log('📋 SUBSCRIPTION: Available data:', event.data);
-                
-                // Still try to authenticate with partial data if we have UID
-                if (event.data.uid) {
-                  const partialUserData = {
-                    uid: event.data.uid,
-                    email: event.data.email || 'Unknown',
-                    displayName: event.data.displayName || 'User',
-                    usageCount: event.data.usageCount || 0,
-                    isPremium: event.data.isPremium || false,
-                    planType: event.data.planType || (event.data.isPremium ? 'premium' : 'free'),
-                    subscriptionStatus: event.data.subscriptionStatus || 'active'
-                  };
-                  
-                  console.log('🔄 SUBSCRIPTION: Attempting authentication with partial data');
-                  setChromeUserData(partialUserData);
-                } else {
-                  console.error('Unable to authenticate: No user ID found');
-                  setChromeStorageData({ available: false, error: true, message: 'No user ID found' });
-                }
+                console.warn('⚠️ SUBSCRIPTION: No UID found in response');
+                console.log('📋 SUBSCRIPTION: Full response data:', event.data);
+                setChromeStorageData({ available: false, error: true, message: 'No user ID found' });
               }
               
               // Clean up listener
