@@ -92,6 +92,7 @@ function SubscriptionsPageContent() {
         if (chromeStorageReader.isFromExtension()) {
           console.log('🔗 Detected visit from Chrome extension, attempting to read user data...');
           
+          // Try Chrome storage reader first (uses postMessage)
           const chromeUserData = await chromeStorageReader.handleExtensionVisit();
           
           console.log('Chrome storage data result:', chromeUserData);
@@ -128,9 +129,50 @@ function SubscriptionsPageContent() {
               usageCount: chromeUserData.usageCount
             });
           } else {
-            console.warn('⚠️ No user data found in Chrome extension storage');
-            console.log('Chrome storage available?', chromeStorageReader.isChromeStorageAvailable());
-            setChromeStorageData({ available: false, authenticated: false });
+            console.warn('⚠️ No user data found in Chrome extension storage via chromeStorageReader');
+            console.log('🔄 Attempting fallback using extensionComm...');
+            
+            // Fallback: Try using extension communication directly
+            try {
+              extensionComm.initialize();
+              
+              // Set up handler for Chrome user data response
+              extensionComm.onChromeUserDataReceived = (userData) => {
+                console.log('✅ Received user data via extensionComm fallback:', userData);
+                setChromeUserData({
+                  uid: userData.uid,
+                  email: userData.email,
+                  displayName: userData.displayName,
+                  photoURL: userData.photoURL,
+                  usageCount: userData.usageCount || 0,
+                  isPremium: userData.isPremium || false,
+                  planType: userData.planType,
+                  subscriptionStatus: userData.subscriptionStatus,
+                  createdAt: userData.createdAt,
+                  lastUsageUpdate: userData.lastUsageUpdate
+                });
+              };
+              
+              extensionComm.onChromeUserDataUnavailable = () => {
+                console.warn('⚠️ No user data available via extensionComm fallback either');
+                setChromeStorageData({ available: false, authenticated: false });
+              };
+              
+              // Request user data from extension
+              extensionComm.getChromeUserData();
+              
+              // Set timeout for fallback attempt
+              setTimeout(() => {
+                if (!chromeUserData) {
+                  console.warn('⚠️ Fallback extensionComm timeout - no user data received');
+                  setChromeStorageData({ available: false, authenticated: false });
+                }
+              }, 3000);
+              
+            } catch (fallbackError) {
+              console.error('❌ Fallback extensionComm failed:', fallbackError);
+              setChromeStorageData({ available: false, authenticated: false });
+            }
           }
         } else {
           console.log('🔗 Not from extension, skipping Chrome storage read');

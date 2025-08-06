@@ -82,7 +82,7 @@ export class ChromeStorageReader {
   }
 
   /**
-   * Read user data from chrome.storage.sync
+   * Read user data from Chrome extension via postMessage communication
    */
   public async getUserDataFromChromeStorage(): Promise<ChromeUserData | null> {
     // Return cached data if already loaded
@@ -95,87 +95,62 @@ export class ChromeStorageReader {
       return this.initPromise;
     }
 
-    // Create new promise for loading data
+    // Create new promise for loading data via extension communication
     this.initPromise = new Promise<ChromeUserData | null>((resolve) => {
-      try {
-        // Check if chrome extension APIs are available
-        if (!this.isChromeStorageAvailable()) {
-          console.warn('ChromeStorageReader: Chrome storage not available - user may not have extension installed');
-          this.isInitialized = true;
-          resolve(null);
-          return;
-        }
-
-        // Add timeout to prevent hanging
-        const timeoutId = setTimeout(() => {
-          console.warn('ChromeStorageReader: Timeout reading chrome.storage.sync');
-          this.isInitialized = true;
-          resolve(null);
-        }, 5000);
-
-        // Get all user data from chrome.storage.sync
-        const chrome = (window as any).chrome as ChromeStorageAPI;
-        chrome.storage!.sync!.get(null, (items) => {
+      console.log('📡 ChromeStorageReader: Requesting user data from extension via postMessage');
+      
+      // Set up message listener for extension response
+      const messageHandler = (event: MessageEvent) => {
+        if (event.source !== window) return;
+        
+        console.log('📨 ChromeStorageReader received message:', event.data);
+        
+        if (event.data.type === 'CHROME_USER_DATA_RESPONSE') {
+          window.removeEventListener('message', messageHandler);
           clearTimeout(timeoutId);
-
-          if (chrome.runtime?.lastError) {
-            console.error('ChromeStorageReader: Error reading chrome.storage.sync:', chrome.runtime.lastError.message);
-            this.isInitialized = true;
-            resolve(null);
-            return;
-          }
-
-          // Find user data (look for keys starting with 'user_')
-          const userKeys = Object.keys(items).filter(key => key.startsWith('user_'));
           
-          if (userKeys.length === 0) {
-            console.warn('ChromeStorageReader: No user data found in chrome.storage.sync');
-            this.isInitialized = true;
-            resolve(null);
-            return;
-          }
-
-          // Get the most recent user data (or find active user)
-          let selectedUserData: ChromeStorageItem | null = null;
-          
-          // Try to find active user or use the first available
-          for (const key of userKeys) {
-            const data = items[key] as ChromeStorageItem;
-            if (data?.userDetails) {
-              selectedUserData = data;
-              break; // Use first valid user data found
-            }
-          }
-
-          if (selectedUserData?.userDetails) {
-            console.log('✅ ChromeStorageReader: User data retrieved from chrome.storage.sync');
+          if (event.data.userData && event.data.userData.uid) {
+            console.log('✅ ChromeStorageReader: User data received from extension');
             
             this.userData = {
-              uid: selectedUserData.userDetails.uid,
-              email: selectedUserData.userDetails.email,
-              displayName: selectedUserData.userDetails.displayName,
-              photoURL: selectedUserData.userDetails.photoURL,
-              usageCount: selectedUserData.usageCount || 0,
-              isPremium: selectedUserData.isPremium || false,
-              planType: selectedUserData.planType,
-              subscriptionStatus: selectedUserData.subscriptionStatus,
-              createdAt: selectedUserData.createdAt,
-              lastUsageUpdate: selectedUserData.lastUsageUpdate
+              uid: event.data.userData.uid,
+              email: event.data.userData.email,
+              displayName: event.data.userData.displayName,
+              photoURL: event.data.userData.photoURL,
+              usageCount: event.data.userData.usageCount || 0,
+              isPremium: event.data.userData.isPremium || false,
+              planType: event.data.userData.planType,
+              subscriptionStatus: event.data.userData.subscriptionStatus,
+              createdAt: event.data.userData.createdAt,
+              lastUsageUpdate: event.data.userData.lastUsageUpdate
             };
             
             this.isInitialized = true;
             resolve(this.userData);
           } else {
-            console.warn('ChromeStorageReader: Invalid user data structure in chrome.storage.sync');
+            console.warn('⚠️ ChromeStorageReader: No user data in extension response');
             this.isInitialized = true;
             resolve(null);
           }
-        });
-      } catch (error) {
-        console.error('ChromeStorageReader: Exception reading chrome.storage.sync:', error);
+        }
+      };
+
+      // Add timeout to prevent hanging
+      const timeoutId = setTimeout(() => {
+        console.warn('ChromeStorageReader: Timeout waiting for extension response');
+        window.removeEventListener('message', messageHandler);
         this.isInitialized = true;
         resolve(null);
-      }
+      }, 5000);
+
+      // Listen for extension response
+      window.addEventListener('message', messageHandler);
+
+      // Request user data from extension
+      window.postMessage({
+        type: 'GET_CHROME_USER_DATA',
+        source: 'website'
+      }, '*');
     });
 
     return this.initPromise;

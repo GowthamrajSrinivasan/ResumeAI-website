@@ -37,6 +37,9 @@ export class ExtensionCommunication {
         case 'EXTENSION_STATUS_RESPONSE':
           this.handleExtensionStatusResponse(event.data);
           break;
+        case 'CHROME_USER_DATA_RESPONSE':
+          this.handleChromeUserDataResponse(event.data);
+          break;
         case 'LINKEDIN_URL_STORED_RESPONSE':
           this.handleLinkedInUrlStoredResponse(event.data.success);
           break;
@@ -109,6 +112,19 @@ export class ExtensionCommunication {
     console.log('Website checking extension status');
     window.postMessage({
       type: 'CHECK_EXTENSION_STATUS'
+    }, '*');
+  }
+
+  /**
+   * Request user data from Chrome extension storage
+   */
+  getChromeUserData() {
+    if (typeof window === 'undefined') return;
+    
+    console.log('Website requesting user data from Chrome extension');
+    window.postMessage({
+      type: 'GET_CHROME_USER_DATA',
+      source: 'website'
     }, '*');
   }
 
@@ -205,6 +221,17 @@ export class ExtensionCommunication {
     }
   }
 
+  handleChromeUserDataResponse(data: any) {
+    console.log('Chrome user data response:', data);
+    if (data.userData) {
+      console.log('✅ Chrome user data received from extension');
+      this.onChromeUserDataReceived(data.userData);
+    } else {
+      console.log('ℹ️ No Chrome user data available in extension');
+      this.onChromeUserDataUnavailable();
+    }
+  }
+
   handleLinkedInUrlStoredResponse(success: boolean) {
     if (success) {
       console.log('✅ LinkedIn URL successfully stored in extension');
@@ -265,6 +292,14 @@ export class ExtensionCommunication {
   }
 
   onExtensionUnavailable() {
+    // Override in implementation
+  }
+
+  onChromeUserDataReceived(userData: any) {
+    // Override in implementation
+  }
+
+  onChromeUserDataUnavailable() {
     // Override in implementation
   }
 
