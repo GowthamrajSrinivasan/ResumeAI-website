@@ -84,6 +84,56 @@ function SubscriptionsPageContent() {
   useEffect(() => {
     const handleChromeExtensionData = async () => {
       try {
+        // COMPREHENSIVE CHROME API LOGGING - Check at the very beginning
+        console.log('🔍 SUBSCRIPTION PAGE: Starting Chrome API availability check...');
+        console.log('🔍 typeof window:', typeof window);
+        console.log('🔍 window.chrome exists:', !!(window as any).chrome);
+        console.log('🔍 window.chrome object:', (window as any).chrome);
+        
+        if ((window as any).chrome) {
+          console.log('🔍 chrome.storage exists:', !!((window as any).chrome.storage));
+          console.log('🔍 chrome.storage object:', (window as any).chrome.storage);
+          
+          if ((window as any).chrome.storage) {
+            console.log('🔍 chrome.storage.sync exists:', !!((window as any).chrome.storage.sync));
+            console.log('🔍 chrome.storage.sync object:', (window as any).chrome.storage.sync);
+            
+            if ((window as any).chrome.storage.sync) {
+              console.log('🔍 chrome.storage.sync.get exists:', typeof (window as any).chrome.storage.sync.get);
+              console.log('✅ ALL CHROME APIS AVAILABLE - Ready to proceed');
+            } else {
+              console.log('❌ chrome.storage.sync is NULL/UNDEFINED');
+            }
+          } else {
+            console.log('❌ chrome.storage is NULL/UNDEFINED');
+          }
+        } else {
+          console.log('❌ window.chrome is NULL/UNDEFINED');
+        }
+        
+        // Check extension availability through chromeStorageReader
+        console.log('🔍 chromeStorageReader.isChromeStorageAvailable():', chromeStorageReader.isChromeStorageAvailable());
+        
+        // DIRECT TEST: Try to access Chrome storage directly
+        if ((window as any).chrome && (window as any).chrome.storage && (window as any).chrome.storage.sync) {
+          console.log('🧪 DIRECT TEST: Attempting direct chrome.storage.sync access...');
+          try {
+            (window as any).chrome.storage.sync.get(null, (items: any) => {
+              if ((window as any).chrome.runtime?.lastError) {
+                console.error('🧪 DIRECT TEST ERROR:', (window as any).chrome.runtime.lastError.message);
+              } else {
+                console.log('🧪 DIRECT TEST SUCCESS: Items from chrome.storage.sync:', items);
+                const userKeys = Object.keys(items).filter(key => key.startsWith('user_'));
+                console.log('🧪 DIRECT TEST: Found user keys:', userKeys);
+              }
+            });
+          } catch (directError) {
+            console.error('🧪 DIRECT TEST EXCEPTION:', directError);
+          }
+        } else {
+          console.log('🧪 DIRECT TEST: Cannot perform - Chrome APIs not available');
+        }
+        
         // Check if this is a visit from Chrome extension
         console.log('🔗 Checking if visit is from Chrome extension...');
         console.log('URL search params:', window.location.search);
@@ -92,88 +142,101 @@ function SubscriptionsPageContent() {
         if (chromeStorageReader.isFromExtension()) {
           console.log('🔗 Detected visit from Chrome extension, attempting to read user data...');
           
-          // Try Chrome storage reader first (uses postMessage)
-          const chromeUserData = await chromeStorageReader.handleExtensionVisit();
-          
-          console.log('Chrome storage data result:', chromeUserData);
-          
-          if (chromeUserData) {
-            console.log('✅ Chrome extension user data loaded:', chromeUserData);
-            setChromeUserData(chromeUserData);
-            
-            // Set minimal user profile data to prevent loading issues
-            if (!userProfile) {
-              setUserProfile({
-                uid: chromeUserData.uid,
-                userEmail: chromeUserData.email,
-                displayName: chromeUserData.displayName,
-                isPremium: chromeUserData.isPremium || false,
-                planType: chromeUserData.planType || 'free',
-                subscriptionStatus: chromeUserData.subscriptionStatus as any || 'active',
-                usage: {
-                  totalUsage: chromeUserData.usageCount || 0,
-                  monthlyUsage: 0,
-                  quotaLimit: chromeUserData.isPremium ? -1 : 10
-                }
-              });
-            }
-            
-            // Store in extension comm data as well for compatibility
-            setChromeStorageData({
-              available: true,
-              authenticated: true,
-              uid: chromeUserData.uid,
-              email: chromeUserData.email,
-              displayName: chromeUserData.displayName,
-              isPremium: chromeUserData.isPremium,
-              usageCount: chromeUserData.usageCount
+          // Set up direct message listener (matches your extension code exactly)
+          const messageHandler = (event: MessageEvent) => {
+            // Log ALL messages received to see what the extension is sending
+            console.log('📨 SUBSCRIPTION: Received message:', {
+              type: event.data?.type,
+              source: event.data?.source,
+              origin: event.origin,
+              data: event.data
             });
-          } else {
-            console.warn('⚠️ No user data found in Chrome extension storage via chromeStorageReader');
-            console.log('🔄 Attempting fallback using extensionComm...');
             
-            // Fallback: Try using extension communication directly
-            try {
-              extensionComm.initialize();
+            if (event.data?.type === "UID_RESPONSE") {
+              console.log('🎉 SUBSCRIPTION: Processing UID_RESPONSE:', event.data);
               
-              // Set up handler for Chrome user data response
-              extensionComm.onChromeUserDataReceived = (userData) => {
-                console.log('✅ Received user data via extensionComm fallback:', userData);
-                setChromeUserData({
-                  uid: userData.uid,
-                  email: userData.email,
-                  displayName: userData.displayName,
-                  photoURL: userData.photoURL,
-                  usageCount: userData.usageCount || 0,
-                  isPremium: userData.isPremium || false,
-                  planType: userData.planType,
-                  subscriptionStatus: userData.subscriptionStatus,
-                  createdAt: userData.createdAt,
-                  lastUsageUpdate: userData.lastUsageUpdate
-                });
-              };
+              // Check if we got complete user data
+              if (event.data.uid && event.data.email) {
+                console.log('✅ SUBSCRIPTION: Complete user data received - proceeding with authentication');
+                
+                const userData = {
+                  uid: event.data.uid,
+                  email: event.data.email,
+                  displayName: event.data.displayName || 'User',
+                  usageCount: event.data.usageCount || 0,
+                  isPremium: event.data.isPremium || false,
+                  createdAt: event.data.createdAt,
+                  lastUsageUpdate: event.data.lastUsageUpdate,
+                  planType: event.data.planType || (event.data.isPremium ? 'premium' : 'free'),
+                  subscriptionStatus: event.data.subscriptionStatus || 'active'
+                };
+                
+                setChromeUserData(userData);
+                console.log('✅ Chrome extension user data loaded:', userData);
+                
+              } else if (event.data.error) {
+                console.error('❌ SUBSCRIPTION: Error from extension:', event.data.error);
+                setChromeStorageData({ available: false, error: true, message: event.data.error });
+              } else {
+                console.warn('⚠️ SUBSCRIPTION: Incomplete user data received');
+                console.log('📋 SUBSCRIPTION: Available data:', event.data);
+                
+                // Still try to authenticate with partial data if we have UID
+                if (event.data.uid) {
+                  const partialUserData = {
+                    uid: event.data.uid,
+                    email: event.data.email || 'Unknown',
+                    displayName: event.data.displayName || 'User',
+                    usageCount: event.data.usageCount || 0,
+                    isPremium: event.data.isPremium || false,
+                    planType: event.data.planType || (event.data.isPremium ? 'premium' : 'free'),
+                    subscriptionStatus: event.data.subscriptionStatus || 'active'
+                  };
+                  
+                  console.log('🔄 SUBSCRIPTION: Attempting authentication with partial data');
+                  setChromeUserData(partialUserData);
+                } else {
+                  console.error('Unable to authenticate: No user ID found');
+                  setChromeStorageData({ available: false, error: true, message: 'No user ID found' });
+                }
+              }
               
-              extensionComm.onChromeUserDataUnavailable = () => {
-                console.warn('⚠️ No user data available via extensionComm fallback either');
-                setChromeStorageData({ available: false, authenticated: false });
-              };
+              // Clean up listener
+              window.removeEventListener('message', messageHandler);
+            }
+          };
+          
+          // Add message listener
+          window.addEventListener('message', messageHandler);
+          
+          // Request user data from extension (matches your extension code)
+          console.log('🌐 SUBSCRIPTION: Requesting user data from extension...');
+          window.postMessage({
+            type: "GET_UID"
+          }, "*");
+          
+          // Timeout for extension response
+          setTimeout(() => {
+            if (!chromeUserData) {
+              console.warn('⚠️ SUBSCRIPTION: No response from extension, trying fallback...');
+              // Remove the message listener
+              window.removeEventListener('message', messageHandler);
               
-              // Request user data from extension
-              extensionComm.getChromeUserData();
-              
-              // Set timeout for fallback attempt
-              setTimeout(() => {
-                if (!chromeUserData) {
-                  console.warn('⚠️ Fallback extensionComm timeout - no user data received');
+              // Try Chrome storage reader as fallback
+              chromeStorageReader.handleExtensionVisit().then((fallbackData) => {
+                if (fallbackData) {
+                  console.log('✅ Chrome extension user data loaded via fallback:', fallbackData);
+                  setChromeUserData(fallbackData);
+                } else {
+                  console.warn('⚠️ No user data found in Chrome extension storage');
                   setChromeStorageData({ available: false, authenticated: false });
                 }
-              }, 3000);
-              
-            } catch (fallbackError) {
-              console.error('❌ Fallback extensionComm failed:', fallbackError);
-              setChromeStorageData({ available: false, authenticated: false });
+              }).catch((error) => {
+                console.error('❌ Error with fallback Chrome storage reader:', error);
+                setChromeStorageData({ available: false, authenticated: false });
+              });
             }
-          }
+          }, 3000);
         } else {
           console.log('🔗 Not from extension, skipping Chrome storage read');
         }

@@ -1,5 +1,5 @@
 // content.js - Chrome Extension Content Script
-// This script runs on executivesai.pro to listen for login success messages
+// This script runs on executivesai.pro to listen for login success messages and handle data requests
 
 window.addEventListener("message", (event) => {
   if (event.source !== window) return;
@@ -39,6 +39,10 @@ window.addEventListener("message", (event) => {
       }
     });
   }
+  
+  // Note: This content script is injected by the website, not the Chrome extension
+  // The actual Chrome extension handles GET_UID and CHECK_EXTENSION_STATUS requests
+  // This file is just for website-side communication bridge
 });
 
-console.log("Content script loaded and listening for LOGIN_SUCCESS messages");
+console.log("Content script loaded and listening for website messages");
