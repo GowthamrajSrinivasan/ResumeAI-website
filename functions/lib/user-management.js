@@ -371,7 +371,7 @@ exports.getBillingHistory = (0, https_1.onRequest)({
             return {
                 id: doc.id,
                 date: (data.upgradedAt || data.createdAt).toDate(),
-                amount: data.amount || 999,
+                amount: data.amount || 999, // Default amount if not stored
                 currency: data.currency || "INR",
                 status: "paid",
                 description: `${data.planType || "Premium"} Plan`,

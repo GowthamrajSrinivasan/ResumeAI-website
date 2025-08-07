@@ -54,7 +54,7 @@ exports.createOrder = (0, https_1.onRequest)({
             receipt: receipt || `receipt_${Date.now()}`
         });
         const order = await razorpay.orders.create({
-            amount: amount * 100,
+            amount: amount * 100, // Convert to paise
             currency,
             receipt: receipt || `receipt_${Date.now()}`,
         });
@@ -210,7 +210,7 @@ exports.createPaymentLink = (0, https_1.onRequest)({
         }
         const razorpay = createRazorpayInstance();
         const paymentLinkData = {
-            amount: amount * 100,
+            amount: amount * 100, // Convert to paise
             currency,
             accept_partial: false,
             description: description || `Payment for ${plan_name || 'Requill'} Plan`,
