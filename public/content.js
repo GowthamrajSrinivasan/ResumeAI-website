@@ -23,9 +23,9 @@ window.addEventListener("message", (event) => {
     });
   }
   
-  // Handle SET_UID messages
-  if (event.data?.type === "SET_UID") {
-    console.log("Content script received SET_UID:", event.data);
+  // Handle SET_USER_ID messages
+  if (event.data?.type === "SET_USER_ID") {
+    console.log("Content script received SET_USER_ID:", event.data);
 
     // Send UID to background for storage
     chrome.runtime.sendMessage({

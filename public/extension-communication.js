@@ -18,26 +18,32 @@ class ExtensionCommunication {
 
             switch (event.data.type) {
                 case 'UID_RESPONSE':
-                    this.handleUidResponse(event.data.uid);
+                    this.handleUidResponse(event.data);
                     break;
-                case 'UID_SET_RESPONSE':
-                    this.handleUidSetResponse(event.data.success);
+                case 'USER_ID_SET_RESPONSE':
+                    this.handleUserIdSetResponse(event.data.success);
                     break;
-                case 'UID_CLEARED_RESPONSE':
-                    this.handleUidClearedResponse(event.data.success);
+                case 'USER_ID_CLEARED_RESPONSE':
+                    this.handleUserIdClearedResponse(event.data.success);
                     break;
-                case 'EXTENSION_STATUS_RESPONSE':
-                    this.handleExtensionStatusResponse(event.data);
+                case 'EXTENSION_HEARTBEAT':
+                    this.handleExtensionHeartbeat(event.data);
+                    break;
+                case 'EXTENSION_PRESENCE_RESPONSE':
+                    this.handleExtensionPresenceResponse(event.data);
+                    break;
+                case 'REQUILL_LOGIN_RESPONSE':
+                    this.handleRequillLoginResponse(event.data);
                     break;
             }
         });
     }
 
-    // Send uid to extension after user login
+    // Send user ID to extension after user login
     setUid(uid, userData = null) {
-        console.log('Website sending uid to extension:', uid);
+        console.log('Website sending user ID to extension:', uid);
         window.postMessage({
-            type: 'SET_UID',
+            type: 'SET_USER_ID',
             uid: uid,
             userData: userData
         }, '*');
@@ -51,19 +57,29 @@ class ExtensionCommunication {
         }, '*');
     }
 
-    // Clear uid from extension (logout)
+    // Clear user ID from extension (logout)
     clearUid() {
-        console.log('Website clearing uid from extension');
+        console.log('Website clearing user ID from extension');
         window.postMessage({
-            type: 'CLEAR_UID'
+            type: 'CLEAR_USER_ID'
         }, '*');
     }
 
-    // Check if extension is available
-    checkExtensionStatus() {
-        console.log('Website checking extension status');
+    // Send heartbeat to extension
+    sendHeartbeat() {
+        console.log('Website sending heartbeat to extension');
         window.postMessage({
-            type: 'CHECK_EXTENSION_STATUS'
+            type: 'WEBSITE_HEARTBEAT_REQUEST',
+            timestamp: Date.now()
+        }, '*');
+    }
+
+    // Check if extension is present
+    checkExtensionPresence() {
+        console.log('Website checking extension presence');
+        window.postMessage({
+            type: 'WEBSITE_PRESENCE_CHECK',
+            timestamp: Date.now()
         }, '*');
     }
 
@@ -77,11 +93,31 @@ class ExtensionCommunication {
     }
 
     // Handle responses
-    handleUidResponse(uid) {
+    handleUidResponse(data) {
+        const { uid, email, displayName, usageCount, isPremium, createdAt, lastUsageUpdate, personalization } = data;
+        
         if (uid) {
             console.log('✅ Extension has uid:', uid);
-            // User is logged in to extension
-            this.onExtensionAuthenticated?.(uid);
+            console.log('📊 User data from extension:', {
+                email,
+                displayName,
+                usageCount: usageCount || 0,
+                isPremium: isPremium || false,
+                createdAt,
+                lastUsageUpdate,
+                personalization
+            });
+            
+            // User is logged in to extension - pass complete data
+            this.onExtensionAuthenticated?.(uid, {
+                email,
+                displayName,
+                usageCount: usageCount || 0,
+                isPremium: isPremium || false,
+                createdAt,
+                lastUsageUpdate,
+                personalization
+            });
         } else {
             console.log('ℹ️ Extension does not have uid');
             // User is not logged in to extension
@@ -89,34 +125,80 @@ class ExtensionCommunication {
         }
     }
 
-    handleUidSetResponse(success) {
+    handleUserIdSetResponse(success) {
         if (success) {
-            console.log('✅ uid successfully stored in extension');
+            console.log('✅ User ID successfully stored in extension');
             this.onUidStored?.();
         } else {
-            console.log('❌ Failed to store uid in extension');
+            console.log('❌ Failed to store User ID in extension');
             this.onUidStoreFailed?.();
         }
     }
 
-    handleUidClearedResponse(success) {
+    handleUserIdClearedResponse(success) {
         if (success) {
-            console.log('✅ uid successfully cleared from extension');
+            console.log('✅ User ID successfully cleared from extension');
             this.onUidCleared?.();
         } else {
-            console.log('❌ Failed to clear uid from extension');
+            console.log('❌ Failed to clear User ID from extension');
             this.onUidClearFailed?.();
         }
     }
 
-    handleExtensionStatusResponse(data) {
-        console.log('Extension status:', data);
-        if (data.available) {
-            console.log('✅ Extension is available and active');
-            this.onExtensionAvailable?.(data);
+    handleExtensionHeartbeat(data) {
+        const { userId, timestamp, extensionVersion } = data;
+        
+        console.log('💓 Extension heartbeat received:', {
+            userId: userId || 'No user logged in',
+            timestamp: new Date(timestamp).toISOString(),
+            extensionVersion
+        });
+        
+        this.onExtensionHeartbeat?.({
+            userId,
+            timestamp,
+            extensionVersion
+        });
+    }
+
+    handleExtensionPresenceResponse(data) {
+        const { userId, timestamp, extensionVersion, isInstalled } = data;
+        
+        console.log('Extension presence response:', {
+            userId,
+            timestamp,
+            extensionVersion,
+            isInstalled
+        });
+        
+        if (isInstalled) {
+            console.log('✅ Extension is present and responding');
+            console.log('📊 Extension details:', {
+                userId: userId || 'No user logged in',
+                version: extensionVersion,
+                timestamp: new Date(timestamp).toISOString()
+            });
+            
+            this.onExtensionPresent?.({
+                userId,
+                timestamp,
+                extensionVersion,
+                isInstalled
+            });
         } else {
-            console.log('ℹ️ Extension is not available');
-            this.onExtensionUnavailable?.();
+            console.log('ℹ️ Extension is not present');
+            this.onExtensionNotPresent?.();
+        }
+    }
+
+    handleRequillLoginResponse(data) {
+        console.log('Requill login response:', data);
+        if (data.success) {
+            console.log('✅ Requill login successful in extension');
+            this.onRequillLoginSuccess?.(data);
+        } else {
+            console.log('❌ Requill login failed in extension');
+            this.onRequillLoginFailed?.(data);
         }
     }
 
@@ -124,11 +206,25 @@ class ExtensionCommunication {
     initialize() {
         console.log('Initializing extension communication...');
         
-        // Check if extension is available
-        this.checkExtensionStatus();
+        // Check if extension is present
+        this.checkExtensionPresence();
         
         // Check if user is already logged in to extension
         this.getUid();
+        
+        // Start heartbeat monitoring
+        this.startHeartbeat();
+    }
+
+    // Start regular heartbeat with extension
+    startHeartbeat() {
+        // Send initial heartbeat
+        this.sendHeartbeat();
+        
+        // Set up regular heartbeat interval (every 30 seconds)
+        setInterval(() => {
+            this.sendHeartbeat();
+        }, 30000);
     }
 }
 

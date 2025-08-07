@@ -497,18 +497,24 @@ function SubscriptionsPageContent() {
             setChromeStorageData({ authenticated: false });
           };
           
-          extensionComm.onExtensionAvailable = (data: any) => {
-            console.log('Extension is available:', data);
-            setChromeStorageData({ ...data, available: true });
+          extensionComm.onExtensionPresent = (data: any) => {
+            console.log('Extension is present:', data);
+            setChromeStorageData({ 
+              available: true,
+              userId: data.userId,
+              extensionVersion: data.extensionVersion,
+              isInstalled: data.isInstalled,
+              timestamp: data.timestamp
+            });
           };
           
-          extensionComm.onExtensionUnavailable = () => {
-            console.log('Extension is not available');
+          extensionComm.onExtensionNotPresent = () => {
+            console.log('Extension is not present');
             setChromeStorageData({ available: false });
           };
           
-          // Request extension status and UID
-          extensionComm.checkExtensionStatus();
+          // Request extension presence check and UID
+          extensionComm.checkExtensionPresence();
           extensionComm.getUid();
           
           // Wait for extension response (with timeout)
@@ -520,19 +526,25 @@ function SubscriptionsPageContent() {
           }, 3000);
           
           // Clear timeout if we get a response
-          const originalOnExtensionAvailable = extensionComm.onExtensionAvailable;
-          extensionComm.onExtensionAvailable = (data: any) => {
+          const originalOnExtensionPresent = extensionComm.onExtensionPresent;
+          extensionComm.onExtensionPresent = (data: any) => {
             clearTimeout(timeoutHandle);
-            originalOnExtensionAvailable.call(extensionComm, data);
-            console.log('Extension is available:', data);
-            setChromeStorageData({ ...data, available: true });
+            originalOnExtensionPresent.call(extensionComm, data);
+            console.log('Extension is present:', data);
+            setChromeStorageData({ 
+              available: true,
+              userId: data.userId,
+              extensionVersion: data.extensionVersion,
+              isInstalled: data.isInstalled,
+              timestamp: data.timestamp
+            });
           };
           
-          const originalOnExtensionUnavailable = extensionComm.onExtensionUnavailable;
-          extensionComm.onExtensionUnavailable = () => {
+          const originalOnExtensionNotPresent = extensionComm.onExtensionNotPresent;
+          extensionComm.onExtensionNotPresent = () => {
             clearTimeout(timeoutHandle);
-            originalOnExtensionUnavailable.call(extensionComm);
-            console.log('Extension is not available');
+            originalOnExtensionNotPresent.call(extensionComm);
+            console.log('Extension is not present');
             setChromeStorageData({ available: false });
           };
         }

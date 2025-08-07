@@ -26,28 +26,22 @@ export class ExtensionCommunication {
 
       switch (event.data.type) {
         case 'UID_RESPONSE':
-          this.handleUidResponse(event.data.uid);
+          this.handleUidResponse(event.data);
           break;
-        case 'UID_SET_RESPONSE':
-          this.handleUidSetResponse(event.data.success);
+        case 'USER_ID_SET_RESPONSE':
+          this.handleUserIdSetResponse(event.data.success);
           break;
-        case 'UID_CLEARED_RESPONSE':
-          this.handleUidClearedResponse(event.data.success);
+        case 'USER_ID_CLEARED_RESPONSE':
+          this.handleUserIdClearedResponse(event.data.success);
           break;
-        case 'EXTENSION_STATUS_RESPONSE':
-          this.handleExtensionStatusResponse(event.data);
+        case 'EXTENSION_HEARTBEAT':
+          this.handleExtensionHeartbeat(event.data);
           break;
-        case 'CHROME_USER_DATA_RESPONSE':
-          this.handleChromeUserDataResponse(event.data);
+        case 'EXTENSION_PRESENCE_RESPONSE':
+          this.handleExtensionPresenceResponse(event.data);
           break;
-        case 'LINKEDIN_URL_STORED_RESPONSE':
-          this.handleLinkedInUrlStoredResponse(event.data.success);
-          break;
-        case 'STORED_LINKEDIN_URL_RESPONSE':
-          this.handleStoredLinkedInUrlResponse(event.data.url);
-          break;
-        case 'LINKEDIN_NAVIGATION_COMPLETE':
-          this.handleLinkedInNavigationComplete(event.data.success);
+        case 'REQUILL_LOGIN_RESPONSE':
+          this.handleRequillLoginResponse(event.data);
           break;
       }
 
@@ -66,14 +60,14 @@ export class ExtensionCommunication {
   }
 
   /**
-   * Send uid to extension after user login
+   * Send user ID to extension after user login
    */
   setUid(uid: string, userData: any = null) {
     if (typeof window === 'undefined') return;
     
-    console.log('Website sending uid to extension:', uid);
+    console.log('Website sending user ID to extension:', uid);
     window.postMessage({
-      type: 'SET_UID',
+      type: 'SET_USER_ID',
       uid: uid,
       userData: userData
     }, '*');
@@ -92,39 +86,40 @@ export class ExtensionCommunication {
   }
 
   /**
-   * Clear uid from extension (logout)
+   * Clear user ID from extension (logout)
    */
   clearUid() {
     if (typeof window === 'undefined') return;
     
-    console.log('Website clearing uid from extension');
+    console.log('Website clearing user ID from extension');
     window.postMessage({
-      type: 'CLEAR_UID'
+      type: 'CLEAR_USER_ID'
     }, '*');
   }
 
   /**
-   * Check if extension is available and active
+   * Send heartbeat request to extension
    */
-  checkExtensionStatus() {
+  sendHeartbeat() {
     if (typeof window === 'undefined') return;
     
-    console.log('Website checking extension status');
+    console.log('Website sending heartbeat to extension');
     window.postMessage({
-      type: 'CHECK_EXTENSION_STATUS'
+      type: 'WEBSITE_HEARTBEAT_REQUEST',
+      timestamp: Date.now()
     }, '*');
   }
 
   /**
-   * Request user data from Chrome extension storage
+   * Check if extension is present and responding
    */
-  getChromeUserData() {
+  checkExtensionPresence() {
     if (typeof window === 'undefined') return;
     
-    console.log('Website requesting user data from Chrome extension');
+    console.log('Website checking extension presence');
     window.postMessage({
-      type: 'GET_CHROME_USER_DATA',
-      source: 'website'
+      type: 'WEBSITE_PRESENCE_CHECK',
+      timestamp: Date.now()
     }, '*');
   }
 
@@ -141,48 +136,33 @@ export class ExtensionCommunication {
     }, '*');
   }
 
-  /**
-   * Store LinkedIn URL before starting sign-in process
-   */
-  storeLinkedInUrl() {
-    if (typeof window === 'undefined') return;
-    
-    console.log('Website requesting to store current LinkedIn URL');
-    window.postMessage({
-      type: 'STORE_LINKEDIN_URL'
-    }, '*');
-  }
-
-  /**
-   * Get stored LinkedIn URL after successful authentication
-   */
-  getStoredLinkedInUrl() {
-    if (typeof window === 'undefined') return;
-    
-    console.log('Website requesting stored LinkedIn URL');
-    window.postMessage({
-      type: 'GET_STORED_LINKEDIN_URL'
-    }, '*');
-  }
-
-  /**
-   * Navigate to stored LinkedIn URL or fallback
-   */
-  navigateToLinkedIn() {
-    if (typeof window === 'undefined') return;
-    
-    console.log('Website requesting navigation to LinkedIn');
-    window.postMessage({
-      type: 'NAVIGATE_TO_LINKEDIN'
-    }, '*');
-  }
 
   // Response handlers
-  handleUidResponse(uid: string | null) {
+  handleUidResponse(data: any) {
+    const { uid, email, displayName, usageCount, isPremium, createdAt, lastUsageUpdate, personalization } = data;
+    
     if (uid) {
       console.log('✅ Extension has uid:', uid);
-      // User is logged in to extension
-      this.onExtensionAuthenticated(uid);
+      console.log('📊 User data from extension:', {
+        email,
+        displayName,
+        usageCount: usageCount || 0,
+        isPremium: isPremium || false,
+        createdAt,
+        lastUsageUpdate,
+        personalization
+      });
+      
+      // User is logged in to extension - pass complete data
+      this.onExtensionAuthenticated(uid, {
+        email,
+        displayName,
+        usageCount: usageCount || 0,
+        isPremium: isPremium || false,
+        createdAt,
+        lastUsageUpdate,
+        personalization
+      });
     } else {
       console.log('ℹ️ Extension does not have uid');
       // User is not logged in to extension
@@ -190,80 +170,93 @@ export class ExtensionCommunication {
     }
   }
 
-  handleUidSetResponse(success: boolean) {
+  handleUserIdSetResponse(success: boolean) {
     if (success) {
-      console.log('✅ uid successfully stored in extension');
+      console.log('✅ User ID successfully stored in extension');
       this.onUidStored();
     } else {
-      console.log('❌ Failed to store uid in extension');
+      console.log('❌ Failed to store User ID in extension');
       this.onUidStoreFailed();
     }
   }
 
-  handleUidClearedResponse(success: boolean) {
+  handleUserIdClearedResponse(success: boolean) {
     if (success) {
-      console.log('✅ uid successfully cleared from extension');
+      console.log('✅ User ID successfully cleared from extension');
       this.onUidCleared();
     } else {
-      console.log('❌ Failed to clear uid from extension');
+      console.log('❌ Failed to clear User ID from extension');
       this.onUidClearFailed();
     }
   }
 
-  handleExtensionStatusResponse(data: any) {
-    console.log('Extension status:', data);
-    if (data.available) {
-      console.log('✅ Extension is available and active');
-      this.onExtensionAvailable(data);
+  handleExtensionHeartbeat(data: any) {
+    const { userId, timestamp, extensionVersion } = data;
+    
+    console.log('💓 Extension heartbeat received:', {
+      userId: userId || 'No user logged in',
+      timestamp: new Date(timestamp).toISOString(),
+      extensionVersion
+    });
+    
+    this.onExtensionHeartbeat({
+      userId,
+      timestamp,
+      extensionVersion
+    });
+  }
+
+  handleExtensionPresenceResponse(data: any) {
+    const { userId, timestamp, extensionVersion, isInstalled } = data;
+    
+    console.log('Extension presence response:', {
+      userId,
+      timestamp,
+      extensionVersion,
+      isInstalled
+    });
+    
+    if (isInstalled) {
+      console.log('✅ Extension is present and responding');
+      console.log('📊 Extension details:', {
+        userId: userId || 'No user logged in',
+        version: extensionVersion,
+        timestamp: new Date(timestamp).toISOString()
+      });
+      
+      this.onExtensionPresent({
+        userId,
+        timestamp,
+        extensionVersion,
+        isInstalled
+      });
     } else {
-      console.log('ℹ️ Extension is not available');
-      this.onExtensionUnavailable();
+      console.log('ℹ️ Extension is not present');
+      this.onExtensionNotPresent();
     }
   }
 
-  handleChromeUserDataResponse(data: any) {
-    console.log('Chrome user data response:', data);
-    if (data.userData) {
-      console.log('✅ Chrome user data received from extension');
-      this.onChromeUserDataReceived(data.userData);
+  handleRequillLoginResponse(data: any) {
+    console.log('Requill login response:', data);
+    if (data.success) {
+      console.log('✅ Requill login successful in extension');
+      this.onRequillLoginSuccess(data);
     } else {
-      console.log('ℹ️ No Chrome user data available in extension');
-      this.onChromeUserDataUnavailable();
-    }
-  }
-
-  handleLinkedInUrlStoredResponse(success: boolean) {
-    if (success) {
-      console.log('✅ LinkedIn URL successfully stored in extension');
-      this.onLinkedInUrlStored();
-    } else {
-      console.log('❌ Failed to store LinkedIn URL in extension');
-      this.onLinkedInUrlStoreFailed();
-    }
-  }
-
-  handleStoredLinkedInUrlResponse(url: string | null) {
-    if (url) {
-      console.log('✅ Retrieved stored LinkedIn URL:', url);
-      this.onStoredLinkedInUrlRetrieved(url);
-    } else {
-      console.log('ℹ️ No LinkedIn URL stored in extension');
-      this.onNoLinkedInUrlStored();
-    }
-  }
-
-  handleLinkedInNavigationComplete(success: boolean) {
-    if (success) {
-      console.log('✅ Successfully navigated to LinkedIn');
-      this.onLinkedInNavigationSuccess();
-    } else {
-      console.log('❌ Failed to navigate to LinkedIn');
-      this.onLinkedInNavigationFailed();
+      console.log('❌ Requill login failed in extension');
+      this.onRequillLoginFailed(data);
     }
   }
 
   // Override these methods for custom behavior
-  onExtensionAuthenticated(uid: string) {
+  onExtensionAuthenticated(uid: string, userData?: {
+    email?: string;
+    displayName?: string;
+    usageCount?: number;
+    isPremium?: boolean;
+    createdAt?: string;
+    lastUsageUpdate?: string;
+    personalization?: any;
+  }) {
     // Override in implementation
   }
 
@@ -287,43 +280,32 @@ export class ExtensionCommunication {
     // Override in implementation
   }
 
-  onExtensionAvailable(data: any) {
+  onExtensionHeartbeat(data: {
+    userId?: string;
+    timestamp?: number;
+    extensionVersion?: string;
+  }) {
     // Override in implementation
   }
 
-  onExtensionUnavailable() {
+  onExtensionPresent(data: {
+    userId?: string;
+    timestamp?: number;
+    extensionVersion?: string;
+    isInstalled?: boolean;
+  }) {
     // Override in implementation
   }
 
-  onChromeUserDataReceived(userData: any) {
+  onExtensionNotPresent() {
     // Override in implementation
   }
 
-  onChromeUserDataUnavailable() {
+  onRequillLoginSuccess(data: any) {
     // Override in implementation
   }
 
-  onLinkedInUrlStored() {
-    // Override in implementation
-  }
-
-  onLinkedInUrlStoreFailed() {
-    // Override in implementation
-  }
-
-  onStoredLinkedInUrlRetrieved(url: string) {
-    // Override in implementation
-  }
-
-  onNoLinkedInUrlStored() {
-    // Override in implementation
-  }
-
-  onLinkedInNavigationSuccess() {
-    // Override in implementation
-  }
-
-  onLinkedInNavigationFailed() {
+  onRequillLoginFailed(data: any) {
     // Override in implementation
   }
 
@@ -333,19 +315,36 @@ export class ExtensionCommunication {
   initialize() {
     console.log('Initializing extension communication...');
     
-    // Check if extension is available
-    this.checkExtensionStatus();
+    // Check if extension is present
+    this.checkExtensionPresence();
     
     // Check if user is already logged in to extension
     this.getUid();
+    
+    // Start heartbeat monitoring
+    this.startHeartbeat();
   }
 
   /**
-   * Cleanup event listeners
+   * Start regular heartbeat with extension
+   */
+  startHeartbeat() {
+    // Send initial heartbeat
+    this.sendHeartbeat();
+    
+    // Set up regular heartbeat interval (every 30 seconds)
+    setInterval(() => {
+      this.sendHeartbeat();
+    }, 30000);
+  }
+
+  /**
+   * Cleanup event listeners and intervals
    */
   destroy() {
     // Note: We can't remove the specific event listener we added
     // without keeping a reference to the bound function
+    // TODO: Keep reference to interval for proper cleanup
     console.log('ExtensionCommunication cleanup');
   }
 }

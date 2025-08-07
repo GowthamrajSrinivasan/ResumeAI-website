@@ -135,8 +135,13 @@ export function useAuth(): AuthState & AuthActions {
     extensionComm.initialize();
     
     // Set up custom extension event handlers
-    extensionComm.onExtensionAuthenticated = (uid: string) => {
+    extensionComm.onExtensionAuthenticated = (uid: string, userData?: any) => {
       console.log('Extension is authenticated with uid:', uid);
+      if (userData) {
+        console.log('📊 Extension user data:', userData);
+        console.log('💎 Premium status:', userData.isPremium ? 'Premium' : 'Free');
+        console.log('📈 Usage count:', userData.usageCount || 0);
+      }
     };
     
     extensionComm.onExtensionUnauthenticated = () => {
@@ -149,6 +154,38 @@ export function useAuth(): AuthState & AuthActions {
     
     extensionComm.onUidCleared = () => {
       console.log('UID successfully cleared from extension');
+    };
+    
+    // Set up heartbeat and presence handlers
+    extensionComm.onExtensionHeartbeat = (data: any) => {
+      console.log('💓 Extension heartbeat received');
+      if (data.extensionVersion) {
+        console.log('🔧 Extension version:', data.extensionVersion);
+      }
+      if (data.userId) {
+        console.log('👤 Active user in extension:', data.userId);
+      }
+    };
+    
+    extensionComm.onExtensionPresent = (data: any) => {
+      console.log('✅ Extension is present and responding');
+      console.log('📊 Extension info:', {
+        version: data.extensionVersion,
+        userId: data.userId || 'No user logged in',
+        installed: data.isInstalled
+      });
+    };
+    
+    extensionComm.onExtensionNotPresent = () => {
+      console.log('⚠️ Extension is not present or not responding');
+    };
+    
+    extensionComm.onRequillLoginSuccess = (data: any) => {
+      console.log('✅ Requill login successful in extension:', data);
+    };
+    
+    extensionComm.onRequillLoginFailed = (data: any) => {
+      console.log('❌ Requill login failed in extension:', data);
     };
 
     // Extension Uninstall Detection
