@@ -42,7 +42,7 @@ export default function PricingPage() {
       name: "Free",
       monthlyPrice: 0,
       annualPrice: 0,
-      subheading: "10 total usages to Generate AI‑powered :",
+      subheading: "10 total usages to Generate AI-powered content",
       features: [
         "summaries and replies for LinkedIn posts",
         "LinkedIn profile summary with personalised messages",
@@ -341,18 +341,17 @@ export default function PricingPage() {
             {/* Text */}
             <div className="z-10 flex-1">
               <div className="flex items-center gap-3 mb-6">
-                <Rocket className="w-8 h-8 md:w-12 md:h-12 text-blue-400" />
                 <h2 className="text-3xl md:text-5xl font-extrabold text-white leading-tight">
                   It's time to <br />
                   <span className="flex items-center gap-2">
                     Level Up 
-                    <Star className="w-8 h-8 md:w-12 md:h-12 text-yellow-400 fill-current" />
+                    <Rocket className="w-8 h-8 md:w-12 md:h-12 text-blue-400" />
                   </span>
                 </h2>
               </div>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <BrainCircuit className="w-6 h-6 text-blue-400 flex-shrink-0" />
+                  <Star className="w-6 h-6 text-blue-400 flex-shrink-0" />
                   <span className="text-gray-300 font-medium">Leverage AI to help you focus more on high impact work</span>
                 </div>
                 <div className="flex items-center gap-3">
