@@ -207,9 +207,9 @@ export function useAuth(): AuthState & AuthActions {
             signOut(auth).then(() => {
               console.log('🚪 Extension was uninstalled - user has been logged out');
               // Optionally redirect to login page
-              if (typeof window !== 'undefined') {
-                window.location.href = '/login';
-              }
+              // if (typeof window !== 'undefined') {
+              //   window.location.href = '/login';
+              // }
             }).catch(error => {
               console.error('Error during extension uninstall logout:', error);
             });
@@ -247,31 +247,14 @@ export function useAuth(): AuthState & AuthActions {
       if ((extensionUninstallLogout === 'true' || extensionNotInstalledLogout === 'true') && user) {
         // Check if this is the same user who was logged out due to extension issues
         if (logoutUserId === user.uid) {
-          // Check if logout was recent (within last 30 seconds to handle redirects)
-          const logoutTime = parseInt(logoutTimestamp || '0');
-          const timeDiff = Date.now() - logoutTime;
-          
-          if (timeDiff < 30000) { // 30 seconds
-            const reason = extensionUninstallLogout === 'true' ? 'extension uninstall' : 'extension not installed';
-            console.log(`🚫 Preventing automatic re-login after ${reason}`);
-            await signOut(auth);
-            setUser(null);
-            setLoading(false);
-            return;
-          } else if (extensionNotInstalledLogout === 'true') {
-            // For extension not installed, keep blocking until user manually logs in
-            // Don't clear the flag automatically - force manual intervention
-            console.log('🚫 Extension still not installed - preventing automatic login');
-            await signOut(auth);
-            setUser(null);
-            setLoading(false);
-            return;
-          } else {
-            // Clear the logout flags only for extension uninstall (not for missing extension)
-            localStorage.removeItem('extension_uninstall_logout');
-            localStorage.removeItem('extension_uninstall_userId');
-            localStorage.removeItem('extension_uninstall_timestamp');
-          }
+          // For both extension uninstall and not installed - keep blocking until user manually logs in
+          // Don't clear the flags automatically - force manual intervention
+          const reason = extensionUninstallLogout === 'true' ? 'extension uninstall' : 'extension not installed';
+          console.log(`🚫 Extension ${reason} - preventing automatic login`);
+          await signOut(auth);
+          setUser(null);
+          setLoading(false);
+          return;
         }
       }
       
