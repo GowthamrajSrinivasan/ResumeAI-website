@@ -1,12 +1,14 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Sparkles, ArrowLeft, Mail, User, Phone, MessageSquare, Send } from "lucide-react";
 import { FIREBASE_FUNCTIONS } from '@/lib/firebase-functions';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function ContactUsPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -15,6 +17,17 @@ export default function ContactUsPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  // Auto-fill email and name from user's login credentials
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        email: user.email || prev.email,
+        name: user.displayName || prev.name
+      }));
+    }
+  }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -129,7 +142,9 @@ export default function ContactUsPage() {
                   {/* Name Field */}
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Name *
+                      Name * {user && user.displayName && (
+                        <span className="text-xs text-blue-400 ml-2">(from your account)</span>
+                      )}
                     </label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -148,7 +163,9 @@ export default function ContactUsPage() {
                   {/* Email Field */}
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Email Address *
+                      Email Address * {user && user.email && (
+                        <span className="text-xs text-blue-400 ml-2">(from your account)</span>
+                      )}
                     </label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -158,9 +175,20 @@ export default function ContactUsPage() {
                         value={formData.email}
                         onChange={handleInputChange}
                         required
-                        className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-white placeholder-gray-400"
+                        readOnly={!!(user && user.email)}
+                        className={`w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-white placeholder-gray-400 ${
+                          user && user.email 
+                            ? 'bg-[#141824] cursor-not-allowed opacity-90' 
+                            : 'bg-[#1a1f2e]'
+                        }`}
                         placeholder="Enter your email address"
+                        title={user && user.email ? "Email address from your account (read-only)" : "Enter your email address"}
                       />
+                      {user && user.email && (
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                          <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
