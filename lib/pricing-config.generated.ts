@@ -1,5 +1,5 @@
 // Auto-generated from pricing.md - DO NOT EDIT MANUALLY
-// Generated at: 2025-08-07T15:35:30.934Z
+// Generated at: 2025-08-06T01:55:38.633Z
 // Source: config/pricing.md
 
 import { PricingConfig } from './currency-service';
@@ -13,7 +13,7 @@ export const PRICING_CONFIG: PricingConfig = {
     "IN": {
       "currency": "INR",
       "symbol": "₹",
-      "monthly": 9,
+      "monthly": 199,
       "annual": 1500,
       "notes": "Primary market - competitive local pricing"
     },

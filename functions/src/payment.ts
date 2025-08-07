@@ -1,9 +1,6 @@
 import {onRequest} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import * as crypto from "crypto";
-import {getFirestore} from "firebase-admin/firestore";
-
-const db = getFirestore();
 
 // Initialize Razorpay
 const Razorpay = require("razorpay");
@@ -33,7 +30,7 @@ export const createOrder = onRequest({
   }
 
   try {
-    const {amount, currency = "INR", receipt, notes, customer} = req.body;
+    const {amount, currency = "INR", receipt} = req.body;
 
     if (!amount) {
       res.status(400).json({error: "Amount is required"});
@@ -64,44 +61,11 @@ export const createOrder = onRequest({
       receipt: receipt || `receipt_${Date.now()}`
     });
     
-    const orderData: { [key: string]: any } = {
+    const order = await razorpay.orders.create({
       amount: amount * 100, // Convert to paise
       currency,
       receipt: receipt || `receipt_${Date.now()}`,
-      notes: notes || {},
-    };
-
-    // Add customer data if provided
-    if (customer && (customer.name || customer.email || customer.contact)) {
-      orderData.customer_id = customer.email || undefined;
-    }
-
-    const order = await razorpay.orders.create(orderData);
-
-    // Store order tracking in Firestore for additional safety
-    if (notes?.userId) {
-      try {
-        await db.collection("razorpay_orders").doc(order.id).set({
-          orderId: order.id,
-          userId: notes.userId,
-          userEmail: notes.userEmail,
-          userDisplayName: notes.userDisplayName,
-          planType: notes.type,
-          planName: notes.plan,
-          amount: order.amount,
-          currency: order.currency,
-          receipt: order.receipt,
-          status: 'created',
-          createdAt: new Date(),
-          notes: notes,
-          customer: customer || null
-        });
-        logger.info("Order tracking stored in Firestore", {orderId: order.id, userId: notes.userId});
-      } catch (firestoreError) {
-        logger.error("Failed to store order tracking:", firestoreError);
-        // Don't fail the order creation if Firestore fails
-      }
-    }
+    });
 
     logger.info("Order created successfully", {orderId: order.id, amount});
     res.status(200).json({
@@ -214,10 +178,7 @@ export const webhook = onRequest({
 
     if (expectedSignature === signature) {
       logger.info("Webhook verified successfully", {event: req.body?.event});
-      
-      // Process webhook event
-      await processWebhookEvent(req.body);
-      
+      // Process webhook event here
       res.status(200).json({status: "ok"});
     } else {
       logger.warn("Webhook verification failed - signature mismatch");
@@ -376,163 +337,3 @@ export const paymentTest = onRequest({
     res.status(500).json({error: "Test failed"});
   }
 });
-
-// Process webhook events
-async function processWebhookEvent(event: any) {
-  try {
-    logger.info("Processing webhook event", {
-      event: event.event,
-      paymentId: event.payload?.payment?.entity?.id,
-      orderId: event.payload?.payment?.entity?.order_id
-    });
-
-    switch (event.event) {
-      case 'payment.captured':
-        await handlePaymentCaptured(event.payload.payment.entity);
-        break;
-      case 'payment.failed':
-        await handlePaymentFailed(event.payload.payment.entity);
-        break;
-      case 'order.paid':
-        await handleOrderPaid(event.payload.order.entity);
-        break;
-      default:
-        logger.info("Unhandled webhook event", {event: event.event});
-    }
-  } catch (error) {
-    logger.error("Error processing webhook event:", error);
-  }
-}
-
-// Handle successful payment capture
-async function handlePaymentCaptured(payment: any) {
-  try {
-    const paymentId = payment.id;
-    const orderId = payment.order_id;
-    const amount = payment.amount / 100; // Convert from paise to rupees
-
-    logger.info("Processing captured payment", {paymentId, orderId, amount});
-
-    // Fetch order details from Razorpay to get user info
-    const razorpay = createRazorpayInstance();
-    const order = await razorpay.orders.fetch(orderId);
-
-    const userId = order.notes?.userId;
-    const userEmail = order.notes?.userEmail;
-    const planType = order.notes?.type || 'monthly';
-    //const planName = order.notes?.plan || 'Premium'; use this when multiple paid plans are there
-
-    if (!userId) {
-      logger.warn("No user ID found in order notes", {orderId, notes: order.notes});
-      return;
-    }
-
-    logger.info("Found user info in order", {userId, userEmail, planType});
-
-    // Check if this payment has already been processed
-    const existingUpgrade = await db.collection("premiumUpgrades")
-      .where("paymentId", "==", paymentId)
-      .limit(1)
-      .get();
-
-    if (!existingUpgrade.empty) {
-      logger.info("Payment already processed, skipping upgrade", {paymentId});
-      return;
-    }
-
-    // Upgrade user to premium
-    const userRef = db.collection("users").doc(userId);
-    const userDoc = await userRef.get();
-
-    if (!userDoc.exists) {
-      logger.error("User not found for upgrade", {userId});
-      return;
-    }
-
-    // Calculate subscription dates
-    const now = new Date();
-    const subscriptionEnd = new Date();
-    if (planType === 'annual') {
-      subscriptionEnd.setFullYear(now.getFullYear() + 1);
-    } else {
-      subscriptionEnd.setMonth(now.getMonth() + 1);
-    }
-
-    // Update user to premium
-    await userRef.update({
-      isPremium: true,
-      subscriptionType: planType,
-      subscriptionStart: now,
-      subscriptionEnd: subscriptionEnd,
-      paymentId: paymentId,
-      orderId: orderId,
-      updatedAt: now,
-      lastPaymentMethod: 'razorpay_webhook'
-    });
-
-    // Log the premium upgrade
-    await db.collection("premiumUpgrades").add({
-      userId: userId,
-      userEmail: userEmail,
-      paymentId: paymentId,
-      orderId: orderId,
-      planType: planType,
-      subscriptionStart: now,
-      subscriptionEnd: subscriptionEnd,
-      upgradedAt: now,
-      createdAt: now,
-      amount: amount,
-      currency: order.currency || "INR",
-      upgradeSource: 'webhook',
-      razorpayData: {
-        payment: payment,
-        order: order
-      }
-    });
-
-    logger.info("User upgraded to premium via webhook", {
-      userId,
-      userEmail,
-      paymentId,
-      orderId,
-      planType,
-      amount
-    });
-
-  } catch (error) {
-    logger.error("Error handling payment capture:", error);
-  }
-}
-
-// Handle failed payment
-async function handlePaymentFailed(payment: any) {
-  try {
-    const paymentId = payment.id;
-    const orderId = payment.order_id;
-
-    logger.info("Processing failed payment", {paymentId, orderId});
-
-    // Log the failed payment for monitoring
-    await db.collection("failedPayments").add({
-      paymentId: paymentId,
-      orderId: orderId,
-      failedAt: new Date(),
-      errorCode: payment.error_code,
-      errorDescription: payment.error_description,
-      razorpayData: payment
-    });
-
-  } catch (error) {
-    logger.error("Error handling payment failure:", error);
-  }
-}
-
-// Handle order paid event
-async function handleOrderPaid(order: any) {
-  try {
-    logger.info("Order paid event received", {orderId: order.id});
-    // This is typically followed by payment.captured, so we don't need to duplicate logic
-  } catch (error) {
-    logger.error("Error handling order paid:", error);
-  }
-}

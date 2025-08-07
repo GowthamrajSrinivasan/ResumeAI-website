@@ -93,24 +93,14 @@ export default function PaymentButton({
         body: JSON.stringify({
           amount: amount,
           currency: pricingData.currency.code,
-          receipt: `receipt_${user?.uid || 'anonymous'}_${planType}_${Date.now()}`,
+          receipt: `receipt_${planName}_${planType}_${Date.now()}`,
           notes: {
-            userId: user?.uid || null,
-            userEmail: user?.email || null,
-            userDisplayName: user?.displayName || user?.email?.split('@')[0] || null,
             plan: planName,
             type: planType,
             currency: pricingData.currency.code,
             pricingSource: pricingData.pricingSource,
-            localizedAmount: amount,
-            createdAt: new Date().toISOString()
+            localizedAmount: amount
           },
-          // Enhanced customer data for Razorpay
-          customer: {
-            name: user?.displayName || user?.email?.split('@')[0] || 'Customer',
-            email: user?.email || '',
-            contact: '' // Will be filled by user during payment
-          }
         }),
       });
 
