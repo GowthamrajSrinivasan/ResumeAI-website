@@ -5,6 +5,8 @@ import React, { useState, useEffect } from "react";
 import { Sparkles, ArrowLeft, Mail, User, Phone, MessageSquare, Send } from "lucide-react";
 import { FIREBASE_FUNCTIONS } from '@/lib/firebase-functions';
 import { useAuth } from '@/hooks/useAuth';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export default function ContactUsPage() {
   const router = useRouter();
@@ -17,16 +19,57 @@ export default function ContactUsPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [firestoreUserData, setFirestoreUserData] = useState<any>(null);
+  const [isLoadingUserData, setIsLoadingUserData] = useState(false);
 
-  // Auto-fill email and name from user's login credentials
+  // Fetch user data from Firestore and auto-fill form
   useEffect(() => {
-    if (user) {
-      setFormData(prev => ({
-        ...prev,
-        email: user.email || prev.email,
-        name: user.displayName || prev.name
-      }));
-    }
+    const fetchUserDataAndFillForm = async () => {
+      if (user?.uid) {
+        setIsLoadingUserData(true);
+        try {
+          const userDocRef = doc(db, 'users', user.uid);
+          const userDoc = await getDoc(userDocRef);
+          
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setFirestoreUserData(userData);
+            
+            // Auto-fill form with Firestore data
+            setFormData(prev => ({
+              ...prev,
+              email: userData.userEmail || user.email || prev.email,
+              name: userData.userDetails?.displayName || user.displayName || prev.name
+            }));
+            
+            console.log('✅ User data loaded from Firestore:', {
+              email: userData.userEmail,
+              displayName: userData.userDetails?.displayName
+            });
+          } else {
+            console.log('ℹ️ No user document found in Firestore, using Firebase Auth data');
+            // Fallback to Firebase Auth data
+            setFormData(prev => ({
+              ...prev,
+              email: user.email || prev.email,
+              name: user.displayName || prev.name
+            }));
+          }
+        } catch (error) {
+          console.error('❌ Error fetching user data from Firestore:', error);
+          // Fallback to Firebase Auth data on error
+          setFormData(prev => ({
+            ...prev,
+            email: user.email || prev.email,
+            name: user.displayName || prev.name
+          }));
+        } finally {
+          setIsLoadingUserData(false);
+        }
+      }
+    };
+
+    fetchUserDataAndFillForm();
   }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -142,9 +185,11 @@ export default function ContactUsPage() {
                   {/* Name Field */}
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Name * {user && user.displayName && (
-                        <span className="text-xs text-blue-400 ml-2">(from your account)</span>
-                      )}
+                      Name * {isLoadingUserData ? (
+                        <span className="text-xs text-gray-400 ml-2">(loading...)</span>
+                      ) : (firestoreUserData?.userDetails?.displayName || (user && user.displayName)) ? (
+                        <span className="text-xs text-green-400 ml-2">(from your profile)</span>
+                      ) : null}
                     </label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -154,18 +199,28 @@ export default function ContactUsPage() {
                         value={formData.name}
                         onChange={handleInputChange}
                         required
-                        className="w-full pl-10 pr-4 py-3 bg-[#1a1f2e] border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-white placeholder-gray-400"
-                        placeholder="Enter your full name"
+                        disabled={isLoadingUserData}
+                        className={`w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-white placeholder-gray-400 ${
+                          isLoadingUserData ? 'bg-[#141824] opacity-70' : 'bg-[#1a1f2e]'
+                        }`}
+                        placeholder={isLoadingUserData ? "Loading..." : "Enter your full name"}
                       />
+                      {isLoadingUserData && (
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                          <Sparkles className="h-4 w-4 text-blue-400 animate-spin" />
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   {/* Email Field */}
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Email Address * {user && user.email && (
-                        <span className="text-xs text-blue-400 ml-2">(from your account)</span>
-                      )}
+                      Email Address * {isLoadingUserData ? (
+                        <span className="text-xs text-gray-400 ml-2">(loading...)</span>
+                      ) : (firestoreUserData?.userEmail || (user && user.email)) ? (
+                        <span className="text-xs text-green-400 ml-2">(from your profile)</span>
+                      ) : null}
                     </label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -175,20 +230,33 @@ export default function ContactUsPage() {
                         value={formData.email}
                         onChange={handleInputChange}
                         required
-                        readOnly={!!(user && user.email)}
+                        readOnly={!!(firestoreUserData?.userEmail || (user && user.email))}
+                        disabled={isLoadingUserData}
                         className={`w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-white placeholder-gray-400 ${
-                          user && user.email 
-                            ? 'bg-[#141824] cursor-not-allowed opacity-90' 
-                            : 'bg-[#1a1f2e]'
+                          isLoadingUserData 
+                            ? 'bg-[#141824] opacity-70'
+                            : (firestoreUserData?.userEmail || (user && user.email))
+                              ? 'bg-[#141824] cursor-not-allowed opacity-90' 
+                              : 'bg-[#1a1f2e]'
                         }`}
-                        placeholder="Enter your email address"
-                        title={user && user.email ? "Email address from your account (read-only)" : "Enter your email address"}
+                        placeholder={isLoadingUserData ? "Loading..." : "Enter your email address"}
+                        title={
+                          isLoadingUserData 
+                            ? "Loading user data..." 
+                            : (firestoreUserData?.userEmail || (user && user.email))
+                              ? "Email address from your profile (read-only)" 
+                              : "Enter your email address"
+                        }
                       />
-                      {user && user.email && (
+                      {isLoadingUserData ? (
                         <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                          <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                          <Sparkles className="h-4 w-4 text-blue-400 animate-spin" />
                         </div>
-                      )}
+                      ) : (firestoreUserData?.userEmail || (user && user.email)) ? (
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        </div>
+                      ) : null}
                     </div>
                   </div>
 
