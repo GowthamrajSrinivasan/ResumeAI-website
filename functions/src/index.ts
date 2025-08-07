@@ -32,7 +32,7 @@ export const contact = onRequest({cors: true}, async (req, res) => {
   }
 
   try {
-    const {name, email, phone, message} = req.body;
+    const {name, email, phone, message, userId} = req.body;
 
     // Validate required fields
     if (!name || !email || !message) {
@@ -47,10 +47,36 @@ export const contact = onRequest({cors: true}, async (req, res) => {
       return;
     }
 
-    // Store in Firestore or send email
-    logger.info("Contact form submitted", {name, email, phone, message});
+    // Prepare feedback data for storage
+    const feedbackData = {
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
+      phone: phone ? phone.trim() : null,
+      message: message.trim(),
+      userId: userId || null,
+      submittedAt: new Date(),
+      timestamp: Date.now(),
+      status: 'new',
+      source: 'contact_form',
+      userAgent: req.headers['user-agent'] || null,
+      ipAddress: req.ip || req.connection?.remoteAddress || null
+    };
+
+    // Store feedback in Firestore
+    const feedbackRef = await db.collection('contact_submissions').add(feedbackData);
     
-    res.status(200).json({message: "Contact form submitted successfully"});
+    logger.info("Contact form submitted and stored", {
+      feedbackId: feedbackRef.id,
+      name,
+      email,
+      phone,
+      userId: userId || 'anonymous'
+    });
+    
+    res.status(200).json({
+      message: "Contact form submitted successfully",
+      submissionId: feedbackRef.id
+    });
   } catch (error) {
     logger.error("Error in contact function:", error);
     res.status(500).json({error: "Internal server error"});

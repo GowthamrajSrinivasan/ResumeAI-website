@@ -85,22 +85,32 @@ export default function ContactUsPage() {
     setSubmitStatus('idle');
 
     try {
+      // Prepare submission data with user ID if authenticated
+      const submissionData = {
+        ...formData,
+        userId: user?.uid || null
+      };
+
       const response = await fetch(FIREBASE_FUNCTIONS.contact, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submissionData),
       });
 
       if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Contact form submitted successfully:', result.submissionId);
         setSubmitStatus('success');
         setFormData({ name: '', email: '', phone: '', message: '' });
       } else {
+        const errorData = await response.json();
+        console.error('❌ Contact form submission failed:', errorData);
         setSubmitStatus('error');
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('❌ Error submitting contact form:', error);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);

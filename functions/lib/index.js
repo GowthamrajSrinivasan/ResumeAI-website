@@ -36,12 +36,13 @@ Object.defineProperty(exports, "cleanupBehaviorData", { enumerable: true, get: f
 Object.defineProperty(exports, "cleanupMetrics", { enumerable: true, get: function () { return maintenance_1.cleanupMetrics; } });
 // Contact form handler
 exports.contact = (0, https_1.onRequest)({ cors: true }, async (req, res) => {
+    var _a;
     if (req.method !== "POST") {
         res.status(405).json({ error: "Method not allowed" });
         return;
     }
     try {
-        const { name, email, phone, message } = req.body;
+        const { name, email, phone, message, userId } = req.body;
         // Validate required fields
         if (!name || !email || !message) {
             res.status(400).json({ error: "Name, email, and message are required" });
@@ -53,9 +54,33 @@ exports.contact = (0, https_1.onRequest)({ cors: true }, async (req, res) => {
             res.status(400).json({ error: "Invalid email format" });
             return;
         }
-        // Store in Firestore or send email
-        logger.info("Contact form submitted", { name, email, phone, message });
-        res.status(200).json({ message: "Contact form submitted successfully" });
+        // Prepare feedback data for storage
+        const feedbackData = {
+            name: name.trim(),
+            email: email.toLowerCase().trim(),
+            phone: phone ? phone.trim() : null,
+            message: message.trim(),
+            userId: userId || null,
+            submittedAt: new Date(),
+            timestamp: Date.now(),
+            status: 'new',
+            source: 'contact_form',
+            userAgent: req.headers['user-agent'] || null,
+            ipAddress: req.ip || ((_a = req.connection) === null || _a === void 0 ? void 0 : _a.remoteAddress) || null
+        };
+        // Store feedback in Firestore
+        const feedbackRef = await db.collection('contact_submissions').add(feedbackData);
+        logger.info("Contact form submitted and stored", {
+            feedbackId: feedbackRef.id,
+            name,
+            email,
+            phone,
+            userId: userId || 'anonymous'
+        });
+        res.status(200).json({
+            message: "Contact form submitted successfully",
+            submissionId: feedbackRef.id
+        });
     }
     catch (error) {
         logger.error("Error in contact function:", error);
