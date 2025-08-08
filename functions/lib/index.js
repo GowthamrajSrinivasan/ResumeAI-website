@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendWelcomeEmail = exports.waitlist = exports.contact = exports.cleanupMetrics = exports.cleanupBehaviorData = exports.healthCheck = exports.getDashboard = exports.processQueue = exports.generateReply = exports.updateUsageCount = exports.getUserUsageData = exports.checkUserByEmail = exports.analyzeProfile = exports.analyzePost = exports.paymentTest = exports.webhook = exports.verifyPayment = exports.createOrder = void 0;
+exports.sendWelcomeEmail = exports.waitlist = exports.contact = exports.cleanupMetrics = exports.cleanupBehaviorData = exports.healthCheck = exports.getDashboard = exports.processQueue = exports.generateReply = exports.getUserProfile = exports.updateSubscriptionPlan = exports.getBillingHistory = exports.cancelSubscription = exports.upgradeToPremium = exports.updateUsageCount = exports.getUserUsageData = exports.checkUserByEmail = exports.analyzeProfile = exports.analyzePost = exports.paymentTest = exports.webhook = exports.verifyPayment = exports.createOrder = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 const app_1 = require("firebase-admin/app");
@@ -22,6 +22,11 @@ var user_management_1 = require("./user-management");
 Object.defineProperty(exports, "checkUserByEmail", { enumerable: true, get: function () { return user_management_1.checkUserByEmail; } });
 Object.defineProperty(exports, "getUserUsageData", { enumerable: true, get: function () { return user_management_1.getUserUsageData; } });
 Object.defineProperty(exports, "updateUsageCount", { enumerable: true, get: function () { return user_management_1.updateUsageCount; } });
+Object.defineProperty(exports, "upgradeToPremium", { enumerable: true, get: function () { return user_management_1.upgradeToPremium; } });
+Object.defineProperty(exports, "cancelSubscription", { enumerable: true, get: function () { return user_management_1.cancelSubscription; } });
+Object.defineProperty(exports, "getBillingHistory", { enumerable: true, get: function () { return user_management_1.getBillingHistory; } });
+Object.defineProperty(exports, "updateSubscriptionPlan", { enumerable: true, get: function () { return user_management_1.updateSubscriptionPlan; } });
+Object.defineProperty(exports, "getUserProfile", { enumerable: true, get: function () { return user_management_1.getUserProfile; } });
 // Export AI services functions
 var ai_services_1 = require("./ai-services");
 Object.defineProperty(exports, "generateReply", { enumerable: true, get: function () { return ai_services_1.generateReply; } });

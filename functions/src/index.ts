@@ -13,7 +13,7 @@ export {createOrder, verifyPayment, webhook, paymentTest} from "./payment";
 export {analyzePost, analyzeProfile} from "./analytics";
 
 // Export user management functions
-export {checkUserByEmail, getUserUsageData, updateUsageCount} from "./user-management";
+export {checkUserByEmail, getUserUsageData, updateUsageCount, upgradeToPremium, cancelSubscription, getBillingHistory, updateSubscriptionPlan, getUserProfile} from "./user-management";
 
 // Export AI services functions
 export {generateReply, processQueue} from "./ai-services";

@@ -95,6 +95,9 @@ export default function PaymentButton({
           currency: pricingData.currency.code,
           receipt: `receipt_${planName}_${planType}_${Date.now()}`,
           notes: {
+            email: user?.email,
+            uid: user?.uid,
+            name: user?.displayName,
             plan: planName,
             type: planType,
             currency: pricingData.currency.code,

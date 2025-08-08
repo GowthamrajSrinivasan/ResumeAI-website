@@ -4,6 +4,8 @@ exports.paymentTest = exports.createPaymentLink = exports.getConfig = exports.we
 const https_1 = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 const crypto = require("crypto");
+const firestore_1 = require("firebase-admin/firestore");
+const db = (0, firestore_1.getFirestore)();
 // Initialize Razorpay
 const Razorpay = require("razorpay");
 function createRazorpayInstance() {
@@ -57,6 +59,15 @@ exports.createOrder = (0, https_1.onRequest)({
             amount: amount * 100, // Convert to paise
             currency,
             receipt: receipt || `receipt_${Date.now()}`,
+            notes: {
+                userId: req.body.userId,
+                email: req.body.email,
+                userEmail: req.body.email,
+                name: req.body.name,
+                plan: req.body.plan,
+                planType: req.body.plan,
+                type: req.body.type
+            }
         });
         logger.info("Order created successfully", { orderId: order.id, amount });
         res.status(200).json(Object.assign(Object.assign({}, order), { razorpay_key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID }));
@@ -99,6 +110,22 @@ exports.verifyPayment = (0, https_1.onRequest)({
                 orderId: razorpay_order_id,
                 paymentId: razorpay_payment_id,
             });
+            // Get user details from request body for upgrade
+            const { userId, userEmail, planType } = req.body;
+            if (userId && userEmail) {
+                try {
+                    // Automatically upgrade user to premium
+                    await upgradeUserToPremium(userId, userEmail, razorpay_payment_id, razorpay_order_id, planType || 'premium');
+                    logger.info("User automatically upgraded to premium after payment verification", {
+                        userId,
+                        paymentId: razorpay_payment_id
+                    });
+                }
+                catch (upgradeError) {
+                    logger.error("Failed to upgrade user to premium:", upgradeError);
+                    // Still return success for payment verification, but log the upgrade failure
+                }
+            }
             res.status(200).json({ verified: true });
         }
         else {
@@ -119,7 +146,7 @@ exports.webhook = (0, https_1.onRequest)({
     cors: true,
     secrets: ["RAZORPAY_WEBHOOK_SECRET"]
 }, async (req, res) => {
-    var _a;
+    var _a, _b;
     if (req.method !== "POST") {
         res.status(405).json({ error: "Method not allowed" });
         return;
@@ -154,8 +181,43 @@ exports.webhook = (0, https_1.onRequest)({
             match: expectedSignature === signature
         });
         if (expectedSignature === signature) {
-            logger.info("Webhook verified successfully", { event: (_a = req.body) === null || _a === void 0 ? void 0 : _a.event });
-            // Process webhook event here
+            const event = (_a = req.body) === null || _a === void 0 ? void 0 : _a.event;
+            const payload = (_b = req.body) === null || _b === void 0 ? void 0 : _b.payload;
+            logger.info("Webhook verified successfully", { event, payload });
+            // Process payment.captured events
+            if (event === 'payment.captured' && (payload === null || payload === void 0 ? void 0 : payload.payment)) {
+                try {
+                    const payment = payload.payment.entity;
+                    const orderId = payment.order_id;
+                    const paymentId = payment.id;
+                    const amount = payment.amount / 100; // Convert from paise to rupees
+                    // Get order details to find user information
+                    if (payment.notes) {
+                        const userId = payment.notes.userId;
+                        const userEmail = payment.notes.email || payment.notes.userEmail;
+                        const planType = payment.notes.plan || payment.notes.planType || 'premium';
+                        if (userId && userEmail) {
+                            await upgradeUserToPremium(userId, userEmail, paymentId, orderId, planType);
+                            logger.info("User automatically upgraded via webhook", {
+                                userId,
+                                paymentId,
+                                orderId,
+                                amount
+                            });
+                        }
+                        else {
+                            logger.warn("Missing user information in payment notes", {
+                                notes: payment.notes,
+                                paymentId
+                            });
+                        }
+                    }
+                }
+                catch (webhookError) {
+                    logger.error("Error processing payment webhook:", webhookError);
+                    // Don't fail the webhook response, just log the error
+                }
+            }
             res.status(200).json({ status: "ok" });
         }
         else {
@@ -227,16 +289,23 @@ exports.createPaymentLink = (0, https_1.onRequest)({
                 plan: plan_name || "unknown",
                 created_via: "executivesAI_checkout"
             },
-            callback_url: "https://your-domain.com/payment-success",
+            callback_url: "https://requill.executivesai.pro/account/subscriptions",
             callback_method: "get"
         };
         logger.info("Creating payment link", {
             amount: paymentLinkData.amount,
             currency: paymentLinkData.currency,
-            description: paymentLinkData.description
+            description: paymentLinkData.description,
+            customer: paymentLinkData.customer,
+            notify: paymentLinkData.notify,
+            reminder_enable: paymentLinkData.reminder_enable,
+            notes: paymentLinkData.notes,
+            callback_url: paymentLinkData.callback_url,
+            callback_method: paymentLinkData.callback_method
         });
         const paymentLink = await razorpay.paymentLink.create(paymentLinkData);
         logger.info("Payment link created successfully", {
+            payment_link: paymentLink,
             id: paymentLink.id,
             short_url: paymentLink.short_url
         });
@@ -304,4 +373,58 @@ exports.paymentTest = (0, https_1.onRequest)({
         res.status(500).json({ error: "Test failed" });
     }
 });
+// Helper function to upgrade user to premium
+async function upgradeUserToPremium(userId, userEmail, paymentId, orderId, planType = 'premium') {
+    try {
+        logger.info("Upgrading user to premium", { userId, userEmail, paymentId, orderId, planType });
+        // Update user document in Firestore
+        const userRef = db.collection("users").doc(userId);
+        const userDoc = await userRef.get();
+        if (!userDoc.exists) {
+            throw new Error("User not found");
+        }
+        // Calculate subscription end date
+        const now = new Date();
+        const subscriptionEnd = new Date();
+        if (planType === 'annual') {
+            subscriptionEnd.setFullYear(now.getFullYear() + 1);
+        }
+        else {
+            subscriptionEnd.setMonth(now.getMonth() + 1);
+        }
+        // Update user to premium
+        await userRef.update({
+            isPremium: true,
+            planType: planType,
+            subscriptionType: planType,
+            subscriptionStatus: 'active',
+            premiumStartDate: now,
+            premiumEndDate: subscriptionEnd,
+            subscriptionStart: now,
+            subscriptionEnd: subscriptionEnd,
+            lastPaymentId: paymentId,
+            lastOrderId: orderId,
+            updatedAt: now
+        });
+        // Log the premium upgrade
+        await db.collection("premiumUpgrades").add({
+            userId: userId,
+            userEmail: userEmail,
+            paymentId: paymentId,
+            orderId: orderId,
+            planType: planType,
+            subscriptionStart: now,
+            subscriptionEnd: subscriptionEnd,
+            upgradedAt: now,
+            createdAt: now,
+            source: 'payment_verification'
+        });
+        logger.info("User upgraded to premium successfully", { userId, userEmail, planType });
+        return true;
+    }
+    catch (error) {
+        logger.error("Error upgrading user to premium:", error);
+        throw error;
+    }
+}
 //# sourceMappingURL=payment.js.map
