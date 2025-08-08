@@ -21,15 +21,24 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPopupHelp, setShowPopupHelp] = useState(false);
+  const [loginSuccessful, setLoginSuccessful] = useState(false);
 
   useEffect(() => {
-    console.log('Login page - Auth state:', { user: user?.email || 'null', loading });
+    console.log('Login page - Auth state:', { user: user?.email || 'null', loading, loginSuccessful });
     
-    if (user && !loading) {
-      console.log('✅ User authenticated, redirecting to LinkedIn feed');
-      window.location.href = 'https://www.linkedin.com/feed/';
+    // Only redirect if user is authenticated AND login was explicitly successful
+    if (user && !loading && loginSuccessful) {
+      console.log('✅ User authenticated and login completed, redirecting to LinkedIn feed');
+      // Add a small delay to ensure all auth processes are complete
+      setTimeout(() => {
+        window.location.href = 'https://www.linkedin.com/feed/';
+      }, 2000);
+    } else if (user && !loading && !loginSuccessful) {
+      // User is already logged in but hasn't performed a new login action
+      // Don't redirect automatically - let them decide what to do
+      console.log('ℹ️ User already authenticated but no new login performed - staying on login page');
     }
-  }, [user, loading, router]);
+  }, [user, loading, loginSuccessful, router]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -47,15 +56,22 @@ export default function LoginPage() {
     try {
       if (isLogin) {
         await signIn(formData.email, formData.password);
+        console.log('🔐 Email/password sign in successful');
       } else {
         if (formData.password !== formData.confirmPassword) {
           setError('Passwords do not match');
           return;
         }
         await signUp(formData.email, formData.password);
+        console.log('📝 Email/password sign up successful');
       }
+      
+      // Mark login as successful after authentication completes
+      setLoginSuccessful(true);
+      
     } catch (error: any) {
       setError(error.message || 'An error occurred');
+      setLoginSuccessful(false);
     } finally {
       setIsLoading(false);
     }
@@ -70,6 +86,7 @@ export default function LoginPage() {
       confirmPassword: ''
     });
     setError('');
+    setLoginSuccessful(false); // Reset login success flag when switching modes
   };
 
   const togglePasswordVisibility = () => {
@@ -81,15 +98,17 @@ export default function LoginPage() {
     setError('');
     
     try {
-      // This will redirect to Google - the page will navigate away
-      // No need to handle success here as the page redirects
       await signInWithGoogle();
+      console.log('🔐 Google sign in successful');
+      
+      // Mark login as successful after Google authentication completes
+      setLoginSuccessful(true);
+      
     } catch (error: any) {
-      // Only handle errors that occur before redirect (rare)
-      setError(error.message || 'Failed to initiate Google sign-in');
+      setError(error.message || 'Failed to sign in with Google');
+      setLoginSuccessful(false);
       setIsLoading(false);
     }
-    // Note: setIsLoading(false) not needed in finally because page redirects
   };
 
   if (loading) {
@@ -98,6 +117,48 @@ export default function LoginPage() {
         <div className="text-center">
           <Sparkles className="h-8 w-8 text-blue-400 animate-pulse mx-auto mb-4" />
           <p className="text-xl text-gray-300">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show success screen when login is complete and about to redirect
+  if (user && !loading && loginSuccessful) {
+    return (
+      <div className="min-h-screen bg-gradient-radial text-gray-200 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto">
+          <div className="relative rounded-2xl border border-green-500 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8">
+            {/* Success Icon */}
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
+              <svg
+                className="h-8 w-8 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+
+            <h1 className="text-2xl font-bold text-white mb-4">
+              Login Successful! 🎉
+            </h1>
+            
+            <p className="text-gray-300 mb-6">
+              Welcome back! Redirecting you to LinkedIn...
+            </p>
+
+            <div className="flex items-center justify-center">
+              <Sparkles className="h-5 w-5 text-blue-400 animate-pulse mr-3" />
+              <p className="text-blue-400">Setting up your workspace...</p>
+            </div>
+          </div>
         </div>
       </div>
     );
