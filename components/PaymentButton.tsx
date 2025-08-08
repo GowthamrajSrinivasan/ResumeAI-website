@@ -45,12 +45,11 @@ export default function PaymentButton({
         body: JSON.stringify({
           amount: amount,
           currency: 'INR',
-          receipt: `receipt_${planName}_${planType}_${Date.now()}`,
-          userId: user?.uid,
-          email: user?.email,
-          name: user?.displayName,
-          plan: planName,
-          type: planType,
+          receipt: `receipt_${planName}_${Date.now()}`,
+          notes: {
+            plan: planName,
+            type: planType,
+          },
         }),
       });
 
@@ -108,10 +107,6 @@ export default function PaymentButton({
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
-                // Include user details for automatic upgrade
-                userId: user?.uid,
-                userEmail: user?.email,
-                planType: planType,
               }),
             });
 
@@ -125,13 +120,43 @@ export default function PaymentButton({
             console.log('🔍 Verification result:', verifyData);
 
             if (verifyData.verified) {
-              console.log('✅ Payment verified and user upgraded automatically! Redirecting...');
+              console.log('✅ Payment verified! Upgrading user...');
               
-              // Payment is verified and user is automatically upgraded in the backend
-              // No need to call separate upgrade endpoint
-              setTimeout(() => {
-                window.location.href = `/payment/success?payment_id=${response.razorpay_payment_id}&order_id=${response.razorpay_order_id}&plan_type=${planType}`;
-              }, 1000);
+              if (user) {
+                const upgradeResponse = await fetch(FIREBASE_FUNCTIONS.upgradeToPremium, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    userId: user.uid,
+                    userEmail: user.email,
+                    paymentId: response.razorpay_payment_id,
+                    orderId: response.razorpay_order_id,
+                    planType: planType
+                  }),
+                });
+
+                if (!upgradeResponse.ok) {
+                  console.error('❌ Failed to upgrade user:', upgradeResponse.status);
+                  alert('Payment successful but upgrade failed. Please contact support.');
+                  return;
+                }
+
+                const upgradeData = await upgradeResponse.json();
+                console.log('🚀 Upgrade result:', upgradeData);
+                
+                if (upgradeData.success) {
+                  console.log('🎉 User upgraded successfully! Redirecting to LinkedIn...');
+                  setTimeout(() => {
+                    window.location.href = 'https://www.linkedin.com/';
+                  }, 1000);
+                } else {
+                  console.error('❌ Upgrade failed:', upgradeData);
+                  alert('Payment successful but upgrade failed. Please contact support.');
+                }
+              } else {
+                console.error('❌ No user logged in');
+                alert('Payment successful but no user found. Please contact support.');
+              }
             } else {
               console.error('❌ Payment verification failed:', verifyData);
               alert('Payment verification failed. Please contact support.');
