@@ -17,8 +17,6 @@ export const FIREBASE_FUNCTIONS = {
   paymentTest: `${FUNCTIONS_BASE_URL}/paymentTest`,
   
   // Analytics functions
-  trackEvent: `${FUNCTIONS_BASE_URL}/trackEvent`,
-  trackPageView: `${FUNCTIONS_BASE_URL}/trackPageView`,
   analyzePost: `${FUNCTIONS_BASE_URL}/analyzePost`,
   analyzeProfile: `${FUNCTIONS_BASE_URL}/analyzeProfile`,
   

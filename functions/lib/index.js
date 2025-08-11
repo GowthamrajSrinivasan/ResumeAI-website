@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendWelcomeEmail = exports.waitlist = exports.contact = exports.cleanupMetrics = exports.cleanupBehaviorData = exports.healthCheck = exports.getDashboard = exports.processQueue = exports.generateReply = exports.getUserProfile = exports.updateSubscriptionPlan = exports.getBillingHistory = exports.cancelSubscription = exports.upgradeToPremium = exports.updateUsageCount = exports.getUserUsageData = exports.checkUserByEmail = exports.analyzeProfile = exports.analyzePost = exports.trackPageView = exports.trackEvent = exports.paymentTest = exports.webhook = exports.verifyPayment = exports.createOrder = void 0;
+exports.sendWelcomeEmail = exports.waitlist = exports.contact = exports.cleanupMetrics = exports.cleanupBehaviorData = exports.healthCheck = exports.getDashboard = exports.processQueue = exports.generateReply = exports.getUserProfile = exports.updateSubscriptionPlan = exports.getBillingHistory = exports.cancelSubscription = exports.upgradeToPremium = exports.updateUsageCount = exports.getUserUsageData = exports.checkUserByEmail = exports.analyzeProfile = exports.analyzePost = exports.paymentTest = exports.webhook = exports.verifyPayment = exports.createOrder = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 const app_1 = require("firebase-admin/app");
@@ -15,8 +15,6 @@ Object.defineProperty(exports, "webhook", { enumerable: true, get: function () {
 Object.defineProperty(exports, "paymentTest", { enumerable: true, get: function () { return payment_1.paymentTest; } });
 // Export analytics functions
 var analytics_1 = require("./analytics");
-Object.defineProperty(exports, "trackEvent", { enumerable: true, get: function () { return analytics_1.trackEvent; } });
-Object.defineProperty(exports, "trackPageView", { enumerable: true, get: function () { return analytics_1.trackPageView; } });
 Object.defineProperty(exports, "analyzePost", { enumerable: true, get: function () { return analytics_1.analyzePost; } });
 Object.defineProperty(exports, "analyzeProfile", { enumerable: true, get: function () { return analytics_1.analyzeProfile; } });
 // Export user management functions
