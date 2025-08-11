@@ -10,7 +10,7 @@ const db = getFirestore();
 export {createOrder, verifyPayment, webhook, paymentTest} from "./payment";
 
 // Export analytics functions
-export {analyzePost, analyzeProfile} from "./analytics";
+export {trackEvent, trackPageView, analyzePost, analyzeProfile} from "./analytics";
 
 // Export user management functions
 export {checkUserByEmail, getUserUsageData, updateUsageCount, upgradeToPremium, cancelSubscription, getBillingHistory, updateSubscriptionPlan, getUserProfile} from "./user-management";
