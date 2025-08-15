@@ -253,6 +253,26 @@ export default function BlogContent() {
                     </li>
                   </ul>
 
+                  {/* Demo Video Section */}
+                  <div className="mb-8">
+                    <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-700 rounded-lg p-6 backdrop-blur-md">
+                      <h3 className="text-lg font-semibold text-purple-300 mb-4 text-center">See Requill in Action</h3>
+                      <div className="relative pb-[56.25%] h-0 overflow-hidden rounded-lg">
+                        <iframe
+                          className="absolute top-0 left-0 w-full h-full"
+                          src="https://www.youtube.com/embed/fbBR_TkLzVY?rel=0&modestbranding=1&vq=hd2160"
+                          title="Requill Demo Video"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        ></iframe>
+                      </div>
+                      <p className="text-center text-purple-200 text-sm mt-3">
+                        Watch how Requill transforms your LinkedIn experience in under 2 minutes
+                      </p>
+                    </div>
+                  </div>
+
                   <h2 id="how-to-use" className="text-2xl font-bold text-white mb-4">How to Use Requill</h2>
                   <ol className="list-decimal list-inside space-y-2 mb-6 text-gray-300">
                     <li>Install Requill from the Chrome Web Store.</li>

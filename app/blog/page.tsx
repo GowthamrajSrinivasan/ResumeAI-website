@@ -35,7 +35,7 @@ export default function BlogPage() {
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              className="block"
+              className="block cursor-pointer"
             >
               <article className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition hover:-translate-y-2 hover:scale-[1.02] overflow-hidden">
                 <div className="pointer-events-none absolute inset-0 rounded-2xl" style={{
