@@ -106,8 +106,8 @@ export default function BlogContent() {
           </Link>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left Sidebar - Table of Contents */}
+        <div className="grid grid-cols-1 lg:grid-cols-9 gap-8">
+          {/* Left Sidebar - Table of Contents and Popular Posts */}
           <aside className="lg:col-span-3">
             <div className="sticky top-24 space-y-6">
               {/* Table of Contents */}
@@ -172,6 +172,29 @@ export default function BlogContent() {
                   {submitError && (
                     <p className="mt-2 text-red-400 text-xs">{submitError}</p>
                   )}
+                </div>
+              </div>
+
+              {/* Popular Posts */}
+              <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-6 transition hover:-translate-y-1 hover:scale-[1.02] overflow-hidden">
+                <div className="pointer-events-none absolute inset-0 rounded-2xl" style={{
+                  background: "radial-gradient(circle at 50% 15%, #4361ee22 0%, transparent 80%)"
+                }} />
+                <div className="relative z-10">
+                  <h3 className="text-lg font-semibold text-white mb-4">Popular Posts</h3>
+                  <div className="space-y-4">
+                    {popularPosts.map((post, index) => (
+                      <Link
+                        key={index}
+                        href={`/blog/${post.slug}`}
+                        className="block group"
+                      >
+                        <h4 className="text-sm font-medium text-gray-300 group-hover:text-blue-400 transition-colors line-clamp-2">
+                          {post.title}
+                        </h4>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -338,33 +361,6 @@ export default function BlogContent() {
               </div>
             </article>
           </main>
-
-          {/* Right Sidebar - Popular Posts */}
-          <aside className="lg:col-span-3">
-            <div className="sticky top-24">
-              <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-6 transition hover:-translate-y-1 hover:scale-[1.02] overflow-hidden">
-                <div className="pointer-events-none absolute inset-0 rounded-2xl" style={{
-                  background: "radial-gradient(circle at 50% 15%, #4361ee22 0%, transparent 80%)"
-                }} />
-                <div className="relative z-10">
-                  <h3 className="text-lg font-semibold text-white mb-4">Popular Posts</h3>
-                  <div className="space-y-4">
-                    {popularPosts.map((post, index) => (
-                      <Link
-                        key={index}
-                        href={`/blog/${post.slug}`}
-                        className="block group"
-                      >
-                        <h4 className="text-sm font-medium text-gray-300 group-hover:text-blue-400 transition-colors line-clamp-2">
-                          {post.title}
-                        </h4>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </aside>
         </div>
       </div>
     </div>
