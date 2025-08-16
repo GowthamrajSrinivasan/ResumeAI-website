@@ -6,6 +6,13 @@ import { Mail } from 'lucide-react';
 
 const blogPosts = [
   {
+    slug: 'executives-save-time-linkedin-focus-high-value-work',
+    title: 'How Can Executives Save Time on LinkedIn and Focus on High-Value Work',
+    excerpt: 'Requill helps executives cut through LinkedIn noise, save hours each week, and focus on tasks that truly matter.',
+    publishedAt: '2025-01-16',
+    author: 'Requill Team'
+  },
+  {
     slug: 'requill-best-chrome-extension-2025',
     title: 'Best Chrome Extension for LinkedIn Summaries in 2025',
     excerpt: 'Save hours on LinkedIn. Use Requill for instant summaries, profile insights & personalized replies.',
