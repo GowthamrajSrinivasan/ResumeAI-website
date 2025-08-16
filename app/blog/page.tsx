@@ -6,18 +6,32 @@ import { Mail } from 'lucide-react';
 
 const blogPosts = [
   {
+    slug: 'requill-vs-linkedin-sales-navigator-smarter-cost-effective-choice-2025',
+    title: 'Requill vs. LinkedIn Sales Navigator: The Smarter, Cost-Effective Choice for Professionals in 2025',
+    excerpt: 'Requill delivers much of the value people seek in Sales Navigator, but at a fraction of the cost.',
+    publishedAt: '2025-01-18',
+    author: 'Renuga S, Co-Founder @ ExecutivesAI'
+  },
+  {
+    slug: 'read-linkedin-posts-faster-without-missing-key-insights',
+    title: 'How to Read LinkedIn Posts Faster Without Missing Key Insights',
+    excerpt: 'Use Requill to instantly summarize LinkedIn posts while preserving key context and critical details.',
+    publishedAt: '2025-01-17',
+    author: 'Renuga S, Co-Founder @ ExecutivesAI'
+  },
+  {
     slug: 'executives-save-time-linkedin-focus-high-value-work',
     title: 'How Can Executives Save Time on LinkedIn and Focus on High-Value Work',
     excerpt: 'Requill helps executives cut through LinkedIn noise, save hours each week, and focus on tasks that truly matter.',
     publishedAt: '2025-01-16',
-    author: 'Requill Team'
+    author: 'Renuga S, Co-Founder @ ExecutivesAI'
   },
   {
     slug: 'requill-best-chrome-extension-2025',
     title: 'Best Chrome Extension for LinkedIn Summaries in 2025',
     excerpt: 'Save hours on LinkedIn. Use Requill for instant summaries, profile insights & personalized replies.',
     publishedAt: '2025-01-15',
-    author: 'Requill Team'
+    author: 'Renuga S, Co-Founder @ ExecutivesAI'
   }
 ];
 
@@ -95,7 +109,7 @@ export default function BlogPage() {
             Blog
           </h1>
           <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
-            Insights, tips, and updates from the Requill team
+            Insights, tips, and updates from the Renuga S, Co-Founder @ ExecutivesAI
           </p>
         </div>
 
@@ -111,7 +125,7 @@ export default function BlogPage() {
                 <div className="relative z-10">
                   <h3 className="text-lg font-semibold text-white mb-3">Join Waiting List</h3>
                   <p className="text-sm text-gray-300 mb-4">
-                    Get early access to Requill and be the first to supercharge your LinkedIn presence.
+                    Get early access to Requill andbe among the first to boost your LinkedIn presence using AI.
                   </p>
                   
                   {!isSubmitted ? (

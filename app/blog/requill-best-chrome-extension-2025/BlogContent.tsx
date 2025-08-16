@@ -139,7 +139,7 @@ export default function BlogContent() {
                 <div className="relative z-10">
                   <h3 className="text-lg font-semibold text-white mb-3">Join Waiting List</h3>
                   <p className="text-sm text-gray-300 mb-4">
-                    Get early access to Requill and be the first to supercharge your LinkedIn presence.
+                    Get early access to Requill andbe among the first to boost your LinkedIn presence using AI.
                   </p>
                   
                   {!isSubmitted ? (
@@ -213,7 +213,7 @@ export default function BlogContent() {
                       January 15, 2025
                     </time>
                     <span className="mx-2">•</span>
-                    <span>Requill Team</span>
+                    <span>Renuga S, Co-Founder @ ExecutivesAI</span>
                   </div>
                   
                   <h1 className="text-4xl font-bold text-white mb-4 drop-shadow-lg">

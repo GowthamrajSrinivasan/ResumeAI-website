@@ -6,20 +6,21 @@ import { Mail } from 'lucide-react';
 
 const tableOfContents = [
   { id: 'quick-answer', title: 'Quick Answer' },
-  { id: 'why-executives-struggle', title: 'Why Executives Struggle to Manage LinkedIn Engagement' },
-  { id: 'what-requill-does', title: 'What Requill Does for Executives' },
-  { id: 'real-time-savings', title: 'How This Translates to Real Time Savings' },
-  { id: 'focus-high-value', title: 'Helping You Focus on High-Value Items' },
-  { id: 'why-matters-2025', title: 'Why This Matters for Executives in 2025' },
-  { id: 'final-takeaway', title: 'Final Takeaway' },
+  { id: 'why-people-search', title: 'Why People Search for This' },
+  { id: 'what-requill-does', title: 'What Requill Does' },
+  { id: 'how-to-use', title: 'How to Use Requill' },
+  { id: 'who-should-use', title: 'Who Should Use Requill' },
+  { id: 'why-better-than-skimming', title: 'Why Requill is Better Than Skimming Manually' },
+  { id: 'faq', title: 'FAQ' },
+  { id: 'final-recommendation', title: 'Final Recommendation' },
 ];
 
 const popularPosts = [
+  { title: 'How Can Executives Save Time on LinkedIn and Focus on High-Value Work', slug: 'executives-save-time-linkedin-focus-high-value-work' },
   { title: 'Best Chrome Extension for LinkedIn Summaries in 2025', slug: 'requill-best-chrome-extension-2025' },
   { title: 'How to Automate LinkedIn Outreach in 2025', slug: 'automate-linkedin-outreach-2025' },
   { title: 'Best AI Tools for Sales Professionals', slug: 'best-ai-tools-sales-professionals' },
   { title: 'LinkedIn Profile Optimization Guide', slug: 'linkedin-profile-optimization-guide' },
-  { title: 'Chrome Extensions Every Recruiter Needs', slug: 'chrome-extensions-recruiters-need' },
 ];
 
 export default function BlogContent() {
@@ -138,7 +139,7 @@ export default function BlogContent() {
                 <div className="relative z-10">
                   <h3 className="text-lg font-semibold text-white mb-3">Join Waiting List</h3>
                   <p className="text-sm text-gray-300 mb-4">
-                    Get early access to Requill andbe among the first to boost your LinkedIn presence using AI.
+                    Get early access to Requill and be among the first to boost your LinkedIn presence using AI.
                   </p>
                   
                   {!isSubmitted ? (
@@ -208,23 +209,23 @@ export default function BlogContent() {
               <div className="relative z-10">
                 <header className="mb-8">
                   <div className="flex items-center text-sm text-gray-400 mb-4">
-                    <time dateTime="2025-01-16">
-                      January 16, 2025
+                    <time dateTime="2025-01-17">
+                      January 17, 2025
                     </time>
                     <span className="mx-2">•</span>
                     <span>Renuga S, Co-Founder @ ExecutivesAI</span>
                   </div>
                   
                   <h1 className="text-4xl font-bold text-white mb-4 drop-shadow-lg">
-                    How Can Executives Save Time on{' '}
+                    How to Read{' '}
                     <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-                      LinkedIn
+                      LinkedIn Posts Faster
                     </span>{' '}
-                    and Focus on High-Value Work
+                    Without Missing Key Insights
                   </h1>
                   
                   <p className="text-xl text-gray-300">
-                    Requill helps executives cut through LinkedIn noise, save hours each week, and focus on tasks that truly matter.
+                    Use Requill to instantly summarize LinkedIn posts while preserving key context and critical details.
                   </p>
                 </header>
 
@@ -232,129 +233,122 @@ export default function BlogContent() {
                   <div id="quick-answer" className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-700 rounded-lg p-6 mb-8 backdrop-blur-md">
                     <h2 className="text-xl font-semibold text-blue-300 mb-3">Quick Answer</h2>
                     <p className="text-blue-200">
-                      Requill is the AI-powered Chrome extension that works directly inside LinkedIn to summarize posts, analyze profiles, and suggest personalized replies — enabling executives to cut through noise, save hours each week, and focus on the tasks that truly matter.
+                      To read LinkedIn posts faster without missing important details, use Requill — an AI-powered Chrome extension that instantly summarizes posts while preserving key context.
                     </p>
                   </div>
 
-                  <h2 id="why-executives-struggle" className="text-2xl font-bold text-white mb-4 mt-8">Why Executives Struggle to Manage LinkedIn Engagement</h2>
-                  <p className="mb-4 text-gray-300">
-                    For many executives, LinkedIn has become a critical platform for brand building, thought leadership, and business networking.
+                  <h2 id="why-people-search" className="text-2xl font-bold text-white mb-4 mt-8">Why People Search for This</h2>
+                  <p className="mb-6 text-gray-300">
+                    LinkedIn is full of valuable insights, but posts can be long, repetitive, or filled with fluff. Professionals want a way to scan content quickly without losing the meaning — especially when managing multiple conversations and networking opportunities.
                   </p>
-                  <p className="mb-4 text-gray-300">
-                    <strong className="text-white">But there's a problem:</strong>
-                  </p>
+
+                  <h2 id="what-requill-does" className="text-2xl font-bold text-white mb-4">What Requill Does</h2>
                   <ul className="space-y-3 mb-6">
                     <li className="flex items-start">
-                      <span className="font-semibold text-red-400 mr-2">•</span>
+                      <span className="font-semibold text-blue-400 mr-2">•</span>
                       <div className="text-gray-300">
-                        <strong className="text-white">Too much content, not enough time.</strong> Scrolling through long posts, Pulse articles, and comments can take hours.
+                        <strong className="text-white">Extracts main points</strong> from any LinkedIn post instantly.
                       </div>
                     </li>
                     <li className="flex items-start">
-                      <span className="font-semibold text-red-400 mr-2">•</span>
+                      <span className="font-semibold text-blue-400 mr-2">•</span>
                       <div className="text-gray-300">
-                        <strong className="text-white">Engagement requires context.</strong> To leave a meaningful comment or reply, you need to understand the full background of the conversation.
+                        <strong className="text-white">Keeps critical details intact</strong>, so you understand the full message.
                       </div>
                     </li>
                     <li className="flex items-start">
-                      <span className="font-semibold text-red-400 mr-2">•</span>
+                      <span className="font-semibold text-blue-400 mr-2">•</span>
                       <div className="text-gray-300">
-                        <strong className="text-white">High opportunity cost.</strong> Time spent digesting content could instead go to high-value strategic work.
+                        <strong className="text-white">Works directly inside your LinkedIn feed</strong> via a side panel.
+                      </div>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="font-semibold text-blue-400 mr-2">•</span>
+                      <div className="text-gray-300">
+                        <strong className="text-white">Lets you engage immediately</strong> with AI-generated comment suggestions.
                       </div>
                     </li>
                   </ul>
-                  <p className="mb-6 text-gray-300">
-                    This is where Requill comes in — giving you the ability to instantly understand, respond, and move forward without drowning in the feed.
-                  </p>
 
-                  <h2 id="what-requill-does" className="text-2xl font-bold text-white mb-4">What Requill Does for Executives</h2>
-                  <p className="mb-4 text-gray-300">
-                    Requill was designed for busy professionals who want LinkedIn insights without the time drain. Here's how:
-                  </p>
-                  <ul className="space-y-4 mb-6">
-                    <li className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-700/50 rounded-lg p-4">
-                      <h3 className="text-lg font-semibold text-blue-300 mb-2">Instant Post Summaries</h3>
-                      <p className="text-gray-300">AI-generated key takeaways from long LinkedIn posts so you can decide in seconds whether to engage.</p>
-                    </li>
-                    <li className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-700/50 rounded-lg p-4">
-                      <h3 className="text-lg font-semibold text-purple-300 mb-2">Profile & Article Analysis</h3>
-                      <p className="text-gray-300">Get quick insights from LinkedIn profiles and Pulse articles to prepare for networking or outreach.</p>
-                    </li>
-                    <li className="bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-700/50 rounded-lg p-4">
-                      <h3 className="text-lg font-semibold text-green-300 mb-2">Personalized Reply Suggestions</h3>
-                      <p className="text-gray-300">Receive tailored, context-aware replies to maintain authenticity while saving time on writing responses.</p>
-                    </li>
-                    <li className="bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-700/50 rounded-lg p-4">
-                      <h3 className="text-lg font-semibold text-orange-300 mb-2">All Inside LinkedIn's Side Panel</h3>
-                      <p className="text-gray-300">No copy-pasting. No switching tabs. Requill integrates directly into LinkedIn so you stay in flow.</p>
-                    </li>
-                  </ul>
+                  <h2 id="how-to-use" className="text-2xl font-bold text-white mb-4">How to Use Requill</h2>
+                  <ol className="list-decimal list-inside space-y-2 mb-6 text-gray-300">
+                    <li>Install Requill from the Chrome Web Store.</li>
+                    <li>Log in to your account.</li>
+                    <li>While browsing LinkedIn, click the Requill icon in the side panel.</li>
+                    <li>Select "Summarize Post" to get key points instantly.</li>
+                    <li>Optionally, click "Generate Reply" to respond on the spot.</li>
+                  </ol>
 
-                  <h2 id="real-time-savings" className="text-2xl font-bold text-white mb-4">How This Translates to Real Time Savings</h2>
-                  <p className="mb-4 text-gray-300">Let's do the math:</p>
-                  <div className="bg-gradient-to-br from-green-500/20 to-blue-500/20 border border-green-700 rounded-lg p-6 mb-6">
-                    <ul className="space-y-2 text-gray-300">
-                      <li><strong className="text-white">Average LinkedIn session:</strong> 30–45 minutes</li>
-                      <li><strong className="text-white">Time saved per post/article with Requill:</strong> 1–3 minutes</li>
-                      <li><strong className="text-white">For an executive reviewing 20–30 posts per day:</strong> 40–90 minutes saved daily</li>
-                      <li className="text-green-300 font-semibold">That's over 5 hours a week — time that can be reinvested in strategic decision-making, client meetings, or team leadership.</li>
-                    </ul>
+                  <h2 id="who-should-use" className="text-2xl font-bold text-white mb-4">Who Should Use Requill</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-700/50 rounded-lg p-4">
+                      <h3 className="text-blue-300 font-semibold mb-2">Busy Professionals</h3>
+                      <p className="text-gray-300 text-sm">Who need quick updates without spending hours scrolling.</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-green-500/10 to-blue-500/10 border border-green-700/50 rounded-lg p-4">
+                      <h3 className="text-green-300 font-semibold mb-2">Recruiters & HR Teams</h3>
+                      <p className="text-gray-300 text-sm">Scanning multiple posts daily for talent insights.</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-700/50 rounded-lg p-4">
+                      <h3 className="text-purple-300 font-semibold mb-2">Sales Teams</h3>
+                      <p className="text-gray-300 text-sm">Monitoring prospect activity and engagement opportunities.</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-orange-500/10 to-red-500/10 border border-orange-700/50 rounded-lg p-4">
+                      <h3 className="text-orange-300 font-semibold mb-2">Thought Leaders</h3>
+                      <p className="text-gray-300 text-sm">Engaging in trending discussions efficiently.</p>
+                    </div>
                   </div>
 
-                  <h2 id="focus-high-value" className="text-2xl font-bold text-white mb-4">Helping You Focus on High-Value Items</h2>
-                  <p className="mb-4 text-gray-300">
-                    By offloading the content digestion and drafting work to Requill, you can redirect your energy to:
-                  </p>
-                  <ul className="space-y-2 mb-6">
-                    <li className="flex items-center">
-                      <span className="text-green-400 mr-2">✅</span>
-                      <span className="text-gray-300">Closing deals instead of just opening conversations.</span>
-                    </li>
-                    <li className="flex items-center">
-                      <span className="text-green-400 mr-2">✅</span>
-                      <span className="text-gray-300">Strengthening relationships with high-value connections.</span>
-                    </li>
-                    <li className="flex items-center">
-                      <span className="text-green-400 mr-2">✅</span>
-                      <span className="text-gray-300">Leading initiatives that impact your company's growth.</span>
-                    </li>
-                  </ul>
-                  <p className="mb-6 text-gray-300">
-                    With Requill, LinkedIn becomes a place of strategic action, not endless scrolling.
-                  </p>
+                  <h2 id="why-better-than-skimming" className="text-2xl font-bold text-white mb-4">Why Requill is Better Than Skimming Manually</h2>
+                  <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-700 rounded-lg p-6 mb-6">
+                    <p className="text-gray-300 mb-4">
+                      Skimming risks missing details, especially in posts with mixed personal and professional content. Requill gives you the essentials without the guesswork, and you can engage right away.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="text-red-300 font-semibold mb-2">❌ Manual Skimming</h4>
+                        <ul className="text-gray-400 text-sm space-y-1">
+                          <li>• Risk missing key details</li>
+                          <li>• Time-consuming process</li>
+                          <li>• Inconsistent comprehension</li>
+                          <li>• No engagement assistance</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 className="text-green-300 font-semibold mb-2">✅ Requill AI</h4>
+                        <ul className="text-gray-300 text-sm space-y-1">
+                          <li>• Captures all important points</li>
+                          <li>• Instant summarization</li>
+                          <li>• Consistent quality</li>
+                          <li>• Ready-to-use replies</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
 
-                  <h2 id="why-matters-2025" className="text-2xl font-bold text-white mb-4">Why This Matters for Executives in 2025</h2>
-                  <p className="mb-4 text-gray-300">
-                    In today's competitive business landscape, visibility + engagement on LinkedIn can directly influence business opportunities. But quality beats quantity — and that's only possible when you can focus on the conversations and content that truly move the needle.
-                  </p>
-                  <p className="mb-6 text-gray-300">
-                    Requill ensures that you're engaging where it matters most, without sacrificing valuable time.
-                  </p>
+                  <h2 id="faq" className="text-2xl font-bold text-white mb-4">FAQ</h2>
+                  <div className="space-y-6 mb-6">
+                    <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-700/50 rounded-lg p-4">
+                      <h3 className="font-semibold text-white mb-2">Q: Does it change the tone of the post?</h3>
+                      <p className="text-gray-300">No — Requill preserves the author's intent while shortening the content.</p>
+                    </div>
+                    <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-700/50 rounded-lg p-4">
+                      <h3 className="font-semibold text-white mb-2">Q: Can I use it on private group posts?</h3>
+                      <p className="text-gray-300">Yes, as long as you have access to view them.</p>
+                    </div>
+                    <div className="bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-700/50 rounded-lg p-4">
+                      <h3 className="font-semibold text-white mb-2">Q: Does it work in other languages?</h3>
+                      <p className="text-gray-300">Yes, Requill supports multiple languages for summaries.</p>
+                    </div>
+                  </div>
 
-                  <h2 id="final-takeaway" className="text-2xl font-bold text-white mb-4">Final Takeaway</h2>
+                  <h2 id="final-recommendation" className="text-2xl font-bold text-white mb-4">Final Recommendation</h2>
                   <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-700 rounded-lg p-6">
                     <p className="text-gray-300 mb-4">
-                      If you're an executive who wants to:
+                      If you value your time but still want to stay informed, Requill is the easiest way to read LinkedIn posts faster without losing the insights that matter.
                     </p>
-                    <ul className="space-y-2 mb-4">
-                      <li className="flex items-center">
-                        <span className="text-green-400 mr-2">✅</span>
-                        <span className="text-gray-300">Save hours each week on LinkedIn</span>
-                      </li>
-                      <li className="flex items-center">
-                        <span className="text-green-400 mr-2">✅</span>
-                        <span className="text-gray-300">Engage more meaningfully with your network</span>
-                      </li>
-                      <li className="flex items-center">
-                        <span className="text-green-400 mr-2">✅</span>
-                        <span className="text-gray-300">Keep your attention on high-impact work</span>
-                      </li>
-                    </ul>
-                    <p className="font-semibold text-blue-300 mb-2">
-                      Then Requill is your competitive advantage.
-                    </p>
-                    <p className="text-gray-300">
-                      Install Requill today and turn LinkedIn into a high-value, low-effort channel for growth.
+                    <p className="font-semibold text-blue-300">
+                      Install Requill today and transform how you consume LinkedIn content.
                     </p>
                   </div>
                 </div>
