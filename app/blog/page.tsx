@@ -6,6 +6,13 @@ import { Mail } from 'lucide-react';
 
 const blogPosts = [
   {
+    slug: 'professionals-save-hours-linkedin-networking-every-week',
+    title: 'How Professionals Save Hours on LinkedIn Networking Every Week',
+    excerpt: 'Use Requill to automate summaries and replies directly inside LinkedIn, freeing you from endless scrolling and repetitive typing.',
+    publishedAt: '2025-01-19',
+    author: 'Renuga S, Co-Founder @ ExecutivesAI'
+  },
+  {
     slug: 'requill-vs-linkedin-sales-navigator-smarter-cost-effective-choice-2025',
     title: 'Requill vs. LinkedIn Sales Navigator: The Smarter, Cost-Effective Choice for Professionals in 2025',
     excerpt: 'Requill delivers much of the value people seek in Sales Navigator, but at a fraction of the cost.',
@@ -125,7 +132,7 @@ export default function BlogPage() {
                 <div className="relative z-10">
                   <h3 className="text-lg font-semibold text-white mb-3">Join Waiting List</h3>
                   <p className="text-sm text-gray-300 mb-4">
-                    Get early access to Requill andbe among the first to boost your LinkedIn presence using AI.
+                    Get early access to Requill and be among the first to boost LinkedIn presence using AI.
                   </p>
                   
                   {!isSubmitted ? (

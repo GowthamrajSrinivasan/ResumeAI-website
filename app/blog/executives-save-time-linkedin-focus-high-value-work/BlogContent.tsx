@@ -138,7 +138,7 @@ export default function BlogContent() {
                 <div className="relative z-10">
                   <h3 className="text-lg font-semibold text-white mb-3">Join Waiting List</h3>
                   <p className="text-sm text-gray-300 mb-4">
-                    Get early access to Requill andbe among the first to boost your LinkedIn presence using AI.
+                    Get early access to Requill and be among the first to boost LinkedIn presence using AI.
                   </p>
                   
                   {!isSubmitted ? (
