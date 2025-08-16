@@ -14,11 +14,10 @@ const tableOfContents = [
 ];
 
 const popularPosts = [
+  { title: 'How Professionals Save Hours on LinkedIn Networking Every Week', slug: 'professionals-save-hours-linkedin-networking-every-week' },
   { title: 'How to Read LinkedIn Posts Faster Without Missing Key Insights', slug: 'read-linkedin-posts-faster-without-missing-key-insights' },
   { title: 'How Can Executives Save Time on LinkedIn and Focus on High-Value Work', slug: 'executives-save-time-linkedin-focus-high-value-work' },
   { title: 'Best Chrome Extension for LinkedIn Summaries in 2025', slug: 'requill-best-chrome-extension-2025' },
-  { title: 'How to Automate LinkedIn Outreach in 2025', slug: 'automate-linkedin-outreach-2025' },
-  { title: 'Best AI Tools for Sales Professionals', slug: 'best-ai-tools-sales-professionals' },
 ];
 
 export default function BlogContent() {

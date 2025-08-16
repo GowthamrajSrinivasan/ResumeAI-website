@@ -16,11 +16,10 @@ const tableOfContents = [
 ];
 
 const popularPosts = [
-  { title: 'How to Automate LinkedIn Outreach in 2025', slug: 'automate-linkedin-outreach-2025' },
-  { title: 'Best AI Tools for Sales Professionals', slug: 'best-ai-tools-sales-professionals' },
-  { title: 'LinkedIn Profile Optimization Guide', slug: 'linkedin-profile-optimization-guide' },
-  { title: 'Chrome Extensions Every Recruiter Needs', slug: 'chrome-extensions-recruiters-need' },
-  { title: 'AI-Powered Social Selling Strategies', slug: 'ai-powered-social-selling-strategies' },
+  { title: 'How Professionals Save Hours on LinkedIn Networking Every Week', slug: 'professionals-save-hours-linkedin-networking-every-week' },
+  { title: 'Requill vs. LinkedIn Sales Navigator: The Smarter Choice', slug: 'requill-vs-linkedin-sales-navigator-smarter-cost-effective-choice-2025' },
+  { title: 'How to Read LinkedIn Posts Faster Without Missing Key Insights', slug: 'read-linkedin-posts-faster-without-missing-key-insights' },
+  { title: 'How Can Executives Save Time on LinkedIn and Focus on High-Value Work', slug: 'executives-save-time-linkedin-focus-high-value-work' },
 ];
 
 export default function BlogContent() {
