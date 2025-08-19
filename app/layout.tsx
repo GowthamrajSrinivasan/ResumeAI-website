@@ -17,7 +17,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}>
+      <head>
         {/* Google Analytics */}
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-7TVDEPTJ6R" strategy="afterInteractive" />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -28,7 +28,8 @@ export default function RootLayout({
             gtag('config', 'G-7TVDEPTJ6R');
           `}
         </Script>
-        
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}>
         <ExtensionMonitorProvider>
           {children}
         </ExtensionMonitorProvider>
