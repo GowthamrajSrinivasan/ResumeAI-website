@@ -19,6 +19,9 @@ export default function HomePage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState('');
   
+  // Referral tracking state
+  const [referralSource, setReferralSource] = useState('');
+  
   // Video modal state
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -57,14 +60,17 @@ export default function HomePage() {
     
     try {
       // Send JSON data to match your Google Apps Script function
-      await fetch('https://script.google.com/macros/s/AKfycbwHnBvy79K-iJyzufY6TgVzF-Xc5SLQkkjPZWPzzIB32cCeU8hhwrs6VwS-xdD2ogiA/exec', {
+      await fetch('https://script.google.com/macros/s/AKfycbwE0IO1jTeKtmFMtawo4YElEgXnOd2NdogXKAnpG-r_FRdvCAHL5e8DZMMgv_P0UEdl/exec', {
         method: 'POST',
         mode: 'no-cors',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: email.trim().toLowerCase()
+          email: email.trim().toLowerCase(),
+          referralSource: referralSource || 'direct',
+          timestamp: new Date().toISOString(),
+          submittedAt: Date.now()
         }),
       });
 
@@ -72,7 +78,10 @@ export default function HomePage() {
       // Assume success if no error was thrown
       setIsSubmitted(true);
       setEmail('');
-      console.log('✅ Email submitted to waitlist via Google Sheets');
+      console.log('✅ Email submitted to waitlist via Google Sheets', { 
+        email: email.trim().toLowerCase(), 
+        referralSource: referralSource || 'direct' 
+      });
     } catch (error) {
       console.error('❌ Error adding email to waitlist:', error);
       setSubmitError('Failed to join waitlist. Please try again.');
@@ -80,6 +89,25 @@ export default function HomePage() {
       setIsSubmitting(false);
     }
   };
+
+  // Capture referral parameter from URL on component mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const ref = urlParams.get('ref');
+      if (ref) {
+        setReferralSource(ref);
+        // Store in sessionStorage to persist across page reloads
+        sessionStorage.setItem('referralSource', ref);
+      } else {
+        // Check if there's a stored referral source
+        const storedRef = sessionStorage.getItem('referralSource');
+        if (storedRef) {
+          setReferralSource(storedRef);
+        }
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
