@@ -18,8 +18,8 @@ base_pricing:
 IN:
   currency: INR
   symbol: ₹
-  monthly: 99
-  annual: 999
+  monthly: 199
+  annual: 1999
   notes: "Primary market - competitive local pricing"
 ```
 
