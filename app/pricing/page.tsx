@@ -412,8 +412,8 @@ export default function PricingPage() {
               <div>
                 <h4 className="font-semibold text-gray-300 mb-2">Company</h4>
                 <ul className="space-y-1 text-gray-400 text-sm">
-                  <li><a href="#about" className="hover:text-blue-400 transition">About</a></li>
-                  <li><a href="blog" className="hover:text-blue-400 transition">Blog</a></li>
+                  <li><a href="/" className="hover:text-blue-400 transition">About</a></li>
+                  <li><a href="/blog" className="hover:text-blue-400 transition">Blog</a></li>
                   <li><a href="/contact" className="hover:text-blue-400 transition">Contact</a></li>
                 </ul>
               </div>

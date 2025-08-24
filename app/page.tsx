@@ -587,17 +587,17 @@ export default function HomePage() {
       <div>
         <h4 className="font-semibold text-gray-300 mb-2">Product</h4>
         <ul className="space-y-1 text-gray-400 text-sm">
-          <li><a href="#features" className="hover:text-blue-400 transition">Features</a></li>
+          <li><a href="/#features" className="hover:text-blue-400 transition">Features</a></li>
           <li><a href="/pricing" className="hover:text-blue-400 transition">Pricing</a></li>
-          <li><a href="#faq" className="hover:text-blue-400 transition">FAQ</a></li>
+          <li><a href="/#faq" className="hover:text-blue-400 transition">FAQ</a></li>
         </ul>
       </div>
       <div>
         <h4 className="font-semibold text-gray-300 mb-2">Company</h4>
         <ul className="space-y-1 text-gray-400 text-sm">
-          <li><a href="#about" className="hover:text-blue-400 transition">About</a></li>
-          <li><a href="blog" className="hover:text-blue-400 transition">Blog</a></li>
-          <li><a href="#contact" className="hover:text-blue-400 transition">Contact</a></li>
+          <li><a href="/" className="hover:text-blue-400 transition">About</a></li>
+          <li><a href="/blog" className="hover:text-blue-400 transition">Blog</a></li>
+          <li><a href="/contact" className="hover:text-blue-400 transition">Contact</a></li>
         </ul>
       </div>
       <div>
