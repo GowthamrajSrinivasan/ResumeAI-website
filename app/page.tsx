@@ -22,8 +22,7 @@ export default function HomePage() {
   // Referral tracking state
   const [referralSource, setReferralSource] = useState('');
   
-  // Video modal state
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  // Video state
   const [isHovered, setIsHovered] = useState(false);
 
   function getNextResetTime() {
@@ -128,24 +127,6 @@ export default function HomePage() {
     }
   }, [user, loading, router]);
 
-  // Close modal with Escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isVideoModalOpen) {
-        setIsVideoModalOpen(false);
-      }
-    };
-
-    if (isVideoModalOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden'; // Prevent background scrolling
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isVideoModalOpen]);
 
   if (loading || user) {
     return (
@@ -167,87 +148,99 @@ export default function HomePage() {
 
       {/* Main Content */}
       <main className="relative">
-        {/* Hero Section (smaller) */}
-        <section id="header" className="py-20 md:py-28 flex items-center justify-center">
-  <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-10 md:p-14 w-full max-w-5xl mx-auto transition hover:-translate-y-2 hover:scale-[1.02] overflow-hidden">
-    {/* Subtle radial glow for depth */}
-    <div
-      className="pointer-events-none absolute inset-0 rounded-2xl"
-      style={{
-        background: "radial-gradient(circle at 50% 15%, #4361ee22 0%, transparent 80%)"
-      }}
-    />
-    <div className="relative z-10">
-      <h2 className="text-4xl md:text-6xl font-extrabold mb-4 text-white drop-shadow-lg">
-        Supercharge Your{' '}
-        <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-          LinkedIn
-        </span>{' '}
-        Presence{' '}
-        <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-          with AI
-        </span>
-      </h2>
-      <p className="text-lg md:text-xl max-w-2xl mx-auto mb-8 text-gray-300">
-      Land your next opportunity faster by leveraging best OpenAI models. Generate Unlimited AI‑powered summaries, personalized replies and profile insights in seconds— to uplift your networking potential.
-      </p>
-      {!isSubmitted ? (
-        <form onSubmit={submitToWaitlist} className="flex flex-col sm:flex-row gap-4 items-center justify-center">
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email address"
-              className="pl-12 pr-4 py-3 rounded-full text-black font-medium w-80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg"
-              disabled={isSubmitting}
-            />
+        {/* Hero Section */}
+        <section id="header" className="py-20 md:py-28 px-4">
+          <div className="container mx-auto max-w-7xl">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+              
+              {/* Left Content */}
+              <div className="relative z-10">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 text-white drop-shadow-lg">
+                  Supercharge Your{' '}
+                  <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+                    LinkedIn
+                  </span>{' '}
+                  Presence{' '}
+                  <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+                    with AI
+                  </span>
+                </h2>
+                <p className="text-lg md:text-xl mb-8 text-gray-300 leading-relaxed">
+                  Land your next opportunity faster by leveraging best OpenAI models. Generate Unlimited AI‑powered summaries, personalized replies and profile insights in seconds— to uplift your networking potential.
+                </p>
+                
+                {!isSubmitted ? (
+                  <form onSubmit={submitToWaitlist} className="flex flex-col sm:flex-row gap-4 mb-6">
+                    <div className="relative flex-1">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Enter your email address"
+                        className="pl-12 pr-4 py-3 rounded-full text-black font-medium w-full focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg"
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                    <button 
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl transition duration-300 transform hover:scale-105 disabled:opacity-50 flex items-center gap-2 whitespace-nowrap"
+                    >
+                      {isSubmitting ? 'Joining...' : 'Join Waitlist'}
+                      {!isSubmitting && <ArrowRight className="h-5 w-5" />}
+                    </button>
+                  </form>
+                ) : (
+                  <div className="bg-green-500 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl flex items-center gap-2 mb-6">
+                    ✅ You're on the waitlist! We'll notify you soon.
+                  </div>
+                )}
+                
+                {submitError && (
+                  <p className="mb-6 text-red-400 text-lg">{submitError}</p>
+                )}
+                
+                <p className="text-sm text-gray-400">
+                  ✨ Join thousands of professionals already using AI to enhance their LinkedIn presence
+                </p>
+              </div>
+              
+              {/* Right Video */}
+              <div className="relative">
+                <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl overflow-hidden">
+                  {/* Subtle radial glow for depth */}
+                  <div
+                    className="pointer-events-none absolute inset-0 rounded-2xl"
+                    style={{
+                      background: "radial-gradient(circle at 50% 15%, #4361ee22 0%, transparent 80%)"
+                    }}
+                  />
+                  
+                  {/* Video Container */}
+                  <div className="relative pb-[56.25%] h-0 overflow-hidden">
+                    <iframe
+                      className="absolute top-0 left-0 w-full h-full"
+                      src="https://www.youtube.com/embed/fbBR_TkLzVY?autoplay=1&mute=1&loop=1&playlist=fbBR_TkLzVY&rel=0&modestbranding=1&vq=hd1080&controls=1"
+                      title="Requill Demo Video"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
+                  </div>
+                  
+                  {/* Video Caption */}
+                  <div className="p-4 bg-gradient-to-r from-blue-900/50 to-purple-900/50 text-center">
+                    <p className="text-gray-300 text-sm font-medium">
+                      🎬 See Requill in action - Watch how AI transforms your LinkedIn experience
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
           </div>
-          <button 
-            type="submit"
-            disabled={isSubmitting}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl transition duration-300 transform hover:scale-105 disabled:opacity-50 flex items-center gap-2"
-          >
-            {isSubmitting ? 'Joining...' : 'Join Waitlist'}
-            {!isSubmitting && <ArrowRight className="h-5 w-5" />}
-          </button>
-        </form>
-      ) : (
-        <div className="bg-green-500 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl flex items-center gap-2">
-          ✅ You're on the waitlist! We'll notify you soon.
-        </div>
-      )}
-      {submitError && (
-        <p className="mt-4 text-red-400 text-lg">{submitError}</p>
-      )}
-      
-      {/* Demo Button */}
-      <div className="flex justify-center mt-6">
-        <button 
-          onClick={() => setIsVideoModalOpen(true)}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          className="group relative bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-6 rounded-2xl shadow-xl transition duration-300 transform hover:scale-105 flex items-center space-x-4 overflow-hidden"
-        >
-          {/* Animated background effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[length:200%_100%] animate-gradient-x"></div>
-          
-          {/* Play icon with pulse effect */}
-          <div className="relative flex items-center justify-center w-12 h-12 bg-white/20 rounded-full backdrop-blur-sm group-hover:bg-white/30 transition-all duration-300">
-            <Play className={`w-6 h-6 text-white transform transition-transform duration-300 ${isHovered ? 'scale-110' : ''}`} fill="currentColor" />
-          </div>
-          
-          {/* Button text */}
-          <div className="relative flex flex-col items-start">
-            <span className="text-lg font-semibold">Watch Demo</span>
-            <span className="text-sm text-purple-100 group-hover:text-white transition-colors">Watch Tutorial Video</span>
-          </div>
-        </button>
-      </div>
-    </div>
-  </div>
-</section>
+        </section>
 
 
 
@@ -612,51 +605,6 @@ export default function HomePage() {
 </footer>
 
       </main>
-
-      {/* Video Demo Modal */}
-      {isVideoModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 backdrop-blur-sm">
-          <div className="relative w-full max-w-4xl mx-4 bg-gray-900 rounded-lg overflow-hidden shadow-2xl">
-            {/* Close Button */}
-            <button
-              onClick={() => setIsVideoModalOpen(false)}
-              className="absolute top-4 right-4 z-10 bg-black bg-opacity-50 hover:bg-opacity-75 text-white rounded-full p-2 transition-all duration-200"
-            >
-              <X className="h-6 w-6" />
-            </button>
-            
-            {/* Video Container [For YOUTUBE_VIDEO_ID_URL replace 08U3DCcmQ5Q]*/}
-            <div className="relative pb-[56.25%] h-0 overflow-hidden">
-              <iframe
-                className="absolute top-0 left-0 w-full h-full"
-                src="https://www.youtube.com/embed/fbBR_TkLzVY?autoplay=1&rel=0&modestbranding=1&vq=hd2160"
-                title="Requill Demo Video"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </div>
-            
-            {/* Modal Footer */}
-            <div className="p-4 bg-gray-800 text-center">
-              <p className="text-gray-300 text-sm">
-                Ready to get started? 
-                <a href="/login" className="text-blue-400 hover:text-blue-300 ml-1 font-semibold">
-                  Sign up now
-                </a>
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Close modal when clicking outside */}
-      {isVideoModalOpen && (
-        <div 
-          className="fixed inset-0 z-40"
-          onClick={() => setIsVideoModalOpen(false)}
-        />
-      )}
     </div>
   );
 }
