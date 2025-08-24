@@ -24,6 +24,7 @@ export default function HomePage() {
   
   // Video state
   const [isHovered, setIsHovered] = useState(false);
+  const [videoStarted, setVideoStarted] = useState(false);
 
   function getNextResetTime() {
     const now = new Date();
@@ -38,6 +39,12 @@ export default function HomePage() {
     const seconds = Math.floor((total / 1000) % 60);
     return { total, hours, minutes, seconds };
   }
+
+  const handleHeroClick = () => {
+    if (!videoStarted) {
+      setVideoStarted(true);
+    }
+  };
 
   const submitToWaitlist = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -151,7 +158,7 @@ export default function HomePage() {
         {/* Hero Section */}
         <section id="header" className="py-20 md:py-28 px-4">
           <div className="container mx-auto max-w-7xl">
-            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center cursor-pointer" onClick={handleHeroClick}>
               
               {/* Left Content */}
               <div className="relative z-10">
@@ -201,9 +208,6 @@ export default function HomePage() {
                   <p className="mb-6 text-red-400 text-lg">{submitError}</p>
                 )}
                 
-                <p className="text-sm text-gray-400">
-                  ✨ Join thousands of professionals already using AI to enhance their LinkedIn presence
-                </p>
               </div>
               
               {/* Right Video */}
@@ -219,14 +223,39 @@ export default function HomePage() {
                   
                   {/* Video Container */}
                   <div className="relative pb-[56.25%] h-0 overflow-hidden">
-                    <iframe
-                      className="absolute top-0 left-0 w-full h-full"
-                      src="https://www.youtube.com/embed/fbBR_TkLzVY?autoplay=1&mute=1&loop=1&playlist=fbBR_TkLzVY&rel=0&modestbranding=1&vq=hd1080&controls=1"
-                      title="Requill Demo Video"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
+                    {!videoStarted ? (
+                      // Initial muted autoplay
+                      <iframe
+                        className="absolute top-0 left-0 w-full h-full"
+                        src="https://www.youtube.com/embed/fbBR_TkLzVY?autoplay=1&mute=1&loop=1&playlist=fbBR_TkLzVY&rel=0&modestbranding=1&vq=hd1080&controls=1"
+                        title="Requill Demo Video"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      ></iframe>
+                    ) : (
+                      // User-initiated playback with sound
+                      <iframe
+                        className="absolute top-0 left-0 w-full h-full"
+                        src="https://www.youtube.com/embed/fbBR_TkLzVY?autoplay=1&mute=0&loop=1&playlist=fbBR_TkLzVY&rel=0&modestbranding=1&vq=hd1080&controls=1"
+                        title="Requill Demo Video"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      ></iframe>
+                    )}
+                    
+                    {/* Click indicator overlay */}
+                    {!videoStarted && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="bg-black/50 backdrop-blur-sm rounded-full p-4 animate-pulse">
+                          <div className="text-white text-center">
+                            <Play className="h-8 w-8 mx-auto mb-2" fill="currentColor" />
+                            <p className="text-sm font-medium">Click anywhere to enable sound</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   
                   {/* Video Caption */}
