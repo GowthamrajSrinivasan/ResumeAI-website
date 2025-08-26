@@ -1,4 +1,5 @@
 import {onRequest} from "firebase-functions/v2/https";
+import {onSchedule} from "firebase-functions/v2/scheduler";
 import * as logger from "firebase-functions/logger";
 import {getFirestore} from "firebase-admin/firestore";
 
@@ -184,5 +185,185 @@ export const cleanupMetrics = onRequest({cors: true}, async (req, res) => {
   } catch (error) {
     logger.error("Error during metrics cleanup:", error);
     res.status(500).json({error: "Failed to cleanup metrics"});
+  }
+});
+
+// Check and expire premium subscriptions
+export const checkExpiredSubscriptions = onRequest({cors: true}, async (req, res) => {
+  try {
+    const now = new Date();
+    logger.info("Starting subscription expiry check", {timestamp: now.toISOString()});
+
+    // Query users whose subscriptions have expired
+    const usersRef = db.collection("users");
+    const expiredQuery = usersRef
+      .where("isPremium", "==", true)
+      .where("subscriptionEnd", "<=", now);
+
+    const snapshot = await expiredQuery.get();
+    let expiredCount = 0;
+    const expiredUsers: Array<{
+      userId: string;
+      userEmail: string;
+      subscriptionType: string;
+      subscriptionEnd: any;
+    }> = [];
+
+    if (!snapshot.empty) {
+      const batch = db.batch();
+      
+      snapshot.docs.forEach(doc => {
+        const userData = doc.data();
+        const userRef = doc.ref;
+        
+        // Update user to non-premium status
+        batch.update(userRef, {
+          isPremium: false,
+          subscriptionStatus: "expired",
+          expiredAt: now,
+          updatedAt: now
+        });
+
+        expiredUsers.push({
+          userId: doc.id,
+          userEmail: userData.userEmail,
+          subscriptionType: userData.subscriptionType || 'unknown',
+          subscriptionEnd: userData.subscriptionEnd
+        });
+        
+        expiredCount++;
+      });
+
+      // Commit the batch update
+      await batch.commit();
+
+      // Log expired subscriptions for record keeping
+      if (expiredUsers.length > 0) {
+        const expiredSubscriptionsRef = db.collection("expired_subscriptions");
+        const expiryBatch = db.batch();
+        
+        expiredUsers.forEach(user => {
+          const docRef = expiredSubscriptionsRef.doc();
+          expiryBatch.set(docRef, {
+            ...user,
+            expiredAt: now,
+            processedAt: now
+          });
+        });
+        
+        await expiryBatch.commit();
+      }
+    }
+
+    logger.info("Subscription expiry check completed", {
+      expiredCount,
+      processedAt: now.toISOString()
+    });
+
+    res.status(200).json({
+      success: true,
+      expiredSubscriptions: expiredCount,
+      processedAt: now.toISOString(),
+      expiredUsers: expiredUsers.map(u => ({
+        userId: u.userId,
+        subscriptionType: u.subscriptionType
+      }))
+    });
+
+  } catch (error) {
+    logger.error("Error checking expired subscriptions:", error);
+    res.status(500).json({
+      error: "Failed to check expired subscriptions",
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Scheduled function to automatically check expired subscriptions daily
+export const scheduledSubscriptionCheck = onSchedule({
+  schedule: "0 2 * * *", // Run at 2 AM every day
+  timeZone: "UTC"
+}, async (event) => {
+  try {
+    logger.info("Running scheduled subscription expiry check");
+    
+    const now = new Date();
+    
+    // Query users whose subscriptions have expired
+    const usersRef = db.collection("users");
+    const expiredQuery = usersRef
+      .where("isPremium", "==", true)
+      .where("subscriptionEnd", "<=", now);
+
+    const snapshot = await expiredQuery.get();
+    let expiredCount = 0;
+    const expiredUsers: Array<{
+      userId: string;
+      userEmail: string;
+      subscriptionType: string;
+      subscriptionEnd: any;
+    }> = [];
+
+    if (!snapshot.empty) {
+      const batch = db.batch();
+      
+      snapshot.docs.forEach(doc => {
+        const userData = doc.data();
+        const userRef = doc.ref;
+        
+        // Update user to non-premium status
+        batch.update(userRef, {
+          isPremium: false,
+          subscriptionStatus: "expired",
+          expiredAt: now,
+          updatedAt: now
+        });
+
+        expiredUsers.push({
+          userId: doc.id,
+          userEmail: userData.userEmail,
+          subscriptionType: userData.subscriptionType || 'unknown',
+          subscriptionEnd: userData.subscriptionEnd
+        });
+        
+        expiredCount++;
+      });
+
+      // Commit the batch update
+      await batch.commit();
+
+      // Log expired subscriptions for record keeping
+      if (expiredUsers.length > 0) {
+        const expiredSubscriptionsRef = db.collection("expired_subscriptions");
+        const expiryBatch = db.batch();
+        
+        expiredUsers.forEach(user => {
+          const docRef = expiredSubscriptionsRef.doc();
+          expiryBatch.set(docRef, {
+            ...user,
+            expiredAt: now,
+            processedAt: now,
+            processedBy: "scheduled_function"
+          });
+        });
+        
+        await expiryBatch.commit();
+      }
+    }
+
+    logger.info("Scheduled subscription expiry check completed", {
+      expiredCount,
+      processedAt: now.toISOString()
+    });
+
+    // Scheduled functions don't return values
+    logger.info("Scheduled function completed successfully", {
+      expiredSubscriptions: expiredCount,
+      processedAt: now.toISOString()
+    });
+
+  } catch (error) {
+    logger.error("Error in scheduled subscription check:", error);
+    throw error;
   }
 });

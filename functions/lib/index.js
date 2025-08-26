@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendWelcomeEmail = exports.waitlist = exports.contact = exports.cleanupMetrics = exports.cleanupBehaviorData = exports.healthCheck = exports.getDashboard = exports.processQueue = exports.generateReply = exports.getUserProfile = exports.updateSubscriptionPlan = exports.getBillingHistory = exports.cancelSubscription = exports.upgradeToPremium = exports.updateUsageCount = exports.getUserUsageData = exports.checkUserByEmail = exports.analyzeProfile = exports.analyzePost = exports.paymentTest = exports.webhook = exports.verifyPayment = exports.createOrder = void 0;
+exports.sendWelcomeEmail = exports.waitlist = exports.contact = exports.scheduledSubscriptionCheck = exports.checkExpiredSubscriptions = exports.cleanupMetrics = exports.cleanupBehaviorData = exports.healthCheck = exports.getDashboard = exports.processQueue = exports.generateReply = exports.getUserProfile = exports.updateSubscriptionPlan = exports.getBillingHistory = exports.cancelSubscription = exports.upgradeToPremium = exports.updateUsageCount = exports.getUserUsageData = exports.checkUserByEmail = exports.analyzeProfile = exports.analyzePost = exports.paymentTest = exports.webhook = exports.verifyPayment = exports.createOrder = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 const app_1 = require("firebase-admin/app");
@@ -39,6 +39,8 @@ var maintenance_1 = require("./maintenance");
 Object.defineProperty(exports, "healthCheck", { enumerable: true, get: function () { return maintenance_1.healthCheck; } });
 Object.defineProperty(exports, "cleanupBehaviorData", { enumerable: true, get: function () { return maintenance_1.cleanupBehaviorData; } });
 Object.defineProperty(exports, "cleanupMetrics", { enumerable: true, get: function () { return maintenance_1.cleanupMetrics; } });
+Object.defineProperty(exports, "checkExpiredSubscriptions", { enumerable: true, get: function () { return maintenance_1.checkExpiredSubscriptions; } });
+Object.defineProperty(exports, "scheduledSubscriptionCheck", { enumerable: true, get: function () { return maintenance_1.scheduledSubscriptionCheck; } });
 // Contact form handler
 exports.contact = (0, https_1.onRequest)({ cors: true }, async (req, res) => {
     var _a;

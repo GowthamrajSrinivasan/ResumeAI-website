@@ -85,9 +85,15 @@ const saveUserToFirestore = async (user: User) => {
       console.log('  - userDetails:', userDetails);
     } else {
       // Create new user
+      const premiumEndDate = new Date();
+      premiumEndDate.setDate(premiumEndDate.getDate() + 7); // 7 days from now
+      
       await setDoc(userRef, {
         ...userData,
         isPremium: true, // Set as premium by default for all new users
+        subscriptionType: 'trial', // Mark as trial subscription
+        subscriptionStart: serverTimestamp(),
+        subscriptionEnd: premiumEndDate,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });

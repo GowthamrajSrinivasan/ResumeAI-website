@@ -22,7 +22,7 @@ export {generateReply, processQueue} from "./ai-services";
 export {getDashboard} from "./dashboard";
 
 // Export maintenance functions
-export {healthCheck, cleanupBehaviorData, cleanupMetrics} from "./maintenance";
+export {healthCheck, cleanupBehaviorData, cleanupMetrics, checkExpiredSubscriptions, scheduledSubscriptionCheck} from "./maintenance";
 
 // Contact form handler
 export const contact = onRequest({cors: true}, async (req, res) => {
