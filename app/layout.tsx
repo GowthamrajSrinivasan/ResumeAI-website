@@ -9,7 +9,7 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 
 export const metadata: Metadata = {
   title: "Requill - powered by OpenAI",
-  description: "Your personal AI-powered study assistant for smarter learning.",
+  description: "Your personal AI-powered assistant for enhanced productivity.",
 };
 
 export default function RootLayout({

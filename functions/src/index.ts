@@ -174,7 +174,7 @@ async function sendWelcomeEmailViaZepto(userEmail: string, userName?: string): P
           }
         }
       ],
-      "subject": "Welcome to Requill - Your AI-Powered Study Companion!",
+      "subject": "Welcome to Requill - Your AI-Powered Assistant!",
       "htmlbody": htmlBody,
       "track_clicks": true,
       "track_opens": true
@@ -238,18 +238,18 @@ function getWelcomeEmailHTML(displayName: string, userEmail: string): string {
                 <div class="welcome-text">
                     Hi ${displayName},
                 </div>
-                <p>Welcome to Requill, your AI-powered study companion! We're excited to have you join our community of learners who are transforming the way they study and retain information.</p>
+                <p>Welcome to Requill, your AI-powered assistant! We're excited to have you join our community of professionals who are enhancing their productivity and workflow.</p>
                 
                 <div class="features">
                     <h3 style="margin-top: 0; color: #2563eb;">What you can do with Requill:</h3>
                     <div class="feature-item">AI-powered content analysis and summarization</div>
-                    <div class="feature-item">Intelligent study session planning</div>
-                    <div class="feature-item">Personalized learning recommendations</div>
+                    <div class="feature-item">Intelligent task planning and organization</div>
+                    <div class="feature-item">Personalized productivity recommendations</div>
                     <div class="feature-item">Progress tracking and analytics</div>
                     <div class="feature-item">Seamless integration with your workflow</div>
                 </div>
 
-                <p>Your account is now active and ready to use. Start by exploring our features and see how Requill can enhance your learning experience.</p>
+                <p>Your account is now active and ready to use. Start by exploring our features and see how Requill can enhance your productivity experience.</p>
 
                 <div class="cta">
                     <a href="https://requill.executivesai.pro/dashboard" class="cta-button">Get Started →</a>
@@ -257,7 +257,7 @@ function getWelcomeEmailHTML(displayName: string, userEmail: string): string {
 
                 <p>If you have any questions or need assistance, don't hesitate to reach out to our support team.</p>
 
-                <p>Happy studying!<br>The Requill Team</p>
+                <p>Happy working!<br>The Requill Team</p>
             </div>
             <div class="footer">
                 <p>© 2025 Requill - Powered by ExecutivesAI. All rights reserved.</p>

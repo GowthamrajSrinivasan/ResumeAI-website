@@ -421,7 +421,7 @@ export default function RefundPolicyPage() {
                 Requill
               </span>
               <span className="text-gray-400 text-sm">
-                Your AI-powered study companion
+                Your AI-powered assistant
               </span>
             </div>
             {/* Links */}
