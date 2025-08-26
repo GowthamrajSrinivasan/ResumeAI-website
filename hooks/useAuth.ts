@@ -87,6 +87,7 @@ const saveUserToFirestore = async (user: User) => {
       // Create new user
       await setDoc(userRef, {
         ...userData,
+        isPremium: true, // Set as premium by default for all new users
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
