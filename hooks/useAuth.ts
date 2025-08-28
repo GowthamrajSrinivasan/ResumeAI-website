@@ -63,6 +63,7 @@ const saveUserToFirestore = async (user: User) => {
       
       // Additional fields for comprehensive user management
       uid: user.uid,
+      userId: user.uid, // Duplicate of uid for compatibility
       lastLoginAt: serverTimestamp(),
       providerData: user.providerData.map(provider => ({
         providerId: provider.providerId,

@@ -43,7 +43,8 @@
       "Bash(npm run generate-pricing:*)",
       "Bash(timeout 15 npm run dev)",
       "Bash(npm run:*)",
-      "Bash(firebase --version)"
+      "Bash(firebase --version)",
+      "Bash(cd:*)"
     ],
     "deny": []
   }
