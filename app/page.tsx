@@ -176,33 +176,16 @@ export default function HomePage() {
                   Land your next opportunity faster by leveraging best OpenAI models. Generate Unlimited AI‑powered summaries, personalized replies and profile insights in seconds— to uplift your networking potential.
                 </p>
                 
-                {!isSubmitted ? (
-                  <form onSubmit={submitToWaitlist} className="flex flex-col sm:flex-row gap-4 mb-6">
-                    <div className="relative flex-1">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email address"
-                        className="pl-12 pr-4 py-3 rounded-full text-black font-medium w-full focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg"
-                        disabled={isSubmitting}
-                      />
-                    </div>
-                    <button 
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl transition duration-300 transform hover:scale-105 disabled:opacity-50 flex items-center gap-2 whitespace-nowrap"
-                    >
-                      {isSubmitting ? 'Joining...' : 'Join Waitlist'}
-                      {!isSubmitting && <ArrowRight className="h-5 w-5" />}
-                    </button>
-                  </form>
-                ) : (
-                  <div className="bg-green-500 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl flex items-center gap-2 mb-6">
-                    ✅ You're on the waitlist! We'll notify you soon.
-                  </div>
-                )}
+                <button 
+                  onClick={() => window.open('https://chromewebstore.google.com/detail/requill-beta-powered-by-o/bhbnnmbpmjjgnncgbbbnpeabkhhjhhpb', '_blank')}
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl transition duration-300 transform hover:scale-105 flex items-center gap-2 whitespace-nowrap mb-6"
+                >
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.568 14.432c-.837 1.445-2.058 2.666-3.503 3.503-.838.485-1.756.837-2.729 1.048l1.904-3.299c1.185-.688 2.058-1.904 2.324-3.252h-2.772V12c0-.324-.261-.585-.585-.585H9.415c-.324 0-.585.261-.585.585v.432h-2.772c.266 1.348 1.139 2.564 2.324 3.252l1.904 3.299c-.973-.211-1.891-.563-2.729-1.048C5.912 17.098 4.691 15.877 3.854 14.432 3.369 13.594 3.017 12.676 2.806 11.703h3.299c.688 1.185 1.904 2.058 3.252 2.324v2.772c0 .324.261.585.585.585h.432c.324 0 .585-.261.585-.585v-2.772c1.348-.266 2.564-1.139 3.252-2.324h3.299c-.211.973-.563 1.891-1.048 2.729z"/>
+                  </svg>
+                  Add to Chrome
+                  <ArrowRight className="h-5 w-5" />
+                </button>
                 
                 {submitError && (
                   <p className="mb-6 text-red-400 text-lg">{submitError}</p>
@@ -547,10 +530,13 @@ export default function HomePage() {
     {/* Button */}
     <div className="z-10 flex-1 flex md:justify-end w-full md:w-auto mt-8 md:mt-0">
       <button
-        onClick={() => document.getElementById('header')?.scrollIntoView({ behavior: 'smooth' })}
-        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg shadow-lg transition duration-300"
+        onClick={() => window.open('https://chromewebstore.google.com/detail/requill-beta-powered-by-o/bhbnnmbpmjjgnncgbbbnpeabkhhjhhpb', '_blank')}
+        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg shadow-lg transition duration-300 flex items-center gap-2"
       >
-        Get Started
+        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.568 14.432c-.837 1.445-2.058 2.666-3.503 3.503-.838.485-1.756.837-2.729 1.048l1.904-3.299c1.185-.688 2.058-1.904 2.324-3.252h-2.772V12c0-.324-.261-.585-.585-.585H9.415c-.324 0-.585.261-.585.585v.432h-2.772c.266 1.348 1.139 2.564 2.324 3.252l1.904 3.299c-.973-.211-1.891-.563-2.729-1.048C5.912 17.098 4.691 15.877 3.854 14.432 3.369 13.594 3.017 12.676 2.806 11.703h3.299c.688 1.185 1.904 2.058 3.252 2.324v2.772c0 .324.261.585.585.585h.432c.324 0 .585-.261.585-.585v-2.772c1.348-.266 2.564-1.139 3.252-2.324h3.299c-.211.973-.563 1.891-1.048 2.729z"/>
+        </svg>
+        Add to Chrome
       </button>
     </div>
 
