@@ -263,13 +263,14 @@ export default function PricingPage() {
                       Loading pricing...
                     </div>
                   ) : (
-                    <PaymentButton
-                      planName={plans.pro.name}
-                      planType={isAnnual ? 'annual' : 'monthly'}
-                      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg"
+                    <a
+                      href={isAnnual ? "https://rzp.io/rzp/hVRUAghB" : "https://rzp.io/rzp/MN67T7T"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg inline-block text-center"
                     >
                       {plans.pro.buttonText}
-                    </PaymentButton>
+                    </a>
                   )}
                 </div>
 
