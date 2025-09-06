@@ -764,13 +764,22 @@ function SubscriptionsPageContent() {
                   <div className="space-y-4">
                     <p className="text-gray-300">Upgrade to Premium to unlock all features:</p>
                     <div className="flex flex-wrap gap-3">
-                      <PaymentButton
-                        planName="Premium"
-                        planType="monthly"
+                      <a
+                        href="https://rzp.io/rzp/MN67T7T"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
                       >
-                        Upgrade to Premium
-                      </PaymentButton>
+                        Upgrade to Premium (Monthly)
+                      </a>
+                      <a
+                        href="https://rzp.io/rzp/hVRUAghB"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                      >
+                        Upgrade to Premium (Annual)
+                      </a>
                       <button
                         onClick={() => window.location.href = '/pricing'}
                         className="border border-gray-600 hover:border-gray-500 text-gray-300 px-6 py-3 rounded-lg font-medium transition-colors"
@@ -783,9 +792,14 @@ function SubscriptionsPageContent() {
                   <div className="space-y-4">
                     <p className="text-gray-300">You're currently on the Premium plan.</p>
                     <div className="flex flex-wrap gap-3">
-                      <button className="border border-gray-600 hover:border-gray-500 text-gray-300 px-6 py-3 rounded-lg font-medium transition-colors">
+                      <a
+                        href="https://rzp.io/rzp/hVRUAghB"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="border border-gray-600 hover:border-gray-500 text-gray-300 px-6 py-3 rounded-lg font-medium transition-colors"
+                      >
                         Switch to Annual (Save 20%)
-                      </button>
+                      </a>
                       <button
                         onClick={() => setShowCancelConfirm(true)}
                         className="border border-red-600 hover:border-red-500 text-red-400 px-6 py-3 rounded-lg font-medium transition-colors"

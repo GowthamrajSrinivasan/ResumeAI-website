@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendWelcomeEmail = exports.waitlist = exports.contact = exports.cleanupMetrics = exports.cleanupBehaviorData = exports.healthCheck = exports.getDashboard = exports.processQueue = exports.generateReply = exports.getUserProfile = exports.updateSubscriptionPlan = exports.getBillingHistory = exports.cancelSubscription = exports.upgradeToPremium = exports.updateUsageCount = exports.getUserUsageData = exports.checkUserByEmail = exports.analyzeProfile = exports.analyzePost = exports.paymentTest = exports.webhook = exports.verifyPayment = exports.createOrder = void 0;
+exports.sendWelcomeEmail = exports.waitlist = exports.contact = exports.scheduledSubscriptionCheck = exports.checkExpiredSubscriptions = exports.cleanupMetrics = exports.cleanupBehaviorData = exports.healthCheck = exports.getDashboard = exports.processQueue = exports.generateReply = exports.getUserProfile = exports.updateSubscriptionPlan = exports.getBillingHistory = exports.cancelSubscription = exports.upgradeToPremium = exports.updateUsageCount = exports.getUserUsageData = exports.checkUserByEmail = exports.analyzeProfile = exports.analyzePost = exports.paymentTest = exports.webhook = exports.verifyPayment = exports.createOrder = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 const app_1 = require("firebase-admin/app");
@@ -39,6 +39,8 @@ var maintenance_1 = require("./maintenance");
 Object.defineProperty(exports, "healthCheck", { enumerable: true, get: function () { return maintenance_1.healthCheck; } });
 Object.defineProperty(exports, "cleanupBehaviorData", { enumerable: true, get: function () { return maintenance_1.cleanupBehaviorData; } });
 Object.defineProperty(exports, "cleanupMetrics", { enumerable: true, get: function () { return maintenance_1.cleanupMetrics; } });
+Object.defineProperty(exports, "checkExpiredSubscriptions", { enumerable: true, get: function () { return maintenance_1.checkExpiredSubscriptions; } });
+Object.defineProperty(exports, "scheduledSubscriptionCheck", { enumerable: true, get: function () { return maintenance_1.scheduledSubscriptionCheck; } });
 // Contact form handler
 exports.contact = (0, https_1.onRequest)({ cors: true }, async (req, res) => {
     var _a;
@@ -173,7 +175,7 @@ async function sendWelcomeEmailViaZepto(userEmail, userName) {
                     }
                 }
             ],
-            "subject": "Welcome to Requill - Your AI-Powered Study Companion!",
+            "subject": "Welcome to Requill - Your AI-Powered Assistant!",
             "htmlbody": htmlBody,
             "track_clicks": true,
             "track_opens": true
@@ -234,18 +236,18 @@ function getWelcomeEmailHTML(displayName, userEmail) {
                 <div class="welcome-text">
                     Hi ${displayName},
                 </div>
-                <p>Welcome to Requill, your AI-powered study companion! We're excited to have you join our community of learners who are transforming the way they study and retain information.</p>
+                <p>Welcome to Requill, your AI-powered assistant! We're excited to have you join our community of professionals who are enhancing their productivity and workflow.</p>
                 
                 <div class="features">
                     <h3 style="margin-top: 0; color: #2563eb;">What you can do with Requill:</h3>
                     <div class="feature-item">AI-powered content analysis and summarization</div>
-                    <div class="feature-item">Intelligent study session planning</div>
-                    <div class="feature-item">Personalized learning recommendations</div>
+                    <div class="feature-item">Intelligent task planning and organization</div>
+                    <div class="feature-item">Personalized productivity recommendations</div>
                     <div class="feature-item">Progress tracking and analytics</div>
                     <div class="feature-item">Seamless integration with your workflow</div>
                 </div>
 
-                <p>Your account is now active and ready to use. Start by exploring our features and see how Requill can enhance your learning experience.</p>
+                <p>Your account is now active and ready to use. Start by exploring our features and see how Requill can enhance your productivity experience.</p>
 
                 <div class="cta">
                     <a href="https://requill.executivesai.pro/dashboard" class="cta-button">Get Started →</a>
@@ -253,7 +255,7 @@ function getWelcomeEmailHTML(displayName, userEmail) {
 
                 <p>If you have any questions or need assistance, don't hesitate to reach out to our support team.</p>
 
-                <p>Happy studying!<br>The Requill Team</p>
+                <p>Happy working!<br>The Requill Team</p>
             </div>
             <div class="footer">
                 <p>© 2025 Requill - Powered by ExecutivesAI. All rights reserved.</p>

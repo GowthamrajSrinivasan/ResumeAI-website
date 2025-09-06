@@ -365,7 +365,7 @@ export default function JobTracker() {
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div className={`flex items-center space-x-2 px-3 py-2 rounded-full ${statusConfig[selectedJob.status].color}`}>
-                    <statusConfig[selectedJob.status].icon className="h-4 w-4" />
+                    {React.createElement(statusConfig[selectedJob.status].icon, { className: "h-4 w-4" })}
                     <span className="font-medium">{statusConfig[selectedJob.status].label}</span>
                   </div>
                   {selectedJob.salary && (

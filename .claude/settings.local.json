@@ -44,7 +44,11 @@
       "Bash(timeout 15 npm run dev)",
       "Bash(npm run:*)",
       "Bash(firebase --version)",
+<<<<<<< HEAD
       "Bash(npx next:*)"
+=======
+      "Bash(cd:*)"
+>>>>>>> eb5559d343a59cbe4bed354c63bcee16dcfb8ee8
     ],
     "deny": []
   }
