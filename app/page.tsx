@@ -3,131 +3,29 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect, useState } from "react";
-import { Mail, ArrowRight, Play, X } from "lucide-react";
-import { RiQuillPenAiFill } from "react-icons/ri";
-// Using API route only for waitlist submissions
+import { 
+  Mail, ArrowRight, Play, X, Briefcase, Star, FileText, 
+  Bookmark, Globe, Zap, Upload, Shield, Lock, EyeOff, 
+  Chrome, CheckCircle, Users, Target, Clock
+} from "lucide-react";
 
 export default function HomePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [resetTime, setResetTime] = useState(getNextResetTime());
-  const [timeLeft, setTimeLeft] = useState(getTimeRemaining(resetTime));
   
   // Waitlist state
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState('');
-  
-  // Referral tracking state
-  const [referralSource, setReferralSource] = useState('');
-  
-  // Video state
-  const [isHovered, setIsHovered] = useState(false);
-  const [videoStarted, setVideoStarted] = useState(false);
 
-  function getNextResetTime() {
-    const now = new Date();
-    const reset = new Date(now);
-    reset.setHours(24, 0, 0, 0);
-    return reset;
-  }
-  function getTimeRemaining(resetTime:any) {
-    const total = resetTime.getTime() - new Date().getTime();
-    const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((total / (1000 * 60)) % 60);
-    const seconds = Math.floor((total / 1000) % 60);
-    return { total, hours, minutes, seconds };
-  }
+  const [activeStep, setActiveStep] = useState(1);
 
-  const handleHeroClick = () => {
-    if (!videoStarted) {
-      setVideoStarted(true);
-    }
+  const handleInstallClick = () => {
+    // Replace with your actual Chrome Web Store URL
+    window.open('https://chrome.google.com/webstore/detail/linkedin-job-analyzer', '_blank');
   };
 
-  const submitToWaitlist = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!email.trim()) {
-      setSubmitError('Please enter your email address');
-      return;
-    }
-    
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setSubmitError('Please enter a valid email address');
-      return;
-    }
-    
-    setIsSubmitting(true);
-    setSubmitError('');
-    
-    try {
-      // Send JSON data to match your Google Apps Script function
-      await fetch('https://script.google.com/macros/s/AKfycbwE0IO1jTeKtmFMtawo4YElEgXnOd2NdogXKAnpG-r_FRdvCAHL5e8DZMMgv_P0UEdl/exec', {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email.trim().toLowerCase(),
-          referralSource: referralSource || 'direct',
-          timestamp: new Date().toISOString(),
-          submittedAt: Date.now()
-        }),
-      });
-
-      // With no-cors mode, we can't read the response
-      // Assume success if no error was thrown
-      setIsSubmitted(true);
-      setEmail('');
-      console.log('✅ Email submitted to waitlist via Google Sheets', { 
-        email: email.trim().toLowerCase(), 
-        referralSource: referralSource || 'direct' 
-      });
-    } catch (error) {
-      console.error('❌ Error adding email to waitlist:', error);
-      setSubmitError('Failed to join waitlist. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Capture referral parameter from URL on component mount
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const ref = urlParams.get('ref');
-      if (ref) {
-        setReferralSource(ref);
-        // Store in sessionStorage to persist across page reloads
-        sessionStorage.setItem('referralSource', ref);
-      } else {
-        // Check if there's a stored referral source
-        const storedRef = sessionStorage.getItem('referralSource');
-        if (storedRef) {
-          setReferralSource(storedRef);
-        }
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const remaining = getTimeRemaining(resetTime);
-      if (remaining.total <= 0) {
-        const newReset = getNextResetTime();
-        setResetTime(newReset);
-        setTimeLeft(getTimeRemaining(newReset));
-      } else {
-        setTimeLeft(remaining);
-      }
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [resetTime]);
   useEffect(() => {
     if (!loading && user) {
       router.push('/dashboard');
@@ -144,495 +42,529 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-radial text-gray-200 overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 text-gray-900">
       {/* Header */}
-      <header className="sticky top-0 z-30 w-full flex items-center justify-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 py-4 px-4 shadow-xl text-white rounded-b-2xl backdrop-blur-lg bg-opacity-90">
-        <div className="flex items-center space-x-2">
-          <RiQuillPenAiFill className="h-6 w-6 text-white" />
-          <h1 className="text-xl font-extrabold">Requill - powered by OpenAI</h1>
+      <header className="fixed top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="bg-blue-600 p-2 rounded-lg">
+              <Briefcase className="h-6 w-6 text-white" />
+            </div>
+            <h1 className="text-xl font-bold text-gray-900">LinkedIn Job Analyzer</h1>
+          </div>
+          <nav className="hidden md:flex space-x-8">
+            <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">Features</a>
+            <a href="#how-it-works" className="text-gray-600 hover:text-blue-600 transition-colors">How It Works</a>
+            <a href="#security" className="text-gray-600 hover:text-blue-600 transition-colors">Security</a>
+            <a href="#faq" className="text-gray-600 hover:text-blue-600 transition-colors">FAQ</a>
+          </nav>
+          <button
+            onClick={handleInstallClick}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition-colors"
+          >
+            Install Extension
+          </button>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="relative">
+      <main className="pt-20">
         {/* Hero Section */}
-        <section id="header" className="py-20 md:py-28 px-4">
-          <div className="container mx-auto max-w-7xl">
-            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center cursor-pointer" onClick={handleHeroClick}>
-              
+        <section className="py-20 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
               {/* Left Content */}
-              <div className="relative z-10">
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 text-white drop-shadow-lg">
-                  Supercharge Your{' '}
-                  <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-                    LinkedIn
-                  </span>{' '}
-                  Presence{' '}
-                  <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-                    with AI
-                  </span>
+              <div>
+                <h2 className="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                  Master the Job Hunt with{' '}
+                  <span className="text-blue-600">AI-Powered</span>{' '}
+                  ATS Analysis
                 </h2>
-                <p className="text-lg md:text-xl mb-8 text-gray-300 leading-relaxed">
-                  Land your next opportunity faster by leveraging best OpenAI models. Generate Unlimited AI‑powered summaries, personalized replies and profile insights in seconds— to uplift your networking potential.
+                <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                  Analyze LinkedIn job descriptions instantly and get ATS compatibility scores for your resume. Extract key skills, generate comprehensive job insights, and optimize your applications to beat applicant tracking systems—all powered by OpenAI's latest models.
                 </p>
                 
-                {!isSubmitted ? (
-                  <form onSubmit={submitToWaitlist} className="flex flex-col sm:flex-row gap-4 mb-6">
-                    <div className="relative flex-1">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email address"
-                        className="pl-12 pr-4 py-3 rounded-full text-black font-medium w-full focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg"
-                        disabled={isSubmitting}
-                      />
-                    </div>
-                    <button 
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl transition duration-300 transform hover:scale-105 disabled:opacity-50 flex items-center gap-2 whitespace-nowrap"
-                    >
-                      {isSubmitting ? 'Joining...' : 'Join Waitlist'}
-                      {!isSubmitting && <ArrowRight className="h-5 w-5" />}
-                    </button>
-                  </form>
-                ) : (
-                  <div className="bg-green-500 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl flex items-center gap-2 mb-6">
-                    ✅ You're on the waitlist! We'll notify you soon.
+                <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                  <button
+                    onClick={handleInstallClick}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+                  >
+                    Install Extension
+                    <ArrowRight className="h-5 w-5" />
+                  </button>
+                  <button className="border-2 border-gray-300 hover:border-blue-600 text-gray-700 hover:text-blue-600 font-semibold py-4 px-8 rounded-lg text-lg transition-all flex items-center justify-center gap-2">
+                    <Play className="h-5 w-5" />
+                    Watch Demo
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-8 text-sm text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    Free to install
                   </div>
-                )}
-                
-                {submitError && (
-                  <p className="mb-6 text-red-400 text-lg">{submitError}</p>
-                )}
-                
-              </div>
-              
-              {/* Right Video */}
-              <div className="relative">
-                <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl overflow-hidden">
-                  {/* Subtle radial glow for depth */}
-                  <div
-                    className="pointer-events-none absolute inset-0 rounded-2xl"
-                    style={{
-                      background: "radial-gradient(circle at 50% 15%, #4361ee22 0%, transparent 80%)"
-                    }}
-                  />
-                  
-                  {/* Video Container */}
-                  <div className="relative pb-[56.25%] h-0 overflow-hidden">
-                    {!videoStarted ? (
-                      // Initial muted autoplay
-                      <iframe
-                        className="absolute top-0 left-0 w-full h-full"
-                        src="https://www.youtube.com/embed/fbBR_TkLzVY?autoplay=1&mute=1&loop=1&playlist=fbBR_TkLzVY&rel=0&modestbranding=1&vq=hd1080&controls=1"
-                        title="Requill Demo Video"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      ></iframe>
-                    ) : (
-                      // User-initiated playback with sound
-                      <iframe
-                        className="absolute top-0 left-0 w-full h-full"
-                        src="https://www.youtube.com/embed/fbBR_TkLzVY?autoplay=1&mute=0&loop=1&playlist=fbBR_TkLzVY&rel=0&modestbranding=1&vq=hd1080&controls=1"
-                        title="Requill Demo Video"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      ></iframe>
-                    )}
-                    
-                    {/* Click indicator overlay */}
-                    {!videoStarted && (
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="bg-black/50 backdrop-blur-sm rounded-full p-4 animate-pulse">
-                          <div className="text-white text-center">
-                            <Play className="h-8 w-8 mx-auto mb-2" fill="currentColor" />
-                            <p className="text-sm font-medium">Click anywhere to enable sound</p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    Works with any LinkedIn account
                   </div>
-                  
-                  {/* Video Caption */}
-                  <div className="p-4 bg-gradient-to-r from-blue-900/50 to-purple-900/50 text-center">
-                    <p className="text-gray-300 text-sm font-medium">
-                      🎬 See Requill in action - Watch how AI transforms your LinkedIn experience
-                    </p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    Chrome Web Store
                   </div>
                 </div>
               </div>
               
+              {/* Right Demo */}
+              <div className="relative">
+                <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+                  <div className="bg-gray-100 px-6 py-4 border-b border-gray-200">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    </div>
+                  </div>
+                  <div className="p-8">
+                    <div className="mb-6">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                        <div className="flex items-center gap-3 mb-3">
+                          <Briefcase className="h-5 w-5 text-blue-600" />
+                          <span className="font-semibold text-blue-900">Senior Software Engineer</span>
+                        </div>
+                        <p className="text-sm text-gray-600">Google • San Francisco, CA • Full-time</p>
+                      </div>
+                      
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                        <div className="flex items-center gap-3 mb-2">
+                          <Star className="h-5 w-5 text-green-600" />
+                          <span className="font-semibold text-green-900">ATS Score: 85%</span>
+                        </div>
+                        <p className="text-sm text-gray-600">Excellent match for your profile</p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">Key Skills Match</span>
+                          <span className="font-semibold text-gray-900">92%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div className="bg-blue-600 h-2 rounded-full" style={{width: '92%'}}></div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <p className="text-xs text-gray-500 text-center">🎬 See how AI transforms your job application strategy</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-
-
-        {/* Benefits & Features Section */}
-        <section id="features" className="py-16 px-4">
-          <div className="container mx-auto">
-            <div className="text-center mb-12">
-              <h3 className="text-4xl font-bold drop-shadow-md">Features & Benefits</h3>
-              <p className="text-gray-400 mt-2">Unlock your LinkedIn potential with these powerful AI-driven features.</p>
-            </div>
-            <div className="grid md:grid-cols-3 gap-10">
-              {/* Benefit 1 */}
-              <div className="group bg-[#181c28]/80 backdrop-blur-md p-8 rounded-3xl shadow-2xl transition transform hover:-translate-y-4 hover:scale-105 duration-300 border border-blue-900
-                before:content-[''] before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-br before:from-blue-500/20 before:to-transparent before:z-0 relative overflow-hidden">
-                <div className="text-blue-400 mb-5 z-10 relative drop-shadow-2xl">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <h4 className="text-2xl font-bold mb-3 z-10 relative">Effortless LinkedIn Engagement</h4>
-                <p className="text-gray-400 mb-6 z-10 relative">Busy executive, marketing lead, or job seeker? Requill helps you stay consistently active on LinkedIn without spending hours online.</p>
-                <ul className="space-y-4 z-10 relative">
-                  <li className="flex items-start">
-                    <span className="font-bold text-blue-400 mr-2">&#10003;</span>
-                    <div>
-                      <h5 className="font-semibold">Stay Consistently Active</h5>
-                      <p className="text-gray-500 text-sm">Maintain your LinkedIn presence without spending hours online.</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="font-bold text-blue-400 mr-2">&#10003;</span>
-                    <div>
-                      <h5 className="font-semibold">Personalized Replies</h5>
-                      <p className="text-gray-500 text-sm">Craft authentic responses that reflect your professional voice.</p>
-                    </div>
-                  </li>
-                </ul>
-                {/* 3D/Glass Glow */}
-                <div className="absolute -inset-1 bg-blue-400/30 blur-2xl opacity-0 group-hover:opacity-60 transition pointer-events-none rounded-3xl z-0"></div>
-              </div>
-
-              {/* Benefit 2 */}
-              <div className="group bg-[#181c28]/80 backdrop-blur-md p-8 rounded-3xl shadow-2xl transition transform hover:-translate-y-4 hover:scale-105 duration-300 border border-indigo-900
-                before:content-[''] before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-br before:from-indigo-500/20 before:to-transparent before:z-0 relative overflow-hidden">
-                <div className="text-indigo-400 mb-5 z-10 relative drop-shadow-2xl">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <h4 className="text-2xl font-bold mb-3 z-10 relative">✨ It's Time to Level Up!</h4>
-                <p className="text-gray-400 mb-6 z-10 relative">Many professionals are automating their content interactions. With Requill, you can do it faster, better, and more authentically, freeing you to focus on the creative, complex, and high-impact work that matters most.</p>
-                <ul className="space-y-4 z-10 relative">
-                  <li className="flex items-start">
-                    <span className="font-bold text-indigo-400 mr-2">&#10003;</span>
-                    <div>
-                      <h5 className="font-semibold">Faster, Smarter Automation</h5>
-                      <p className="text-gray-500 text-sm">Create AI‑powered summaries and replies in seconds.</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="font-bold text-indigo-400 mr-2">&#10003;</span>
-                    <div>
-                      <h5 className="font-semibold">Focus Where It Counts</h5>
-                      <p className="text-gray-500 text-sm">Spend less time on routine tasks and more on high‑impact strategy.</p>
-                    </div>
-                  </li>
-                </ul>
-                <div className="absolute -inset-1 bg-indigo-400/30 blur-2xl opacity-0 group-hover:opacity-60 transition pointer-events-none rounded-3xl z-0"></div>
-              </div>
-
-              {/* Benefit 3 */}
-              <div className="group bg-[#181c28]/80 backdrop-blur-md p-8 rounded-3xl shadow-2xl transition transform hover:-translate-y-4 hover:scale-105 duration-300 border border-purple-900
-                before:content-[''] before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-br before:from-purple-500/20 before:to-transparent before:z-0 relative overflow-hidden">
-                <div className="text-purple-400 mb-5 z-10 relative drop-shadow-2xl">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                  </svg>
-                </div>
-                <h4 className="text-2xl font-bold mb-3 z-10 relative">Boost Your LinkedIn Presence, Effortlessly</h4>
-                <p className="text-gray-400 mb-6 z-10 relative">Whether you're job hunting or building your personal brand, the extension helps you increase visibility, engagement, and consistency—with minimal effort and maximum impact.</p>
-                <ul className="space-y-4 z-10 relative">
-                  <li className="flex items-start">
-                    <span className="font-bold text-purple-400 mr-2">&#10003;</span>
-                    <div>
-                      <h5 className="font-semibold">Increase Visibility & Engagement</h5>
-                      <p className="text-gray-500 text-sm">Get noticed by recruiters and build your professional brand.</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="font-bold text-purple-400 mr-2">&#10003;</span>
-                    <div>
-                      <h5 className="font-semibold">Minimal Effort, Maximum Impact</h5>
-                      <p className="text-gray-500 text-sm">Achieve better results with less time and energy invested.</p>
-                    </div>
-                  </li>
-                </ul>
-                <div className="absolute -inset-1 bg-purple-400/30 blur-2xl opacity-0 group-hover:opacity-60 transition pointer-events-none rounded-3xl z-0"></div>
-              </div>
+        {/* Features Section */}
+        <section id="features" className="py-20 px-4 bg-white">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h3 className="text-4xl font-bold text-gray-900 mb-4">Powerful Features for Job Seekers</h3>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Everything you need to analyze jobs and optimize your applications for ATS systems.
+              </p>
             </div>
             
-            {/* Pricing CTA */}
+            <div className="grid lg:grid-cols-4 gap-8">
+              {/* Feature 1 */}
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-2xl border border-blue-200 hover:shadow-lg transition-all">
+                <div className="bg-blue-600 p-3 rounded-lg w-fit mb-6">
+                  <Briefcase className="h-8 w-8 text-white" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Smart Job Description Analysis</h4>
+                <p className="text-gray-600 mb-6">
+                  Navigate to any LinkedIn job posting and get instant AI-powered analysis including job summary, key requirements, skills breakdown, career insights, and targeted application tips.
+                </p>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Comprehensive Analysis
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Application Strategy
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Time-Saving Intelligence
+                  </li>
+                </ul>
+              </div>
+
+              {/* Feature 2 */}
+              <div className="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-2xl border border-green-200 hover:shadow-lg transition-all">
+                <div className="bg-green-600 p-3 rounded-lg w-fit mb-6">
+                  <Star className="h-8 w-8 text-white" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">AI-Powered ATS Score Analysis</h4>
+                <p className="text-gray-600 mb-6">
+                  Upload your resume and get a detailed ATS compatibility score (0-100%) against any job description. Understand exactly how your resume matches job requirements and what needs improvement.
+                </p>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Precise Scoring
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Keyword Analysis
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Actionable Recommendations
+                  </li>
+                </ul>
+              </div>
+
+              {/* Feature 3 */}
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-2xl border border-purple-200 hover:shadow-lg transition-all">
+                <div className="bg-purple-600 p-3 rounded-lg w-fit mb-6">
+                  <FileText className="h-8 w-8 text-white" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Comprehensive Resume Analysis</h4>
+                <p className="text-gray-600 mb-6">
+                  Get detailed feedback on your resume including strengths, weaknesses, experience match assessment, skills gap analysis, and improvement recommendations tailored to each job.
+                </p>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Strengths & Weaknesses
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Skills Gap Analysis
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Experience Assessment
+                  </li>
+                </ul>
+              </div>
+
+              {/* Feature 4 */}
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-8 rounded-2xl border border-orange-200 hover:shadow-lg transition-all">
+                <div className="bg-orange-600 p-3 rounded-lg w-fit mb-6">
+                  <Bookmark className="h-8 w-8 text-white" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Save & Organize Job Applications</h4>
+                <p className="text-gray-600 mb-6">
+                  Save analyzed jobs to your personal collection with all the AI-generated insights. Keep track of applications, requirements, and optimization notes in one place.
+                </p>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Organized Job Hunt
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Application Tracking
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Cloud Sync
+                  </li>
+                </ul>
+              </div>
+            </div>
+
             <div className="text-center mt-16">
               <button
-                onClick={() => window.location.href = '/pricing'}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl transition duration-300 transform hover:scale-105"
+                onClick={handleInstallClick}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all transform hover:scale-105 shadow-lg"
               >
-                View Pricing Plans
+                Get Started - Install Extension
               </button>
             </div>
           </div>
         </section>
 
-        <section className="py-16 px-4">
-  <div className="text-center mb-14">
-    <h2 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-blue-400 via-blue-200 to-purple-400 bg-clip-text text-transparent mb-4">
-      Security And Data <br /> Protection
-    </h2>
-  </div>
-  <div className="max-w-6xl mx-auto grid gap-8 md:grid-cols-3">
-    {/* Card 1 */}
-    
-    <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 flex flex-col items-center transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
-      <div className="mb-6">
-        <div className="bg-white/10 rounded-xl p-4 shadow-md flex items-center justify-center">
-          {/* Detective Icon */}
-          <svg className="h-10 w-10 text-blue-200" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-        </div>
-      </div>
-      <h4 className="text-xl font-semibold mb-2 text-white">Anonymous AI Processing</h4>
-      <p className="text-gray-300 text-center text-base">
-        Your data is never shared with OpenAI or any third party for processing.
-      </p>
-      <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-        background: "radial-gradient(circle at 60% 20%, #4cc9f022 0%, transparent 75%)"
-      }} />
-    </div>
-    {/* Card 2 */}
-    <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 flex flex-col items-center transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
-      <div className="mb-6">
-        <div className="bg-white/10 rounded-xl p-4 shadow-md flex items-center justify-center">
-          {/* Lock Icon */}
-          <svg className="h-10 w-10 text-blue-200" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <rect width="18" height="14" x="3" y="7" rx="4" stroke="currentColor" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M7 7V5a5 5 0 1110 0v2" />
-            <circle cx="12" cy="15" r="2" fill="currentColor" />
-          </svg>
-        </div>
-      </div>
-      <h4 className="text-xl font-semibold mb-2 text-white">Data ownership</h4>
-      <p className="text-gray-300 text-center text-base">
-        Your data is yours and you have full control over it. We do not use your data for any other purpose than providing a service to you.
-      </p>
-      <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-        background: "radial-gradient(circle at 40% 30%, #4361ee22 0%, transparent 75%)"
-      }} />
-    </div>
-    {/* Card 3 */}
-    <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 flex flex-col items-center transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
-      <div className="mb-6">
-        <div className="bg-white/10 rounded-xl p-4 shadow-md flex items-center justify-center">
-          {/* Shield Icon */}
-          <svg className="h-10 w-10 text-blue-200" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
-        </div>
-      </div>
-      <h4 className="text-xl font-semibold mb-2 text-white">Enterprise‑Grade Privacy</h4>
-      <p className="text-gray-300 text-center text-base">
-        Powered by Google's secure, world‑class server infrastructure.
-      </p>
-      <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-        background: "radial-gradient(circle at 65% 40%, #7209b722 0%, transparent 75%)"
-      }} />
-    </div>
-  </div>
-</section>
+        {/* How It Works Section */}
+        <section id="how-it-works" className="py-20 px-4 bg-gray-50">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h3 className="text-4xl font-bold text-gray-900 mb-4">How It Works - Three Simple Steps</h3>
+            </div>
+            
+            <div className="grid lg:grid-cols-3 gap-12">
+              {/* Step 1 */}
+              <div className="text-center">
+                <div className="relative mb-8">
+                  <div className="bg-blue-600 p-6 rounded-2xl w-24 h-24 mx-auto flex items-center justify-center">
+                    <Globe className="h-12 w-12 text-white" />
+                  </div>
+                  <div className="absolute -top-3 -right-3 bg-white border-4 border-blue-600 text-blue-600 font-bold text-sm rounded-full w-8 h-8 flex items-center justify-center">
+                    1
+                  </div>
+                </div>
+                <h4 className="text-2xl font-bold text-gray-900 mb-4">Browse LinkedIn Jobs</h4>
+                <p className="text-gray-600">Navigate to any LinkedIn job posting that interests you</p>
+              </div>
 
-<section  id="faq" className="py-16 px-4">
-  <div className="text-center mb-14">
-    <h2 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-blue-400 via-blue-200 to-purple-400 bg-clip-text text-transparent mb-4">
-      Frequently Asked Questions
-    </h2>
-  </div>
-  <div className="max-w-5xl mx-auto grid gap-8 md:grid-cols-2">
-    {/* FAQ 1 */}
-    <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
-      <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-        Is Requill safe to use with my LinkedIn account?
-      </h4>
-      <p className="text-gray-300 text-base">
-        Yes, Requill is completely safe. It works as a browser extension that assists you with content creation and messaging without compromising your account security. We follow all LinkedIn's terms of service and best practices.
-      </p>
-      <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-        background: "radial-gradient(circle at 40% 30%, #4361ee22 0%, transparent 75%)"
-      }} />
-    </div>
-    {/* FAQ 2 */}
-    <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
-      <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-        How does the AI generate personalized content?
-      </h4>
-      <p className="text-gray-300 text-base">
-        Our AI analyzes your industry, role, and professional interests to create content that matches your unique voice and expertise. It learns from your preferences to deliver increasingly relevant suggestions.
-      </p>
-      <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-        background: "radial-gradient(circle at 65% 40%, #7209b722 0%, transparent 75%)"
-      }} />
-    </div>
-    {/* FAQ 3 */}
-    <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
-      <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-        Will my generated content be unique?
-      </h4>
-      <p className="text-gray-300 text-base">
-        Absolutely! Every piece of content is uniquely generated based on your input, professional background, and current trends. No two users will receive identical suggestions.
-      </p>
-      <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-        background: "radial-gradient(circle at 60% 20%, #4cc9f022 0%, transparent 75%)"
-      }} />
-    </div>
-    {/* FAQ 4 */}
-    <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
-      <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-        Do I need a LinkedIn Premium account?
-      </h4>
-      <p className="text-gray-300 text-base">
-        No, Requill works with any LinkedIn account. However, some advanced features may work better with LinkedIn Premium due to increased messaging and connection limits.
-      </p>
-      <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-        background: "radial-gradient(circle at 55% 20%, #4361ee22 0%, transparent 75%)"
-      }} />
-    </div>
-    {/* FAQ 5 */}
-    <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
-      <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-        What languages does Requill support?
-      </h4>
-      <p className="text-gray-300 text-base">
-        Requill supports content generation in over 25 languages, automatically adapting to your LinkedIn profile's primary language and regional preferences.
-      </p>
-      <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-        background: "radial-gradient(circle at 35% 50%, #4cc9f022 0%, transparent 75%)"
-      }} />
-    </div>
-    {/* FAQ 6 */}
-    <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-105 overflow-hidden">
-      <h4 className="text-lg md:text-xl font-semibold mb-3 text-white">
-      What personal data does Requill store?
-      </h4>
-      <p className="text-gray-300 text-base">
-      Requill only stores the email address linked to your account and your usage counts. No other personal data is collected or stored.
-      </p>
-      <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-        background: "radial-gradient(circle at 65% 70%, #7209b722 0%, transparent 75%)"
-      }} />
-    </div>
-  </div>
-</section>
+              {/* Step 2 */}
+              <div className="text-center">
+                <div className="relative mb-8">
+                  <div className="bg-green-600 p-6 rounded-2xl w-24 h-24 mx-auto flex items-center justify-center">
+                    <Zap className="h-12 w-12 text-white" />
+                  </div>
+                  <div className="absolute -top-3 -right-3 bg-white border-4 border-green-600 text-green-600 font-bold text-sm rounded-full w-8 h-8 flex items-center justify-center">
+                    2
+                  </div>
+                </div>
+                <h4 className="text-2xl font-bold text-gray-900 mb-4">Analyze with AI</h4>
+                <p className="text-gray-600">Click "Analyze Job" to extract skills, requirements, and insights instantly</p>
+              </div>
 
-<section className="py-12 px-2 md:px-8">
-  <div className="relative max-w-5xl mx-auto rounded-2xl bg-[#181c28]/80 backdrop-blur-md border border-blue-900 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between px-6 md:px-14 py-10 overflow-hidden group">
-    {/* Text */}
-    <div className="z-10 flex-1">
-      <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
-        Supercharge your LinkedIn<br />grow your network
-      </h2>
-      <div className="flex items-center gap-2 mt-2">
-        <span className="text-gray-300 font-medium ml-2"> Your AI-powered LinkedIn companion</span>
-      </div>
-    </div>
+              {/* Step 3 */}
+              <div className="text-center">
+                <div className="relative mb-8">
+                  <div className="bg-purple-600 p-6 rounded-2xl w-24 h-24 mx-auto flex items-center justify-center">
+                    <Upload className="h-12 w-12 text-white" />
+                  </div>
+                  <div className="absolute -top-3 -right-3 bg-white border-4 border-purple-600 text-purple-600 font-bold text-sm rounded-full w-8 h-8 flex items-center justify-center">
+                    3
+                  </div>
+                </div>
+                <h4 className="text-2xl font-bold text-gray-900 mb-4">Check ATS Score</h4>
+                <p className="text-gray-600">Upload your resume to get compatibility score and optimization recommendations</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
-    {/* Button */}
-    <div className="z-10 flex-1 flex md:justify-end w-full md:w-auto mt-8 md:mt-0">
-      <button
-        onClick={() => document.getElementById('header')?.scrollIntoView({ behavior: 'smooth' })}
-        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg shadow-lg transition duration-300"
-      >
-        Get Started
-      </button>
-    </div>
+        {/* Key Statistics */}
+        <section className="py-20 px-4 bg-white">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid lg:grid-cols-4 gap-8">
+              <div className="text-center">
+                <div className="bg-blue-50 p-6 rounded-2xl mb-4">
+                  <Clock className="h-12 w-12 text-blue-600 mx-auto" />
+                </div>
+                <h4 className="text-2xl font-bold text-gray-900 mb-2">15+ Minutes</h4>
+                <p className="text-gray-600">Saved per job application with instant analysis</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="bg-green-50 p-6 rounded-2xl mb-4">
+                  <Target className="h-12 w-12 text-green-600 mx-auto" />
+                </div>
+                <h4 className="text-2xl font-bold text-gray-900 mb-2">70%+ Match</h4>
+                <p className="text-gray-600">ATS compatibility increases interview chances by 3x</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="bg-purple-50 p-6 rounded-2xl mb-4">
+                  <CheckCircle className="h-12 w-12 text-purple-600 mx-auto" />
+                </div>
+                <h4 className="text-2xl font-bold text-gray-900 mb-2">Better Quality</h4>
+                <p className="text-gray-600">Specific, actionable recommendations for each job</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="bg-orange-50 p-6 rounded-2xl mb-4">
+                  <Users className="h-12 w-12 text-orange-600 mx-auto" />
+                </div>
+                <h4 className="text-2xl font-bold text-gray-900 mb-2">Career Insights</h4>
+                <p className="text-gray-600">Market demands and skill requirements analysis</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
-    {/* Decorative glass angle */}
-    <div
-      className="pointer-events-none absolute top-0 right-0 h-full w-1/2"
-      style={{
-        background: "linear-gradient(120deg, transparent 60%, #ffffff09 100%)",
-        clipPath: "polygon(100% 0, 100% 100%, 0 100%, 40% 0)"
-      }}
-    />
+        {/* Security Section */}
+        <section id="security" className="py-20 px-4 bg-gray-50">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h3 className="text-4xl font-bold text-gray-900 mb-4">Security And Data Protection</h3>
+            </div>
+            
+            <div className="grid lg:grid-cols-4 gap-8">
+              <div className="bg-white p-8 rounded-2xl border border-gray-200 text-center hover:shadow-lg transition-all">
+                <div className="bg-blue-50 p-4 rounded-xl mb-6 w-fit mx-auto">
+                  <Shield className="h-12 w-12 text-blue-600" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Local Processing</h4>
+                <p className="text-gray-600">
+                  Your resume is processed locally in your browser and securely transmitted to our AI service. No data is stored permanently on our servers.
+                </p>
+              </div>
 
-    {/* Subtle radial glow */}
-    <div className="pointer-events-none absolute inset-0 rounded-2xl"
-      style={{
-        background: "radial-gradient(circle at 60% 20%, #4cc9f022 0%, transparent 80%)"
-      }}
-    />
-  </div>
-</section>
-<footer className="bg-[#111624]/90 border-t border-blue-900 py-10 mt-16">
-  <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center md:items-start justify-between gap-8">
-    {/* Brand / Logo */}
-    <div className="flex flex-col items-center md:items-start gap-2">
-      <span className="text-2xl font-bold text-white tracking-tight">
-        Requill
-      </span>
-      <span className="text-gray-400 text-sm">
-        Your AI-powered LinkedIn companion
-      </span>
-    </div>
-    {/* Links */}
-    <div className="flex flex-wrap gap-8 text-center md:text-left">
-      <div>
-        <h4 className="font-semibold text-gray-300 mb-2">Product</h4>
-        <ul className="space-y-1 text-gray-400 text-sm">
-          <li><a href="/#features" className="hover:text-blue-400 transition">Features</a></li>
-          <li><a href="/pricing" className="hover:text-blue-400 transition">Pricing</a></li>
-          <li><a href="/#faq" className="hover:text-blue-400 transition">FAQ</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 className="font-semibold text-gray-300 mb-2">Company</h4>
-        <ul className="space-y-1 text-gray-400 text-sm">
-          <li><a href="/" className="hover:text-blue-400 transition">About</a></li>
-          <li><a href="/blog" className="hover:text-blue-400 transition">Blog</a></li>
-          <li><a href="/contact" className="hover:text-blue-400 transition">Contact</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 className="font-semibold text-gray-300 mb-2">Legal</h4>
-        <ul className="space-y-1 text-gray-400 text-sm">
-          <li><a href="/privacy" className="hover:text-blue-400 transition">Privacy Policy</a></li>
-          <li><a href="/delivery" className="hover:text-blue-400 transition">Service Delivery</a></li>
-          <li><a href="/terms" className="hover:text-blue-400 transition">Terms of Service</a></li>
-        </ul>
-      </div>
-    </div>
-    {/* Social Icons */}
-    <div className="flex items-center gap-5 mt-6 md:mt-0">
-      <a href="#" aria-label="Twitter" className="text-gray-400 hover:text-blue-400 transition">
-        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M22.46 5.9c-.8.36-1.67.61-2.58.72a4.37 4.37 0 0 0 1.92-2.42c-.85.5-1.8.87-2.81 1.07A4.34 4.34 0 0 0 12.06 8c0 .34.04.66.1.97-3.61-.19-6.81-1.91-8.95-4.53a4.44 4.44 0 0 0-.59 2.17c0 1.5.76 2.82 1.92 3.6-.7 0-1.36-.2-1.93-.53v.06c0 2.09 1.48 3.83 3.45 4.23-.36.1-.73.16-1.11.16-.27 0-.53-.03-.78-.07.53 1.64 2.09 2.83 3.92 2.86a8.73 8.73 0 0 1-5.43 1.87c-.35 0-.7-.02-1.04-.06a12.37 12.37 0 0 0 6.69 1.96c8.04 0 12.45-6.66 12.45-12.44 0-.19-.01-.38-.02-.57A8.6 8.6 0 0 0 24 4.56a8.74 8.74 0 0 1-2.54.7z"/>
-        </svg>
-      </a>
-      <a href="#" aria-label="GitHub" className="text-gray-400 hover:text-blue-400 transition">
-        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2a10 10 0 0 0-3.16 19.48c.5.09.68-.22.68-.48 0-.24-.01-.87-.01-1.7-2.78.61-3.37-1.34-3.37-1.34-.45-1.16-1.1-1.47-1.1-1.47-.9-.62.07-.61.07-.61 1 .07 1.53 1.04 1.53 1.04.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.95 0-1.09.39-1.98 1.03-2.67-.1-.26-.45-1.28.1-2.66 0 0 .84-.27 2.75 1.02A9.47 9.47 0 0 1 12 6.84c.85.004 1.71.115 2.51.337 1.91-1.3 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.66.64.7 1.03 1.58 1.03 2.67 0 3.85-2.34 4.7-4.57 4.95.36.31.68.93.68 1.87 0 1.35-.01 2.44-.01 2.77 0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/>
-        </svg>
-      </a>
-      <a href="#" aria-label="LinkedIn" className="text-gray-400 hover:text-blue-400 transition">
-        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-9h3v9zm-1.5-10.268c-.966 0-1.75-.785-1.75-1.75s.784-1.75 1.75-1.75 1.75.785 1.75 1.75-.784 1.75-1.75 1.75zm15.5 10.268h-3v-4.604c0-1.097-.02-2.508-1.529-2.508-1.529 0-1.764 1.193-1.764 2.427v4.685h-3v-9h2.887v1.233h.041c.402-.762 1.379-1.563 2.841-1.563 3.042 0 3.604 2.003 3.604 4.605v4.725z"/>
-        </svg>
-      </a>
-    </div>
-  </div>
-  <div className="mt-8 text-center text-gray-500 text-sm">
-    © {new Date().getFullYear()} Requill. All rights reserved.
-  </div>
-</footer>
+              <div className="bg-white p-8 rounded-2xl border border-gray-200 text-center hover:shadow-lg transition-all">
+                <div className="bg-green-50 p-4 rounded-xl mb-6 w-fit mx-auto">
+                  <Lock className="h-12 w-12 text-green-600" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Encrypted Analysis</h4>
+                <p className="text-gray-600">
+                  All communications with our AI service use enterprise-grade encryption. Your personal information never leaves secure channels.
+                </p>
+              </div>
 
+              <div className="bg-white p-8 rounded-2xl border border-gray-200 text-center hover:shadow-lg transition-all">
+                <div className="bg-purple-50 p-4 rounded-xl mb-6 w-fit mx-auto">
+                  <EyeOff className="h-12 w-12 text-purple-600" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">No Data Retention</h4>
+                <p className="text-gray-600">
+                  Resume content is analyzed in real-time and not stored. Only anonymized analysis results are temporarily cached for performance.
+                </p>
+              </div>
+
+              <div className="bg-white p-8 rounded-2xl border border-gray-200 text-center hover:shadow-lg transition-all">
+                <div className="bg-orange-50 p-4 rounded-xl mb-6 w-fit mx-auto">
+                  <Chrome className="h-12 w-12 text-orange-600" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Browser Extension Security</h4>
+                <p className="text-gray-600">
+                  Built with Chrome's Manifest V3 security standards. Limited permissions only for LinkedIn job pages with no access to personal browsing.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section id="faq" className="py-20 px-4 bg-white">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <h3 className="text-4xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h3>
+            </div>
+            
+            <div className="grid gap-8">
+              <div className="bg-gray-50 p-8 rounded-2xl border border-gray-200">
+                <h4 className="text-xl font-bold text-gray-900 mb-4">How accurate are the ATS compatibility scores?</h4>
+                <p className="text-gray-600">
+                  Our AI analyzes over 20 factors including keyword matching, experience relevance, skills coverage, and formatting. Scores are based on real ATS system criteria and have been validated against actual hiring outcomes. While no system is 100% perfect, our analysis provides highly reliable guidance for optimization.
+                </p>
+              </div>
+
+              <div className="bg-gray-50 p-8 rounded-2xl border border-gray-200">
+                <h4 className="text-xl font-bold text-gray-900 mb-4">What file formats are supported for resume upload?</h4>
+                <p className="text-gray-600">
+                  Currently, we support PDF files only. Your PDF must have selectable text (not scanned images) and be under 10MB. We recommend using "Print to PDF" from your word processor for best results.
+                </p>
+              </div>
+
+              <div className="bg-gray-50 p-8 rounded-2xl border border-gray-200">
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Does the extension work on all LinkedIn job postings?</h4>
+                <p className="text-gray-600">
+                  Yes, our extension works on all LinkedIn job postings. It automatically detects when you're on a job page and enables the analysis features. You can also manually enter job descriptions for analysis if needed.
+                </p>
+              </div>
+
+              <div className="bg-gray-50 p-8 rounded-2xl border border-gray-200">
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Is my resume data secure and private?</h4>
+                <p className="text-gray-600">
+                  Absolutely. Your resume is processed securely and never stored permanently. We use enterprise-grade encryption and follow strict data privacy standards. Your personal information is protected at all times.
+                </p>
+              </div>
+
+              <div className="bg-gray-50 p-8 rounded-2xl border border-gray-200">
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Can I save my job analyses for later reference?</h4>
+                <p className="text-gray-600">
+                  Yes! You can save analyzed jobs to your personal collection. This includes all the AI insights, ATS scores, and your notes. Saved jobs are stored securely and can be accessed anytime through the extension.
+                </p>
+              </div>
+
+              <div className="bg-gray-50 p-8 rounded-2xl border border-gray-200">
+                <h4 className="text-xl font-bold text-gray-900 mb-4">How does the AI analysis compare to human recruiters?</h4>
+                <p className="text-gray-600">
+                  Our AI is trained on thousands of job descriptions and hiring patterns. It provides consistent, objective analysis that many users find more comprehensive than initial human screening. However, it's designed to complement, not replace, human judgment in the hiring process.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA Section */}
+        <section className="py-20 px-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+          <div className="max-w-4xl mx-auto text-center">
+            <h3 className="text-4xl font-bold mb-6">Ready to Transform Your Job Hunt?</h3>
+            <p className="text-xl mb-4 text-blue-100">
+              Join thousands of job seekers using AI to land their dream jobs faster
+            </p>
+            <p className="text-lg mb-8 text-blue-200">
+              Install our Chrome extension and start analyzing LinkedIn jobs with AI-powered insights today. Your next career move is just one click away.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={handleInstallClick}
+                className="bg-white text-blue-600 hover:bg-gray-100 font-bold py-4 px-8 rounded-lg text-lg transition-all transform hover:scale-105 shadow-lg"
+              >
+                Install Extension - It's Free
+              </button>
+              <button className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-bold py-4 px-8 rounded-lg text-lg transition-all flex items-center justify-center gap-2">
+                <Play className="h-5 w-5" />
+                Watch Demo Video
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="bg-gray-900 text-gray-300 py-16 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid lg:grid-cols-5 gap-8 mb-8">
+              {/* Brand */}
+              <div className="lg:col-span-2">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="bg-blue-600 p-2 rounded-lg">
+                    <Briefcase className="h-6 w-6 text-white" />
+                  </div>
+                  <h4 className="text-xl font-bold text-white">LinkedIn Job Description Analyzer</h4>
+                </div>
+                <p className="text-gray-400">AI-powered job hunting made simple</p>
+              </div>
+
+              {/* Product */}
+              <div>
+                <h5 className="font-bold text-white mb-4">Product</h5>
+                <ul className="space-y-2 text-gray-400">
+                  <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
+                  <li><a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a></li>
+                  <li><a href="#security" className="hover:text-white transition-colors">Security</a></li>
+                  <li><a href="#faq" className="hover:text-white transition-colors">FAQ</a></li>
+                </ul>
+              </div>
+
+              {/* Resources */}
+              <div>
+                <h5 className="font-bold text-white mb-4">Resources</h5>
+                <ul className="space-y-2 text-gray-400">
+                  <li><a href="#" className="hover:text-white transition-colors">User Guide</a></li>
+                  <li><a href="#" className="hover:text-white transition-colors">Job Search Tips</a></li>
+                  <li><a href="#" className="hover:text-white transition-colors">ATS Optimization Guide</a></li>
+                  <li><a href="#" className="hover:text-white transition-colors">Career Advice Blog</a></li>
+                </ul>
+              </div>
+
+              {/* Support */}
+              <div>
+                <h5 className="font-bold text-white mb-4">Support</h5>
+                <ul className="space-y-2 text-gray-400">
+                  <li><a href="/contact" className="hover:text-white transition-colors">Contact Us</a></li>
+                  <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
+                  <li><a href="#" className="hover:text-white transition-colors">Report Bug</a></li>
+                  <li><a href="#" className="hover:text-white transition-colors">Feature Request</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+              <div className="flex space-x-6 mb-4 md:mb-0">
+                <a href="/privacy" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
+                <a href="/terms" className="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">Data Protection</a>
+              </div>
+              <p className="text-gray-500">© {new Date().getFullYear()} LinkedIn Job Description Analyzer. All rights reserved.</p>
+            </div>
+          </div>
+        </footer>
       </main>
     </div>
   );
