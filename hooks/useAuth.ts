@@ -16,7 +16,7 @@ import {
   serverTimestamp,
   updateDoc
 } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
+import { auth, db, isFirebaseConfigured } from '@/lib/firebase';
 import { extensionComm } from '@/lib/extensionCommunication';
 import { collection, addDoc } from 'firebase/firestore';
 import { FIREBASE_FUNCTIONS } from '@/lib/firebase-functions';
