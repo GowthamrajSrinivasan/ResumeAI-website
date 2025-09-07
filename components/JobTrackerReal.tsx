@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   Search, 
   Filter, 
@@ -21,7 +22,9 @@ import {
   Globe,
   Users,
   TrendingUp,
-  Briefcase
+  Briefcase,
+  LogIn,
+  ArrowRight
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSavedJobs } from '@/hooks/useSavedJobs';
@@ -73,6 +76,7 @@ const priorityConfig = {
 
 export default function JobTrackerReal() {
   const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const { 
     jobs: rawJobs, 
     loading: jobsLoading, 
@@ -167,11 +171,47 @@ export default function JobTrackerReal() {
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <Briefcase className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Sign in to track jobs</h3>
-          <p className="text-gray-600">Please sign in to view and manage your job applications.</p>
+      <div className="flex items-center justify-center min-h-[500px]">
+        <div className="text-center max-w-md mx-auto p-8">
+          <div className="bg-blue-50 rounded-full p-6 w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+            <Briefcase className="h-12 w-12 text-blue-600" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">Track Your Job Applications</h3>
+          <p className="text-gray-600 mb-6 leading-relaxed">
+            Sign in to view and manage your saved jobs from LinkedIn. Track application status, add notes, and stay organized in your job search.
+          </p>
+          
+          <div className="space-y-3 mb-6">
+            <div className="flex items-center text-sm text-gray-600">
+              <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+              <span>View all your saved LinkedIn jobs</span>
+            </div>
+            <div className="flex items-center text-sm text-gray-600">
+              <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+              <span>Track application status and progress</span>
+            </div>
+            <div className="flex items-center text-sm text-gray-600">
+              <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+              <span>Add personal notes and priorities</span>
+            </div>
+            <div className="flex items-center text-sm text-gray-600">
+              <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+              <span>Get insights and analytics</span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => router.push('/login')}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 w-full group"
+          >
+            <LogIn className="h-5 w-5" />
+            <span>Sign In to Get Started</span>
+            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+          </button>
+
+          <p className="text-sm text-gray-500 mt-4">
+            Don't have an account? You can create one on the login page.
+          </p>
         </div>
       </div>
     );
