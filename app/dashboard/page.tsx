@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect, useState } from "react";
 import { Sparkles, LogOut, User, Crown, Briefcase, Home } from "lucide-react";
 import ExtensionStatusIndicator from '@/components/ExtensionStatusIndicator';
-import JobTracker from '@/components/JobTracker';
+import JobTrackerReal from '@/components/JobTrackerReal';
 
 export default function DashboardPage() {
   const { user, loading, logout } = useAuth();
@@ -216,7 +216,7 @@ export default function DashboardPage() {
             </>
           )}
 
-          {activeTab === 'jobs' && <JobTracker />}
+          {activeTab === 'jobs' && <JobTrackerReal />}
         </div>
     </div>
   );

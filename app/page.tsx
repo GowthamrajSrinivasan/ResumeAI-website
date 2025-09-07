@@ -64,10 +64,10 @@ export default function HomePage() {
               </button>
               
               <button 
-                onClick={() => router.push('/test-jobs')}
+                onClick={() => router.push('/jobs')}
                 className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl transition duration-300 transform hover:scale-105 flex items-center gap-2 justify-center"
               >
-                View Job Tracker Demo
+                View Job Tracker
                 <ArrowRight className="h-5 w-5" />
               </button>
             </div>
