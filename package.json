@@ -8,12 +8,14 @@
     "prebuild": "npm run generate-pricing",
     "dev": "npm run generate-pricing && next dev",
     "build": "next build",
+    "export": "next build && next export",
     "start": "next start",
     "lint": "next lint",
     "serve": "npx http-server . -p 8080 -o",
-    "preview": "npx http-server . -p 8080 -o",
-    "landing": "npx http-server . -p 3000 -o landing.html",
-    "login": "npx http-server . -p 3000 -o index.html"
+    "preview": "npx http-server out -p 8080 -o",
+    "deploy": "npm run build && firebase deploy --only hosting",
+    "deploy:functions": "firebase deploy --only functions",
+    "deploy:all": "npm run build && firebase deploy"
   },
   "dependencies": {
     "firebase": "^11.10.0",
