@@ -80,10 +80,10 @@ export function useSavedJobs() {
     }
 
     try {
-      const jobsRef = collection(db, 'saved_jobs');
+      // Use the new subcollection structure: users/{userId}/saved_jobs
+      const jobsRef = collection(db, 'users', user.uid, 'saved_jobs');
       const q = query(
         jobsRef,
-        where('userId', '==', user.uid),
         orderBy('savedAt', 'desc')
       );
 
@@ -120,7 +120,7 @@ export function useSavedJobs() {
     }
 
     try {
-      const jobRef = doc(db, 'saved_jobs', jobId);
+      const jobRef = doc(db, 'users', user.uid, 'saved_jobs', jobId);
       await updateDoc(jobRef, {
         status: REVERSE_STATUS_MAPPING[newStatus],
         lastUpdated: serverTimestamp()
@@ -135,7 +135,7 @@ export function useSavedJobs() {
     if (!user || !db) return;
 
     try {
-      const jobRef = doc(db, 'saved_jobs', jobId);
+      const jobRef = doc(db, 'users', user.uid, 'saved_jobs', jobId);
       const job = jobs.find(j => j.id === jobId);
       if (!job) return;
 
@@ -155,7 +155,7 @@ export function useSavedJobs() {
     }
 
     try {
-      const jobRef = doc(db, 'saved_jobs', jobId);
+      const jobRef = doc(db, 'users', user.uid, 'saved_jobs', jobId);
       await deleteDoc(jobRef);
     } catch (error) {
       console.error('Error deleting job:', error);
@@ -169,7 +169,7 @@ export function useSavedJobs() {
     }
 
     try {
-      const jobsRef = collection(db, 'saved_jobs');
+      const jobsRef = collection(db, 'users', user.uid, 'saved_jobs');
       const newJob = {
         ...jobData,
         userId: user.uid,
