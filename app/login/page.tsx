@@ -28,10 +28,10 @@ export default function LoginPage() {
     
     // Only redirect if user is authenticated AND login was explicitly successful
     if (user && !loading && loginSuccessful) {
-      console.log('✅ User authenticated and login completed, redirecting to LinkedIn feed');
+      console.log('✅ User authenticated and login completed, redirecting to dashboard');
       // Add a small delay to ensure all auth processes are complete
       setTimeout(() => {
-        window.location.href = 'https://www.linkedin.com/feed/';
+        router.push('/jobs');
       }, 2000);
     } else if (user && !loading && !loginSuccessful) {
       // User is already logged in but hasn't performed a new login action
