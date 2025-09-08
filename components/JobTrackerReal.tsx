@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSavedJobs } from '@/hooks/useSavedJobs';
+import { isFirebaseConfigured } from '@/lib/firebase';
 
 const statusConfig = {
   applied: { 
@@ -98,6 +99,16 @@ export default function JobTrackerReal() {
 
   const jobs = getJobsForTracker();
   const stats = getJobStatistics();
+
+  // Debug logging
+  console.log('JobTrackerReal - Debug Info:', {
+    isFirebaseConfigured,
+    user: user?.email || 'null',
+    authLoading,
+    jobsLoading,
+    error,
+    jobsCount: jobs.length
+  });
 
   const filteredJobs = jobs.filter(job => {
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -220,10 +231,21 @@ export default function JobTrackerReal() {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
+        <div className="text-center max-w-md mx-auto p-6">
           <XCircle className="h-16 w-16 text-red-400 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-gray-900 mb-2">Error loading jobs</h3>
-          <p className="text-gray-600">{error}</p>
+          <p className="text-gray-600 mb-4">{error}</p>
+          {error.includes('Firebase not configured') && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-left">
+              <p className="text-sm text-yellow-800 mb-2">
+                <strong>Firebase Configuration Missing:</strong>
+              </p>
+              <p className="text-xs text-yellow-700">
+                The Firebase environment variables are not configured. Please check your .env file 
+                or contact support for assistance.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     );

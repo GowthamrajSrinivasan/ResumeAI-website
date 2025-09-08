@@ -73,7 +73,15 @@ export function useSavedJobs() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user || !db) {
+    if (!user) {
+      setJobs([]);
+      setLoading(false);
+      return;
+    }
+
+    if (!db) {
+      console.warn('Firebase not configured - jobs cannot be loaded');
+      setError('Firebase not configured');
       setJobs([]);
       setLoading(false);
       return;
