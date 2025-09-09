@@ -67,12 +67,17 @@ const REVERSE_STATUS_MAPPING = {
 } as const;
 
 export function useSavedJobs() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [jobs, setJobs] = useState<SavedJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Wait for auth to complete before making decisions
+    if (authLoading) {
+      return;
+    }
+
     if (!user) {
       setJobs([]);
       setLoading(false);
@@ -120,7 +125,7 @@ export function useSavedJobs() {
       setError('Failed to initialize job tracking');
       setLoading(false);
     }
-  }, [user]);
+  }, [user, authLoading]);
 
   const updateJobStatus = async (jobId: string, newStatus: keyof typeof REVERSE_STATUS_MAPPING) => {
     if (!user || !db) {
