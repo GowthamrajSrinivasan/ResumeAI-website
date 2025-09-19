@@ -1,8 +1,7 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
-import { extensionComm } from '@/lib/extensionCommunication';
 import React, { useEffect, useState } from "react";
 import { Sparkles, Eye, EyeOff, Mail, Lock, User, ArrowRight, Rocket, Zap, TrendingUp } from "lucide-react";
 import { RiQuillPenAiFill } from "react-icons/ri";
@@ -10,6 +9,7 @@ import { RiQuillPenAiFill } from "react-icons/ri";
 export default function LoginPage() {
   const { user, loading, signIn, signUp, signInWithGoogle } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLogin, setIsLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -25,20 +25,21 @@ export default function LoginPage() {
 
   useEffect(() => {
     console.log('Login page - Auth state:', { user: user?.email || 'null', loading, loginSuccessful });
-    
+
     // Only redirect if user is authenticated AND login was explicitly successful
     if (user && !loading && loginSuccessful) {
-      console.log('✅ User authenticated and login completed, redirecting to dashboard');
+      const returnTo = searchParams.get('returnTo') || '/jobs';
+      console.log('✅ User authenticated and login completed, redirecting to:', returnTo);
       // Add a small delay to ensure all auth processes are complete
       setTimeout(() => {
-        router.push('/jobs');
+        router.push(returnTo);
       }, 2000);
     } else if (user && !loading && !loginSuccessful) {
       // User is already logged in but hasn't performed a new login action
       // Don't redirect automatically - let them decide what to do
       console.log('ℹ️ User already authenticated but no new login performed - staying on login page');
     }
-  }, [user, loading, loginSuccessful, router]);
+  }, [user, loading, loginSuccessful, router, searchParams]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -151,7 +152,7 @@ export default function LoginPage() {
             </h1>
             
             <p className="text-gray-300 mb-6">
-              Welcome back! Redirecting you to LinkedIn...
+              Welcome back! Redirecting you to your dashboard...
             </p>
 
             <div className="flex items-center justify-center">

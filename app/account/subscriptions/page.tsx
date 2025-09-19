@@ -6,8 +6,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { FIREBASE_FUNCTIONS } from '@/lib/firebase-functions';
 import { getLocalizedPricing, PlanPricing } from '@/lib/currency-service';
 import PaymentButton from '@/components/PaymentButtonWithCurrency';
-import { extensionComm } from '@/lib/extensionCommunication';
-import { chromeStorageReader, ChromeUserData } from '@/lib/chromeStorageReader';
 
 interface UserProfile {
   // Basic user info
@@ -75,176 +73,14 @@ function SubscriptionsPageContent() {
   const [error, setError] = useState<string>('');
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [chromeStorageData, setChromeStorageData] = useState<any>(null);
-  const [chromeUserData, setChromeUserData] = useState<ChromeUserData | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [authStateChecked, setAuthStateChecked] = useState(false);
   const [redirectTimeoutId, setRedirectTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
-  // Handle Chrome extension visits first
+  // Initialize the page without extension dependency
   useEffect(() => {
-    const handleChromeExtensionData = async () => {
-      try {
-        // COMPREHENSIVE CHROME API LOGGING - Check at the very beginning
-        console.log('🔍 SUBSCRIPTION PAGE: Starting Chrome API availability check...');
-        console.log('🔍 typeof window:', typeof window);
-        console.log('🔍 window.chrome exists:', !!(window as any).chrome);
-        console.log('🔍 window.chrome object:', (window as any).chrome);
-        
-        if ((window as any).chrome) {
-          console.log('🔍 chrome.storage exists:', !!((window as any).chrome.storage));
-          console.log('🔍 chrome.storage object:', (window as any).chrome.storage);
-          
-          if ((window as any).chrome.storage) {
-            console.log('🔍 chrome.storage.sync exists:', !!((window as any).chrome.storage.sync));
-            console.log('🔍 chrome.storage.sync object:', (window as any).chrome.storage.sync);
-            
-            if ((window as any).chrome.storage.sync) {
-              console.log('🔍 chrome.storage.sync.get exists:', typeof (window as any).chrome.storage.sync.get);
-              console.log('✅ ALL CHROME APIS AVAILABLE - Ready to proceed');
-            } else {
-              console.log('❌ chrome.storage.sync is NULL/UNDEFINED');
-            }
-          } else {
-            console.log('❌ chrome.storage is NULL/UNDEFINED');
-          }
-        } else {
-          console.log('❌ window.chrome is NULL/UNDEFINED');
-        }
-        
-        // Check extension availability through chromeStorageReader
-        console.log('🔍 chromeStorageReader.isChromeStorageAvailable():', chromeStorageReader.isChromeStorageAvailable());
-        
-        // DIRECT TEST: Try to access Chrome storage directly
-        if ((window as any).chrome && (window as any).chrome.storage && (window as any).chrome.storage.sync) {
-          console.log('🧪 DIRECT TEST: Attempting direct chrome.storage.sync access...');
-          try {
-            (window as any).chrome.storage.sync.get(null, (items: any) => {
-              if ((window as any).chrome.runtime?.lastError) {
-                console.error('🧪 DIRECT TEST ERROR:', (window as any).chrome.runtime.lastError.message);
-              } else {
-                console.log('🧪 DIRECT TEST SUCCESS: Items from chrome.storage.sync:', items);
-                const userKeys = Object.keys(items).filter(key => key.startsWith('user_'));
-                console.log('🧪 DIRECT TEST: Found user keys:', userKeys);
-              }
-            });
-          } catch (directError) {
-            console.error('🧪 DIRECT TEST EXCEPTION:', directError);
-          }
-        } else {
-          console.log('🧪 DIRECT TEST: Cannot perform - Chrome APIs not available');
-        }
-        
-        // Check if this is a visit from Chrome extension
-        console.log('🔗 Checking if visit is from Chrome extension...');
-        console.log('URL search params:', window.location.search);
-        console.log('isFromExtension():', chromeStorageReader.isFromExtension());
-        
-        if (chromeStorageReader.isFromExtension()) {
-          console.log('🔗 Detected visit from Chrome extension, attempting to read user data...');
-          
-          // Set up direct message listener (matches your extension code exactly)
-          const messageHandler = (event: MessageEvent) => {
-            // Log ALL messages received to see what the extension is sending
-            console.log('📨 SUBSCRIPTION: Received message:', {
-              type: event.data?.type,
-              source: event.data?.source,
-              origin: event.origin,
-              data: event.data
-            });
-            
-            if (event.data?.type === "UID_RESPONSE") {
-              console.log('🎉 SUBSCRIPTION: Processing UID_RESPONSE:', event.data);
-              
-              // Parse the actual Chrome storage structure (based on the actual data format)
-              if (event.data.uid) {
-                console.log('✅ SUBSCRIPTION: UID found, parsing user data...');
-                
-                // Look for user data in the format we actually received: user_${uid}
-                const userKey = `user_${event.data.uid}`;
-                const userDataFromStorage = event.data[userKey] || event.data;
-                
-                console.log('📋 SUBSCRIPTION: Parsing data structure:', {
-                  uid: event.data.uid,
-                  userKey: userKey,
-                  userDataFromStorage: userDataFromStorage,
-                  directProps: {
-                    isPremium: event.data.isPremium || userDataFromStorage?.isPremium,
-                    usageCount: event.data.usageCount || userDataFromStorage?.usageCount,
-                    authExpiry: userDataFromStorage?.authExpiry
-                  }
-                });
-                
-                const userData = {
-                  uid: event.data.uid,
-                  email: event.data.email || userDataFromStorage?.email || 'unknown@extension.local',
-                  displayName: event.data.displayName || userDataFromStorage?.displayName || 'Extension User',
-                  usageCount: event.data.usageCount || userDataFromStorage?.usageCount || 0,
-                  isPremium: event.data.isPremium || userDataFromStorage?.isPremium || false,
-                  createdAt: event.data.createdAt || userDataFromStorage?.createdAt,
-                  lastUsageUpdate: event.data.lastUsageUpdate || userDataFromStorage?.lastUsageUpdate,
-                  planType: event.data.planType || userDataFromStorage?.planType || (event.data.isPremium || userDataFromStorage?.isPremium ? 'premium' : 'free'),
-                  subscriptionStatus: event.data.subscriptionStatus || userDataFromStorage?.subscriptionStatus || 'active'
-                };
-                
-                console.log('✅ SUBSCRIPTION: Successfully parsed user data:', userData);
-                setChromeUserData(userData);
-                
-              } else if (event.data.error) {
-                console.error('❌ SUBSCRIPTION: Error from extension:', event.data.error);
-                setChromeStorageData({ available: false, error: true, message: event.data.error });
-              } else {
-                console.warn('⚠️ SUBSCRIPTION: No UID found in response');
-                console.log('📋 SUBSCRIPTION: Full response data:', event.data);
-                setChromeStorageData({ available: false, error: true, message: 'No user ID found' });
-              }
-              
-              // Clean up listener
-              window.removeEventListener('message', messageHandler);
-            }
-          };
-          
-          // Add message listener
-          window.addEventListener('message', messageHandler);
-          
-          // Request user data from extension (matches your extension code)
-          console.log('🌐 SUBSCRIPTION: Requesting user data from extension...');
-          window.postMessage({
-            type: "GET_UID"
-          }, "*");
-          
-          // Timeout for extension response
-          setTimeout(() => {
-            if (!chromeUserData) {
-              console.warn('⚠️ SUBSCRIPTION: No response from extension, trying fallback...');
-              // Remove the message listener
-              window.removeEventListener('message', messageHandler);
-              
-              // Try Chrome storage reader as fallback
-              chromeStorageReader.handleExtensionVisit().then((fallbackData) => {
-                if (fallbackData) {
-                  console.log('✅ Chrome extension user data loaded via fallback:', fallbackData);
-                  setChromeUserData(fallbackData);
-                } else {
-                  console.warn('⚠️ No user data found in Chrome extension storage');
-                  setChromeStorageData({ available: false, authenticated: false });
-                }
-              }).catch((error) => {
-                console.error('❌ Error with fallback Chrome storage reader:', error);
-                setChromeStorageData({ available: false, authenticated: false });
-              });
-            }
-          }, 3000);
-        } else {
-          console.log('🔗 Not from extension, skipping Chrome storage read');
-        }
-      } catch (error) {
-        console.error('❌ Error handling Chrome extension data:', error);
-        setChromeStorageData({ available: false, error: true, message: error });
-      }
-    };
-
-    // Run immediately when component mounts
-    handleChromeExtensionData();
+    console.log('🚀 Initializing subscriptions page (web-only mode)');
+    // No extension dependencies - just proceed with Firebase auth
   }, []);
 
   useEffect(() => {
@@ -261,15 +97,11 @@ function SubscriptionsPageContent() {
       return; // Still loading auth state
     }
     
-    // If we have a user OR Chrome extension data, clear any existing timeout and proceed with data loading
-    if (!loading && (user || chromeUserData)) {
-      const effectiveUser = user || { 
-        email: chromeUserData?.email, 
-        uid: chromeUserData?.uid,
-        displayName: chromeUserData?.displayName 
-      };
+    // If we have a user, clear any existing timeout and proceed with data loading
+    if (!loading && user) {
+      const effectiveUser = user;
       
-      console.log('User found (Firebase or Chrome), loading subscription data:', effectiveUser.email);
+      console.log('User found (Firebase), loading subscription data:', effectiveUser.email);
       
       // Clear any existing redirect timeout since we found a user
       if (redirectTimeoutId) {
@@ -310,18 +142,17 @@ function SubscriptionsPageContent() {
         });
         
         const timeoutId = setTimeout(() => {
-          // Double-check after additional wait time - only redirect if still no user AND no Chrome data
-          console.log('Timeout reached. Checking user state:', { 
-            user: !!user, 
-            chromeUserData: !!chromeUserData,
+          // Double-check after additional wait time - only redirect if still no user
+          console.log('Timeout reached. Checking user state:', {
+            user: !!user,
             authStateChecked
           });
-          
-          if (!user && !chromeUserData) {
+
+          if (!user) {
             console.log('No user found after restoration wait, redirecting to login');
             router.push('/login?returnTo=' + encodeURIComponent('/account/subscriptions'));
           } else {
-            console.log('User or Chrome data available, skipping redirect. User:', !!user, 'Chrome data:', !!chromeUserData);
+            console.log('User available, skipping redirect. User:', !!user);
           }
         }, waitTime);
         
@@ -332,13 +163,11 @@ function SubscriptionsPageContent() {
     }
     
     // Handle case where user becomes null after being authenticated (logout)
-    if (!loading && !user && !chromeUserData && authStateChecked) {
+    if (!loading && !user && authStateChecked) {
       console.log('User logged out, redirecting to login');
-      console.log('chromeUserData:', chromeUserData);
-
       //router.push('/login');
     }
-  }, [user, loading, router, authStateChecked, redirectTimeoutId, chromeUserData]);
+  }, [user, loading, router, authStateChecked, redirectTimeoutId]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -358,20 +187,16 @@ function SubscriptionsPageContent() {
 
   const loadSubscriptionData = async () => {
     try {
-      // Determine effective user (Firebase or Chrome extension)
-      const effectiveUser = user || { 
-        uid: chromeUserData?.uid, 
-        email: chromeUserData?.email,
-        displayName: chromeUserData?.displayName 
-      };
+      // Use Firebase user only
+      const effectiveUser = user;
       
-      if (!effectiveUser.uid || !effectiveUser.email) {
+      if (!effectiveUser?.uid || !effectiveUser?.email) {
         console.error('No valid user data available for loading subscription data');
         setPageLoading(false);
         return;
       }
       
-      console.log('Starting comprehensive data loading for:', effectiveUser.email);
+      console.log('Starting comprehensive data loading for:', effectiveUser?.email);
       setPageLoading(true);
       
       // Start all data loading operations in parallel for better performance
@@ -416,36 +241,36 @@ function SubscriptionsPageContent() {
           setUserProfile(profileData.userProfile);
         } else {
           console.error('User profile API failed:', profileResponse.status, profileResponse.statusText);
-          // Set minimal user profile using effective user or Chrome data
+          // Set minimal user profile using Firebase user
           setUserProfile({
-            isPremium: chromeUserData?.isPremium || false,
-            planType: chromeUserData?.planType || 'free',
-            subscriptionStatus: (chromeUserData?.subscriptionStatus as any) || 'expired',
-            userEmail: effectiveUser.email || undefined,
-            displayName: effectiveUser.displayName || effectiveUser.email?.split('@')[0] || undefined,
-            uid: effectiveUser.uid || undefined,
-            usage: chromeUserData ? {
-              totalUsage: chromeUserData.usageCount || 0,
+            isPremium: false,
+            planType: 'free',
+            subscriptionStatus: 'expired',
+            userEmail: effectiveUser?.email || undefined,
+            displayName: effectiveUser?.displayName || effectiveUser?.email?.split('@')[0] || undefined,
+            uid: effectiveUser?.uid || undefined,
+            usage: {
+              totalUsage: 0,
               monthlyUsage: 0,
-              quotaLimit: chromeUserData.isPremium ? -1 : 10
-            } : undefined
+              quotaLimit: 10
+            }
           });
         }
       }).catch((profileError) => {
         console.error('Error loading user profile:', profileError);
-        // Set fallback user profile using Chrome data if available
+        // Set fallback user profile
         setUserProfile({
-          isPremium: chromeUserData?.isPremium || false,
-          planType: chromeUserData?.planType || 'free',
-          subscriptionStatus: (chromeUserData?.subscriptionStatus as any) || 'expired',
-          userEmail: effectiveUser.email || undefined,
-          displayName: effectiveUser.displayName || effectiveUser.email?.split('@')[0] || undefined,
-          uid: effectiveUser.uid || undefined,
-          usage: chromeUserData ? {
-            totalUsage: chromeUserData.usageCount || 0,
+          isPremium: false,
+          planType: 'free',
+          subscriptionStatus: 'expired',
+          userEmail: effectiveUser?.email || undefined,
+          displayName: effectiveUser?.displayName || effectiveUser?.email?.split('@')[0] || undefined,
+          uid: effectiveUser?.uid || undefined,
+          usage: {
+            totalUsage: 0,
             monthlyUsage: 0,
-            quotaLimit: chromeUserData.isPremium ? -1 : 10
-          } : undefined
+            quotaLimit: 10
+          }
         });
       });
       dataLoadingPromises.push(profilePromise);
@@ -479,104 +304,28 @@ function SubscriptionsPageContent() {
       await Promise.allSettled(dataLoadingPromises);
       console.log('Core data loading completed');
 
-      // 4. Try to get Chrome extension data (non-blocking)
-      console.log('Attempting to get Chrome extension data...');
-      try {
-        if (typeof window !== 'undefined') {
-          // Initialize extension communication
-          extensionComm.initialize();
-          
-          // Set up handlers for extension responses
-          extensionComm.onExtensionAuthenticated = (uid: string) => {
-            console.log('Extension is authenticated with uid:', uid);
-            setChromeStorageData({ uid, authenticated: true });
-          };
-          
-          extensionComm.onExtensionUnauthenticated = () => {
-            console.log('Extension is not authenticated');
-            setChromeStorageData({ authenticated: false });
-          };
-          
-          extensionComm.onExtensionPresent = (data: any) => {
-            console.log('Extension is present:', data);
-            setChromeStorageData({ 
-              available: true,
-              userId: data.userId,
-              extensionVersion: data.extensionVersion,
-              isInstalled: data.isInstalled,
-              timestamp: data.timestamp
-            });
-          };
-          
-          extensionComm.onExtensionNotPresent = () => {
-            console.log('Extension is not present');
-            setChromeStorageData({ available: false });
-          };
-          
-          // Request extension presence check and UID
-          extensionComm.checkExtensionPresence();
-          extensionComm.getUid();
-          
-          // Wait for extension response (with timeout)
-          const timeoutHandle = setTimeout(() => {
-            console.log('Extension data timeout reached');
-            if (!chromeStorageData) {
-              setChromeStorageData({ available: false, timeout: true });
-            }
-          }, 3000);
-          
-          // Clear timeout if we get a response
-          const originalOnExtensionPresent = extensionComm.onExtensionPresent;
-          extensionComm.onExtensionPresent = (data: any) => {
-            clearTimeout(timeoutHandle);
-            originalOnExtensionPresent.call(extensionComm, data);
-            console.log('Extension is present:', data);
-            setChromeStorageData({ 
-              available: true,
-              userId: data.userId,
-              extensionVersion: data.extensionVersion,
-              isInstalled: data.isInstalled,
-              timestamp: data.timestamp
-            });
-          };
-          
-          const originalOnExtensionNotPresent = extensionComm.onExtensionNotPresent;
-          extensionComm.onExtensionNotPresent = () => {
-            clearTimeout(timeoutHandle);
-            originalOnExtensionNotPresent.call(extensionComm);
-            console.log('Extension is not present');
-            setChromeStorageData({ available: false });
-          };
-        }
-      } catch (extensionError) {
-        console.error('Error communicating with extension:', extensionError);
-        setChromeStorageData({ error: true, message: extensionError });
-      }
+      // Extension communication removed - web-only mode
 
     } catch (err) {
       console.error('Error in loadSubscriptionData:', err);
       setError('Failed to load some subscription data');
       
-      // Redeclare effectiveUser in catch block
-      const effectiveUser = user || { 
-        uid: chromeUserData?.uid, 
-        email: chromeUserData?.email,
-        displayName: chromeUserData?.displayName 
-      };
-      
-      // Set minimal fallback data using Chrome data if available
+      // Use Firebase user in catch block
+      const effectiveUser = user;
+
+      // Set minimal fallback data
       setUserProfile({
-        isPremium: chromeUserData?.isPremium || false,
-        planType: chromeUserData?.planType || 'free',
-        subscriptionStatus: (chromeUserData?.subscriptionStatus as any) || 'expired',
-        userEmail: effectiveUser.email || undefined,
-        displayName: effectiveUser.displayName || effectiveUser.email?.split('@')[0] || undefined,
-        uid: effectiveUser.uid || undefined,
-        usage: chromeUserData ? {
-          totalUsage: chromeUserData.usageCount || 0,
+        isPremium: false,
+        planType: 'free',
+        subscriptionStatus: 'expired',
+        userEmail: effectiveUser?.email || undefined,
+        displayName: effectiveUser?.displayName || effectiveUser?.email?.split('@')[0] || undefined,
+        uid: effectiveUser?.uid || undefined,
+        usage: {
+          totalUsage: 0,
           monthlyUsage: 0,
-          quotaLimit: chromeUserData.isPremium ? -1 : 10
-        } : undefined
+          quotaLimit: 10
+        }
       });
       setBillingHistory([]);
     } finally {
@@ -587,12 +336,12 @@ function SubscriptionsPageContent() {
 
   const handleCancelSubscription = async () => {
     try {
-      const effectiveUser = user || { uid: chromeUserData?.uid };
+      const effectiveUser = user;
       const response = await fetch(FIREBASE_FUNCTIONS.cancelSubscription, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          userId: effectiveUser.uid,
+        body: JSON.stringify({
+          userId: effectiveUser?.uid,
           reason: 'User requested cancellation'
         }),
       });
@@ -614,7 +363,7 @@ function SubscriptionsPageContent() {
   };
 
   // Show loading state while authentication is being determined
-  if (loading || (!user && !chromeUserData && !authStateChecked)) {
+  if (loading || (!user && !authStateChecked)) {
     return (
       <div className="min-h-screen bg-gradient-radial text-gray-200 flex items-center justify-center">
         <div className="flex items-center">
@@ -627,7 +376,7 @@ function SubscriptionsPageContent() {
     );
   }
 
-  if (!user && !chromeUserData) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-gradient-radial text-gray-200 flex items-center justify-center">
         <div className="text-center">
@@ -920,7 +669,7 @@ function SubscriptionsPageContent() {
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-400">Email</span>
-                    <span className="text-white text-right break-all max-w-48">{userProfile.userEmail || user?.email || chromeUserData?.email}</span>
+                    <span className="text-white text-right break-all max-w-48">{userProfile.userEmail || user?.email}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Display Name</span>
@@ -1016,7 +765,7 @@ function SubscriptionsPageContent() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Account Since</span>
-                  <span className="text-white">{user?.metadata?.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString() : chromeUserData?.createdAt ? new Date(chromeUserData.createdAt).toLocaleDateString() : 'N/A'}</span>
+                  <span className="text-white">{user?.metadata?.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString() : 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Plan</span>
