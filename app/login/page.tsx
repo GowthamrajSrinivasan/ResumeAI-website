@@ -2,11 +2,11 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { Sparkles, Eye, EyeOff, Mail, Lock, User, ArrowRight, Rocket, Zap, TrendingUp } from "lucide-react";
 import { RiQuillPenAiFill } from "react-icons/ri";
 
-export default function LoginPage() {
+function LoginContent() {
   const { user, loading, signIn, signUp, signInWithGoogle } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -535,5 +535,20 @@ export default function LoginPage() {
         Version: 1.1.2.0
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-radial text-gray-200 flex items-center justify-center">
+        <div className="text-center">
+          <Sparkles className="h-8 w-8 text-blue-400 animate-pulse mx-auto mb-4" />
+          <p className="text-xl text-gray-300">Loading...</p>
+        </div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
