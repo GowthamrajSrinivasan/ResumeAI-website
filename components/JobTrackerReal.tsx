@@ -494,19 +494,20 @@ export default function JobTrackerReal() {
       {/* Job Details Modal */}
       {showJobDetails && selectedJob && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">{selectedJob.title}</h2>
-                  <div className="flex items-center space-x-4 text-gray-600">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] sm:max-h-[85vh] overflow-hidden flex flex-col mx-auto">
+            {/* Fixed Header */}
+            <div className="flex-shrink-0 p-4 sm:p-6 border-b border-gray-200">
+              <div className="flex justify-between items-start">
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-xl font-bold text-gray-900 mb-2 truncate">{selectedJob.title}</h2>
+                  <div className="flex items-center space-x-3 text-sm text-gray-600 flex-wrap">
                     <div className="flex items-center space-x-1">
                       <Building2 className="h-4 w-4" />
-                      <span>{selectedJob.company}</span>
+                      <span className="truncate">{selectedJob.company}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <MapPin className="h-4 w-4" />
-                      <span>{selectedJob.location}</span>
+                      <span className="truncate">{selectedJob.location}</span>
                     </div>
                     <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
                       {selectedJob.platform}
@@ -515,11 +516,15 @@ export default function JobTrackerReal() {
                 </div>
                 <button
                   onClick={() => setShowJobDetails(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-gray-600 ml-4 flex-shrink-0"
                 >
                   <XCircle className="h-6 w-6" />
                 </button>
               </div>
+            </div>
+
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
 
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
@@ -578,42 +583,45 @@ export default function JobTrackerReal() {
                     <p className="text-gray-600">{selectedJob.viewCount || 0}</p>
                   </div>
                 </div>
+              </div>
+            </div>
 
-                <div className="flex space-x-3 pt-4">
-                  {selectedJob.jobUrl && (
-                    <button 
-                      onClick={() => window.open(selectedJob.jobUrl, '_blank')}
-                      className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      <span>View Original Job</span>
-                    </button>
-                  )}
-                  
-                  <select
-                    value={selectedJob.status}
-                    onChange={(e) => {
-                      handleStatusChange(selectedJob.id, e.target.value);
-                      setSelectedJob({...selectedJob, status: e.target.value});
-                    }}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            {/* Fixed Footer with Actions */}
+            <div className="flex-shrink-0 p-3 sm:p-4 border-t border-gray-200 bg-gray-50">
+              <div className="flex flex-wrap gap-2 sm:gap-3">
+                {selectedJob.jobUrl && (
+                  <button
+                    onClick={() => window.open(selectedJob.jobUrl, '_blank')}
+                    className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                   >
-                    <option value="applied">Applied</option>
-                    <option value="in_review">In Review</option>
-                    <option value="interview_scheduled">Interview Scheduled</option>
-                    <option value="offer_received">Offer Received</option>
-                    <option value="rejected">Rejected</option>
-                    <option value="withdrawn">Withdrawn</option>
-                  </select>
-                  
-                  <button 
-                    onClick={() => handleDeleteJob(selectedJob.id)}
-                    className="flex items-center space-x-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    <span>Delete</span>
+                    <ExternalLink className="h-4 w-4" />
+                    <span>View Original</span>
                   </button>
-                </div>
+                )}
+
+                <select
+                  value={selectedJob.status}
+                  onChange={(e) => {
+                    handleStatusChange(selectedJob.id, e.target.value);
+                    setSelectedJob({...selectedJob, status: e.target.value});
+                  }}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                >
+                  <option value="applied">Applied</option>
+                  <option value="in_review">In Review</option>
+                  <option value="interview_scheduled">Interview Scheduled</option>
+                  <option value="offer_received">Offer Received</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="withdrawn">Withdrawn</option>
+                </select>
+
+                <button
+                  onClick={() => handleDeleteJob(selectedJob.id)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  <span>Delete</span>
+                </button>
               </div>
             </div>
           </div>
