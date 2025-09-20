@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  Search, 
-  Filter, 
-  Plus, 
-  MapPin, 
-  Calendar, 
+import {
+  Search,
+  Filter,
+  Plus,
+  MapPin,
+  Calendar,
   ExternalLink,
   Clock,
   CheckCircle,
@@ -31,6 +31,7 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { useSavedJobs } from '@/hooks/useSavedJobs';
 import { isFirebaseConfigured } from '@/lib/firebase';
+import AddApplicationForm from './AddApplicationForm';
 
 const statusConfig = {
   applied: { 
@@ -99,6 +100,7 @@ export default function JobTrackerReal() {
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [showJobDetails, setShowJobDetails] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   const jobs = getJobsForTracker();
   const stats = getJobStatistics();
@@ -263,7 +265,10 @@ export default function JobTrackerReal() {
           <h1 className="text-2xl font-bold text-gray-900">Job Applications</h1>
           <p className="text-gray-600">Track and manage your saved jobs</p>
         </div>
-        <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        <button
+          onClick={() => setShowAddForm(true)}
+          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
           <Plus className="h-4 w-4" />
           <span>Add Application</span>
         </button>
@@ -664,6 +669,16 @@ export default function JobTrackerReal() {
           </div>
         </div>
       )}
+
+      {/* Add Application Form */}
+      <AddApplicationForm
+        isOpen={showAddForm}
+        onClose={() => setShowAddForm(false)}
+        onSuccess={() => {
+          // Form will handle the success message and auto-close
+          console.log('Job application added successfully');
+        }}
+      />
     </div>
   );
 }
