@@ -24,7 +24,9 @@ import {
   TrendingUp,
   Briefcase,
   LogIn,
-  ArrowRight
+  ArrowRight,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSavedJobs } from '@/hooks/useSavedJobs';
@@ -96,6 +98,7 @@ export default function JobTrackerReal() {
   const [platformFilter, setPlatformFilter] = useState<string>('all');
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [showJobDetails, setShowJobDetails] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   const jobs = getJobsForTracker();
   const stats = getJobStatistics();
@@ -125,7 +128,8 @@ export default function JobTrackerReal() {
   const handleJobClick = async (job: any) => {
     setSelectedJob(job);
     setShowJobDetails(true);
-    
+    setIsDescriptionExpanded(false); // Reset description expansion for new job
+
     // Increment view count
     try {
       await incrementViewCount(job.id);
@@ -498,31 +502,31 @@ export default function JobTrackerReal() {
           onClick={() => setShowJobDetails(false)}
         >
           <div
-            className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-xl"
+            className="bg-white rounded-xl w-full min-w-[320px] max-w-[95vw] sm:max-w-2xl max-h-[95vh] flex flex-col shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Fixed Header */}
             <div className="flex-shrink-0 p-4 sm:p-6 border-b border-gray-200">
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between items-start gap-4">
                 <div className="flex-1 min-w-0">
-                  <h2 className="text-xl font-bold text-gray-900 mb-2 truncate">{selectedJob.title}</h2>
-                  <div className="flex items-center space-x-3 text-sm text-gray-600 flex-wrap">
-                    <div className="flex items-center space-x-1">
-                      <Building2 className="h-4 w-4" />
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 leading-tight">{selectedJob.title}</h2>
+                  <div className="flex items-center space-x-3 text-sm text-gray-600 flex-wrap gap-2">
+                    <div className="flex items-center space-x-1 min-w-0">
+                      <Building2 className="h-4 w-4 flex-shrink-0" />
                       <span className="truncate">{selectedJob.company}</span>
                     </div>
-                    <div className="flex items-center space-x-1">
-                      <MapPin className="h-4 w-4" />
+                    <div className="flex items-center space-x-1 min-w-0">
+                      <MapPin className="h-4 w-4 flex-shrink-0" />
                       <span className="truncate">{selectedJob.location}</span>
                     </div>
-                    <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                    <span className="badge-blue flex-shrink-0">
                       {selectedJob.platform}
                     </span>
                   </div>
                 </div>
                 <button
                   onClick={() => setShowJobDetails(false)}
-                  className="text-gray-400 hover:text-gray-600 ml-4 flex-shrink-0"
+                  className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0"
                 >
                   <XCircle className="h-6 w-6" />
                 </button>
@@ -547,8 +551,35 @@ export default function JobTrackerReal() {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Job Description</h3>
-                  <p className="text-gray-600 leading-relaxed">{selectedJob.description}</p>
+                  <button
+                    onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                    className="flex items-center justify-between w-full text-left mb-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <h3 className="text-lg font-semibold text-gray-900">Job Description</h3>
+                    {isDescriptionExpanded ? (
+                      <ChevronUp className="h-5 w-5 text-gray-500" />
+                    ) : (
+                      <ChevronDown className="h-5 w-5 text-gray-500" />
+                    )}
+                  </button>
+
+                  {isDescriptionExpanded ? (
+                    <div className="px-2">
+                      <p className="text-gray-600 leading-relaxed">{selectedJob.description}</p>
+                    </div>
+                  ) : (
+                    <div className="px-2">
+                      <p className="text-gray-600 leading-relaxed line-clamp-3">
+                        {selectedJob.description}
+                      </p>
+                      <button
+                        onClick={() => setIsDescriptionExpanded(true)}
+                        className="text-blue-600 hover:text-blue-700 text-sm font-medium mt-1"
+                      >
+                        Read more...
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <div>
