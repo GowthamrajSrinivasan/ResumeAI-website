@@ -493,8 +493,15 @@ export default function JobTrackerReal() {
 
       {/* Job Details Modal */}
       {showJobDetails && selectedJob && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] sm:max-h-[85vh] overflow-hidden flex flex-col mx-auto">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto"
+          onClick={() => setShowJobDetails(false)}
+        >
+          <div
+            className="flex min-h-full items-center justify-center p-2 sm:p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bg-white rounded-xl w-full max-w-2xl max-h-[calc(100vh-1rem)] sm:max-h-[calc(100vh-2rem)] overflow-hidden flex flex-col shadow-xl">
             {/* Fixed Header */}
             <div className="flex-shrink-0 p-4 sm:p-6 border-b border-gray-200">
               <div className="flex justify-between items-start">
@@ -624,6 +631,7 @@ export default function JobTrackerReal() {
                 </button>
               </div>
             </div>
+          </div>
           </div>
         </div>
       )}
