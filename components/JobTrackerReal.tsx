@@ -494,14 +494,13 @@ export default function JobTrackerReal() {
       {/* Job Details Modal */}
       {showJobDetails && selectedJob && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto"
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto"
           onClick={() => setShowJobDetails(false)}
         >
           <div
-            className="flex min-h-full items-center justify-center p-2 sm:p-4"
+            className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-white rounded-xl w-full max-w-2xl max-h-[calc(100vh-1rem)] sm:max-h-[calc(100vh-2rem)] overflow-hidden flex flex-col shadow-xl">
             {/* Fixed Header */}
             <div className="flex-shrink-0 p-4 sm:p-6 border-b border-gray-200">
               <div className="flex justify-between items-start">
@@ -531,7 +530,7 @@ export default function JobTrackerReal() {
             </div>
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 scrollbar-visible min-h-0">
 
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
@@ -631,7 +630,6 @@ export default function JobTrackerReal() {
                 </button>
               </div>
             </div>
-          </div>
           </div>
         </div>
       )}

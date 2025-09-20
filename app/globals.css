@@ -250,11 +250,11 @@ body {
 /* Scrollbar Styling */
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: var(--neutral-300) var(--neutral-100);
+  scrollbar-color: var(--neutral-400) var(--neutral-100);
 }
 
 .scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
@@ -263,12 +263,31 @@ body {
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: var(--neutral-300);
+  background: var(--neutral-400);
   border-radius: var(--radius-full);
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: var(--neutral-400);
+  background: var(--neutral-500);
+}
+
+/* Ensure scrollbar is always visible */
+.scrollbar-visible::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-visible::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.scrollbar-visible::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+
+.scrollbar-visible::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }
 
 /* Focus States */
