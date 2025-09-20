@@ -502,7 +502,7 @@ export default function JobTrackerReal() {
           onClick={() => setShowJobDetails(false)}
         >
           <div
-            className="bg-white rounded-xl w-full min-w-[320px] max-w-[95vw] sm:max-w-2xl max-h-[95vh] flex flex-col shadow-xl"
+            className="bg-white rounded-xl w-full min-w-[280px] max-w-[65vw] sm:max-w-lg max-h-[80vh] flex flex-col shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Fixed Header */}
@@ -534,7 +534,7 @@ export default function JobTrackerReal() {
             </div>
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 scrollbar-visible min-h-0">
+            <div className="flex-1 overflow-y-scroll p-4 sm:p-6 pr-2 sm:pr-4 scrollbar-visible min-h-0" style={{ scrollbarGutter: 'stable' }}>
 
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
