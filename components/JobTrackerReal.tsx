@@ -215,128 +215,422 @@ export default function JobTrackerReal() {
       // Determine site-specific configuration
       const isNaukri = url.includes('naukri.com');
       const isLinkedIn = url.includes('linkedin.com');
+      const isIndeed = url.includes('indeed.com');
+      const isGlassdoor = url.includes('glassdoor.com');
+      const isFoundit = url.includes('foundit.in') || url.includes('monster');
+      const isShine = url.includes('shine.com');
+      const isTimesJobs = url.includes('timesjobs.com');
 
-      const params = new URLSearchParams({
-        api_key: API_KEY,
-        url: url,
-        render_js: 'true',
-        premium_proxy: isNaukri || isLinkedIn ? 'true' : 'false',
-        wait: isNaukri ? '5000' : '3000'
-      });
+      // Try different scraping strategies based on site difficulty
+      let response;
+      let html;
 
-      // Add additional parameters for difficult sites
-      if (isNaukri || isLinkedIn) {
-        params.append('country_code', 'IN');
-        params.append('block_ads', 'true');
-        params.append('stealth_proxy', 'true');
+      try {
+        if (isLinkedIn) {
+          // LinkedIn - try with maximum protection
+          const params = new URLSearchParams({
+            api_key: API_KEY,
+            url: url,
+            render_js: 'true',
+            premium_proxy: 'true',
+            wait: '8000',
+            country_code: 'US',
+            block_ads: 'true',
+            stealth_proxy: 'true',
+            session_id: `linkedin_${Date.now()}`
+          });
+          response = await fetch(`https://app.scrapingbee.com/api/v1/?${params}`);
+        } else if (isNaukri) {
+          // Naukri configuration (working)
+          const params = new URLSearchParams({
+            api_key: API_KEY,
+            url: url,
+            render_js: 'true',
+            premium_proxy: 'true',
+            wait: '5000',
+            country_code: 'IN',
+            block_ads: 'true',
+            stealth_proxy: 'true'
+          });
+          response = await fetch(`https://app.scrapingbee.com/api/v1/?${params}`);
+        } else if (isGlassdoor) {
+          // Glassdoor - moderate protection
+          const params = new URLSearchParams({
+            api_key: API_KEY,
+            url: url,
+            render_js: 'true',
+            premium_proxy: 'true',
+            wait: '4000',
+            block_ads: 'true'
+          });
+          response = await fetch(`https://app.scrapingbee.com/api/v1/?${params}`);
+        } else if (isIndeed) {
+          // Indeed - needs JS rendering
+          const params = new URLSearchParams({
+            api_key: API_KEY,
+            url: url,
+            render_js: 'true',
+            premium_proxy: 'false',
+            wait: '3000'
+          });
+          response = await fetch(`https://app.scrapingbee.com/api/v1/?${params}`);
+        } else if (isFoundit || isShine || isTimesJobs) {
+          // Indian job sites - moderate protection
+          const params = new URLSearchParams({
+            api_key: API_KEY,
+            url: url,
+            render_js: 'true',
+            premium_proxy: 'false',
+            wait: '3000',
+            country_code: 'IN'
+          });
+          response = await fetch(`https://app.scrapingbee.com/api/v1/?${params}`);
+        } else {
+          // Generic sites - basic configuration
+          const params = new URLSearchParams({
+            api_key: API_KEY,
+            url: url,
+            render_js: 'false',
+            premium_proxy: 'false',
+            wait: '2000'
+          });
+          response = await fetch(`https://app.scrapingbee.com/api/v1/?${params}`);
+        }
+
+        if (!response.ok) {
+          throw new Error(`ScrapingBee returned ${response.status}: ${response.statusText}`);
+        }
+
+        html = await response.text();
+
+      } catch (fetchError) {
+        console.error('Primary scraping failed:', fetchError);
+
+        // Fallback: Try basic scraping without advanced features
+        console.log('Trying fallback scraping method...');
+        const fallbackParams = new URLSearchParams({
+          api_key: API_KEY,
+          url: url,
+          render_js: 'false',
+          premium_proxy: 'false',
+          wait: '1000'
+        });
+
+        const fallbackResponse = await fetch(`https://app.scrapingbee.com/api/v1/?${fallbackParams}`);
+
+        if (!fallbackResponse.ok) {
+          // Final fallback: Allow manual entry with URL
+          if (isLinkedIn) {
+            throw new Error('LinkedIn has strong anti-bot protection. Please use the manual "Add Application" button instead and copy the job details manually.');
+          } else {
+            throw new Error('This site is blocking automated access. You can still add the job manually using the "Add Application" button.');
+          }
+        }
+
+        html = await fallbackResponse.text();
+        console.log('Fallback scraping succeeded');
       }
-
-      const response = await fetch(`https://app.scrapingbee.com/api/v1/?${params}`);
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch job data: ${response.status}`);
-      }
-
-      const html = await response.text();
       const doc = new DOMParser().parseFromString(html, 'text/html');
 
       // Extract job information using comprehensive selectors
       const extractJobInfo = () => {
-        // Site-specific selectors based on URL
-        const siteSelectors = isNaukri ? {
-          title: [
-            // New CSS module selectors
-            '[class*="job-title"]',
-            '[class*="jd-header-title"]',
-            '[class*="jobTitle"]',
-            'h1[class*="title"]',
-            // Legacy selectors
-            '.jd-header-title',
-            '.job-title',
-            'h1.jd-job-title',
-            '.job-title-text'
-          ],
-          company: [
-            // New CSS module selectors
-            '[class*="comp-name"]',
-            '[class*="company-name"]',
-            '[class*="employer-name"]',
-            '[class*="jd-header-comp"]',
-            // Legacy selectors
-            '.jd-header-comp-name',
-            '.company-name',
-            '.employer-name',
-            '.comp-name'
-          ],
-          location: [
-            // New CSS module selectors
-            '[class*="job-loc"]',
-            '[class*="location"]',
-            '[class*="jd-loc"]',
-            // Legacy selectors
-            '.jd-job-loc',
-            '.job-location',
-            '.location-text',
-            '.jd-location'
-          ],
-          description: [
-            // New CSS module selectors - based on your finding
-            'section[class*="job-desc-container"]',
-            'section[class*="jd-desc"]',
-            '[class*="job-desc"]',
-            '[class*="jd-desc"]',
-            '[class*="job-description"]',
-            '[class*="job-summary"]',
-            // Content area selectors
-            '[class*="content"] section',
-            '[class*="left-section"] section',
-            'main [class*="desc"]',
-            // Legacy selectors
-            '.jd-desc',
-            '.job-description',
-            '.job-summary',
-            '.jd-job-description'
-          ],
-          salary: [
-            // Naukri specific
-            '.jd-header-salary',
-            '.salary',
-            '.compensation',
-            '.jd-salary',
-            '.detail-header .salary',
-            '[class*="salary"]',
-            '[class*="compensation"]',
-            '.pay-range',
-            '.package'
-          ]
-        } : {
-          // Generic selectors for other sites
-          title: [
-            'h1', '.job-title', '.jobTitle', '.title', '[class*="title"]', '[class*="Title"]',
-            '[data-testid="job-title"]', '.job-header h1', '.posting-headline h2',
-            '[class*="job-title"]', '[class*="jobTitle"]',
-            'h1[class*="title"]', 'h2[class*="title"]', '.header h1', '.main-title'
-          ],
-          company: [
-            '.company-name', '.companyName', '[class*="company"]', '[class*="Company"]',
-            '[data-testid="company"]', '.employer-name', '.job-company',
-            '.comp-name', '.company-title'
-          ],
-          location: [
-            '.location', '.job-location', '[class*="location"]', '[class*="Location"]',
-            '[data-testid="location"]', '.job-location-text', '.loc', '.job-loc'
-          ],
-          description: [
-            '.job-description', '.description', '.job-details', '[class*="description"]', '[class*="Description"]',
-            '.posting-description', '.job-content', '.job-desc', '.content', '.main-content', '.body'
-          ],
-          salary: [
-            '.salary', '.compensation', '[class*="salary"]', '[class*="Salary"]',
-            '[class*="compensation"]', '.pay-range', '.package'
-          ]
+        // Define comprehensive site-specific selectors
+        const SITE_SELECTORS = {
+          linkedin: {
+            title: [
+              '.job-details-jobs-unified-top-card__job-title h1',
+              '.jobs-unified-top-card__job-title h1',
+              '.job-details-jobs-unified-top-card__job-title',
+              '.jobs-unified-top-card__job-title',
+              'h1[data-test-id*="job-title"]',
+              '.jobs-details__main-content h1'
+            ],
+            company: [
+              '.job-details-jobs-unified-top-card__company-name a',
+              '.jobs-unified-top-card__company-name a',
+              '.job-details-jobs-unified-top-card__company-name',
+              '.jobs-unified-top-card__company-name',
+              '[data-test-id*="company-name"]'
+            ],
+            location: [
+              '.job-details-jobs-unified-top-card__primary-description-container .tvm__text',
+              '.jobs-unified-top-card__primary-description .tvm__text',
+              '.job-details-jobs-unified-top-card__primary-description-container',
+              '.jobs-unified-top-card__primary-description',
+              '[data-test-id*="job-location"]'
+            ],
+            description: [
+              '.jobs-description__content .jobs-description-content__text',
+              '.jobs-description-content__text',
+              '.jobs-description__content',
+              '.job-details-jobs-unified-top-card__job-description',
+              '[data-test-id*="job-description"]',
+              '.jobs-box__html-content'
+            ],
+            salary: [
+              '.job-details-jobs-unified-top-card__job-insight',
+              '.jobs-unified-top-card__job-insight',
+              '[class*="salary"]',
+              '[class*="compensation"]'
+            ]
+          },
+          indeed: {
+            title: [
+              'h1[data-jk]',
+              '.jobsearch-JobInfoHeader-title',
+              '.jobsearch-JobInfoHeader-title span[title]',
+              'h1.icl-u-xs-mb--xs'
+            ],
+            company: [
+              '[data-testid="inlineHeader-companyName"] a',
+              '.jobsearch-InlineCompanyRating .icl-u-lg-mr--sm',
+              '.jobsearch-CompanyInfoWithoutHeaderImage',
+              '.jobsearch-InlineCompanyRating a'
+            ],
+            location: [
+              '[data-testid="job-location"]',
+              '.jobsearch-JobInfoHeader-subtitle > div:first-child',
+              '.icl-u-xs-mt--xs .icl-u-colorForeground--secondary'
+            ],
+            description: [
+              '#jobDescriptionText',
+              '.jobsearch-jobDescriptionText',
+              '.jobsearch-JobComponent-description'
+            ],
+            salary: [
+              '.salary-snippet',
+              '.icl-u-xs-mr--xs',
+              '[class*="salary"]'
+            ]
+          },
+          glassdoor: {
+            title: [
+              '[data-test="job-title"]',
+              '.job-title',
+              'h1.css-2ha8t'
+            ],
+            company: [
+              '[data-test="employer-name"]',
+              '.employer-name',
+              '.css-16nw49e'
+            ],
+            location: [
+              '[data-test="job-location"]',
+              '.location',
+              '.css-1v5elnn'
+            ],
+            description: [
+              '.job-description',
+              '[data-test="jobDescription"]',
+              '.css-1udn6o9'
+            ],
+            salary: [
+              '[data-test="salary"]',
+              '.salary',
+              '[class*="salary"]'
+            ]
+          },
+          foundit: {
+            title: [
+              'span.job_title',
+              '.job-title',
+              'h1.job-title',
+              '[data-testid="job-title"]'
+            ],
+            company: [
+              '#company_name',
+              '.company-name',
+              '[data-testid="company-name"]',
+              '.employer-name'
+            ],
+            location: [
+              'span.job_location',
+              '.job-location',
+              '[data-testid="job-location"]',
+              '.location'
+            ],
+            description: [
+              '#job_description',
+              '.job-description',
+              '.job-summary',
+              '[data-testid="job-description"]'
+            ],
+            salary: [
+              '.salary',
+              '[class*="salary"]',
+              '.compensation'
+            ]
+          },
+          naukri: {
+            title: [
+              '[class*="job-title"]',
+              '[class*="jd-header-title"]',
+              '[class*="jobTitle"]',
+              'h1[class*="title"]',
+              '.jd-header-title',
+              '.job-title',
+              'h1.jd-job-title',
+              '.job-title-text'
+            ],
+            company: [
+              '[class*="comp-name"]',
+              '[class*="company-name"]',
+              '[class*="employer-name"]',
+              '[class*="jd-header-comp"]',
+              '.jd-header-comp-name',
+              '.company-name',
+              '.employer-name',
+              '.comp-name'
+            ],
+            location: [
+              '[class*="job-loc"]',
+              '[class*="location"]',
+              '[class*="jd-loc"]',
+              '.jd-job-loc',
+              '.job-location',
+              '.location-text',
+              '.jd-location'
+            ],
+            description: [
+              'section[class*="job-desc-container"]',
+              'section[class*="jd-desc"]',
+              '[class*="job-desc"]',
+              '[class*="jd-desc"]',
+              '[class*="job-description"]',
+              '[class*="job-summary"]',
+              '[class*="content"] section',
+              '[class*="left-section"] section',
+              'main [class*="desc"]',
+              '.jd-desc',
+              '.job-description',
+              '.job-summary',
+              '.jd-job-description'
+            ],
+            salary: [
+              '.jd-header-salary',
+              '.salary',
+              '.compensation',
+              '.jd-salary',
+              '.detail-header .salary',
+              '[class*="salary"]',
+              '[class*="compensation"]',
+              '.pay-range',
+              '.package'
+            ]
+          },
+          shine: {
+            title: [
+              '.job-title',
+              'h1.title',
+              '.jobtitle',
+              '.job-heading'
+            ],
+            company: [
+              '.company-name',
+              '.employer-name',
+              '.company',
+              '.recruiter-name'
+            ],
+            location: [
+              '.job-location',
+              '.location',
+              '.job-loc',
+              '.city'
+            ],
+            description: [
+              '.job-description',
+              '.job-summary',
+              '.jobdesc',
+              '.description'
+            ],
+            salary: [
+              '.salary',
+              '[class*="salary"]',
+              '.compensation'
+            ]
+          },
+          timesjobs: {
+            title: [
+              '.jd-job-title',
+              '.job-title',
+              'h1.title',
+              '.jobtitle'
+            ],
+            company: [
+              '.jd-comp-name',
+              '.company-name',
+              '.employer-name',
+              '.company'
+            ],
+            location: [
+              '.jd-loc',
+              '.job-location',
+              '.location',
+              '.city-name'
+            ],
+            description: [
+              '.jd-desc',
+              '.job-description',
+              '.job-summary',
+              '.description'
+            ],
+            salary: [
+              '.salary',
+              '[class*="salary"]',
+              '.compensation'
+            ]
+          },
+          generic: {
+            title: [
+              '[class*="job-title"]', '[class*="jobTitle"]', '[class*="title"]',
+              'h1[class*="job"]', 'h1[class*="title"]', 'h1[class*="position"]',
+              '[id*="title"]', '[data-testid*="title"]',
+              'h1', 'h2.title', '.job-title', '.position-title'
+            ],
+            company: [
+              '[class*="company"]', '[class*="employer"]', '[class*="comp-name"]',
+              '[data-testid*="company"]', '[data-test*="company"]',
+              '[id*="company"]', '.employer'
+            ],
+            location: [
+              '[class*="location"]', '[class*="job-loc"]', '[class*="address"]',
+              '[data-testid*="location"]', '[data-test*="location"]',
+              '[id*="location"]', '.location'
+            ],
+            description: [
+              'section[class*="desc"]', 'section[class*="job-desc"]',
+              '[class*="job-description"]', '[class*="job-details"]',
+              '[class*="description"]', '[class*="job-summary"]',
+              '[class*="job-content"]', '[class*="content"] section',
+              '[id*="description"]', '.description',
+              '.job-summary', '.job-content', '[role="main"] div'
+            ],
+            salary: [
+              '[class*="salary"]', '[class*="compensation"]',
+              '[data-testid*="salary"]', '.salary', '.compensation'
+            ]
+          }
         };
 
-        const selectors = siteSelectors;
+        // Determine which selectors to use based on the URL
+        let selectors;
+        if (isLinkedIn) {
+          selectors = SITE_SELECTORS.linkedin;
+        } else if (isIndeed) {
+          selectors = SITE_SELECTORS.indeed;
+        } else if (isGlassdoor) {
+          selectors = SITE_SELECTORS.glassdoor;
+        } else if (isFoundit) {
+          selectors = SITE_SELECTORS.foundit;
+        } else if (isNaukri) {
+          selectors = SITE_SELECTORS.naukri;
+        } else if (isShine) {
+          selectors = SITE_SELECTORS.shine;
+        } else if (isTimesJobs) {
+          selectors = SITE_SELECTORS.timesjobs;
+        } else {
+          selectors = SITE_SELECTORS.generic;
+        }
 
         const extractText = (selectors: string[], fieldName: string) => {
           console.log(`\nTrying to extract ${fieldName}...`);
