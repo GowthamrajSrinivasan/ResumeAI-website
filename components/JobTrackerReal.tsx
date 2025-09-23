@@ -242,54 +242,101 @@ export default function JobTrackerReal() {
 
       // Extract job information using comprehensive selectors
       const extractJobInfo = () => {
-        const selectors = {
+        // Site-specific selectors based on URL
+        const siteSelectors = isNaukri ? {
           title: [
-            // Naukri specific selectors
-            '.jd-header-title', '.job-title', '.jobTitle',
-            '.jd-job-title', '.detail-header h1', '.jd-header h1',
-            // Generic selectors
-            'h1', '.title', '[class*="title"]', '[class*="Title"]',
+            // New CSS module selectors
+            '[class*="job-title"]',
+            '[class*="jd-header-title"]',
+            '[class*="jobTitle"]',
+            'h1[class*="title"]',
+            // Legacy selectors
+            '.jd-header-title',
+            '.job-title',
+            'h1.jd-job-title',
+            '.job-title-text'
+          ],
+          company: [
+            // New CSS module selectors
+            '[class*="comp-name"]',
+            '[class*="company-name"]',
+            '[class*="employer-name"]',
+            '[class*="jd-header-comp"]',
+            // Legacy selectors
+            '.jd-header-comp-name',
+            '.company-name',
+            '.employer-name',
+            '.comp-name'
+          ],
+          location: [
+            // New CSS module selectors
+            '[class*="job-loc"]',
+            '[class*="location"]',
+            '[class*="jd-loc"]',
+            // Legacy selectors
+            '.jd-job-loc',
+            '.job-location',
+            '.location-text',
+            '.jd-location'
+          ],
+          description: [
+            // New CSS module selectors - based on your finding
+            'section[class*="job-desc-container"]',
+            'section[class*="jd-desc"]',
+            '[class*="job-desc"]',
+            '[class*="jd-desc"]',
+            '[class*="job-description"]',
+            '[class*="job-summary"]',
+            // Content area selectors
+            '[class*="content"] section',
+            '[class*="left-section"] section',
+            'main [class*="desc"]',
+            // Legacy selectors
+            '.jd-desc',
+            '.job-description',
+            '.job-summary',
+            '.jd-job-description'
+          ],
+          salary: [
+            // Naukri specific
+            '.jd-header-salary',
+            '.salary',
+            '.compensation',
+            '.jd-salary',
+            '.detail-header .salary',
+            '[class*="salary"]',
+            '[class*="compensation"]',
+            '.pay-range',
+            '.package'
+          ]
+        } : {
+          // Generic selectors for other sites
+          title: [
+            'h1', '.job-title', '.jobTitle', '.title', '[class*="title"]', '[class*="Title"]',
             '[data-testid="job-title"]', '.job-header h1', '.posting-headline h2',
             '[class*="job-title"]', '[class*="jobTitle"]',
-            // Broader selectors
             'h1[class*="title"]', 'h2[class*="title"]', '.header h1', '.main-title'
           ],
           company: [
-            // Naukri specific
-            '.jd-header-comp-name', '.company-name', '.companyName',
-            '.jd-company-name', '.detail-header .company',
-            // Generic selectors
-            '[class*="company"]', '[class*="Company"]',
+            '.company-name', '.companyName', '[class*="company"]', '[class*="Company"]',
             '[data-testid="company"]', '.employer-name', '.job-company',
             '.comp-name', '.company-title'
           ],
           location: [
-            // Naukri specific
-            '.jd-header-location', '.location', '.job-location',
-            '.jd-location', '.detail-header .location',
-            // Generic selectors
-            '[class*="location"]', '[class*="Location"]',
-            '[data-testid="location"]', '.job-location-text',
-            '.loc', '.job-loc'
+            '.location', '.job-location', '[class*="location"]', '[class*="Location"]',
+            '[data-testid="location"]', '.job-location-text', '.loc', '.job-loc'
           ],
           description: [
-            // Naukri specific
-            '.jd-desc', '.job-description', '.description', '.job-details',
-            '.jd-content', '.detail-content',
-            // Generic selectors
-            '[class*="description"]', '[class*="Description"]',
-            '.posting-description', '.job-content', '.job-desc',
-            '.content', '.main-content', '.body'
+            '.job-description', '.description', '.job-details', '[class*="description"]', '[class*="Description"]',
+            '.posting-description', '.job-content', '.job-desc', '.content', '.main-content', '.body'
           ],
           salary: [
-            // Naukri specific
-            '.jd-header-salary', '.salary', '.compensation',
-            '.jd-salary', '.detail-header .salary',
-            // Generic selectors
-            '[class*="salary"]', '[class*="Salary"]',
+            '.salary', '.compensation', '[class*="salary"]', '[class*="Salary"]',
             '[class*="compensation"]', '.pay-range', '.package'
           ]
         };
+
+        const selectors = siteSelectors;
 
         const extractText = (selectors: string[], fieldName: string) => {
           console.log(`\nTrying to extract ${fieldName}...`);
@@ -774,7 +821,7 @@ export default function JobTrackerReal() {
           onClick={() => setShowJobDetails(false)}
         >
           <div
-            className="bg-white rounded-xl w-full min-w-[280px] max-w-[65vw] sm:max-w-lg h-[80vh] flex flex-col shadow-xl"
+            className="bg-white rounded-xl w-full min-w-[280px] max-w-[50vw] sm:max-w-md h-[80vh] flex flex-col shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Sticky Header */}
@@ -809,15 +856,145 @@ export default function JobTrackerReal() {
 
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 pr-2 sm:pr-4 scrollbar-visible min-h-0" style={{ scrollbarGutter: 'stable' }}>
-              {/* ... your content (status, description, skills, notes, metadata) ... */}
+              <div className="space-y-6">
+                {/* Status */}
+                <div className="flex items-center justify-between">
+                  <div className={`flex items-center space-x-2 px-3 py-2 rounded-full ${statusConfig[selectedJob.status as keyof typeof statusConfig].color}`}>
+                    {React.createElement(statusConfig[selectedJob.status as keyof typeof statusConfig].icon, { className: "h-4 w-4" })}
+                    <span className="font-medium">{statusConfig[selectedJob.status as keyof typeof statusConfig].label}</span>
+                  </div>
+                  {selectedJob.salary && (
+                    <div className="flex items-center space-x-1 text-lg font-semibold text-green-600">
+                      <DollarSign className="h-5 w-5" />
+                      <span>{typeof selectedJob.salary === 'number' ? formatSalary(selectedJob.salary) : selectedJob.salary}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Job Description */}
+                {selectedJob.description && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Job Description</h3>
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className={`text-gray-700 leading-relaxed ${isDescriptionExpanded ? '' : 'line-clamp-6'}`}>
+                        {selectedJob.description}
+                      </div>
+                      {selectedJob.description.length > 300 && (
+                        <button
+                          onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                          className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center space-x-1"
+                        >
+                          <span>{isDescriptionExpanded ? 'Show Less' : 'Show More'}</span>
+                          {isDescriptionExpanded ? (
+                            <ChevronUp className="h-4 w-4" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4" />
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Skills */}
+                {selectedJob.extractedSkills && selectedJob.extractedSkills.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Required Skills</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedJob.extractedSkills.map((skill: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined, index: React.Key | null | undefined) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Job Metadata */}
+                <div className="grid grid-cols-1 gap-4 text-sm">
+                  <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                    <h3 className="font-semibold text-gray-900">Job Details</h3>
+
+                    {selectedJob.platform && (
+                      <div className="flex justify-between">
+                        <span className="font-medium text-gray-700">Platform:</span>
+                        <span className="text-gray-600">{selectedJob.platform}</span>
+                      </div>
+                    )}
+
+                    {selectedJob.isRemote && (
+                      <div className="flex justify-between">
+                        <span className="font-medium text-gray-700">Work Type:</span>
+                        <span className="text-green-600 font-medium">Remote</span>
+                      </div>
+                    )}
+
+                    {selectedJob.applicants && (
+                      <div className="flex justify-between">
+                        <span className="font-medium text-gray-700">Applicants:</span>
+                        <span className="text-gray-600">{selectedJob.applicants}</span>
+                      </div>
+                    )}
+
+                    {selectedJob.skillsCount && (
+                      <div className="flex justify-between">
+                        <span className="font-medium text-gray-700">Skills Required:</span>
+                        <span className="text-gray-600">{selectedJob.skillsCount}</span>
+                      </div>
+                    )}
+
+                    {selectedJob.viewCount !== undefined && (
+                      <div className="flex justify-between">
+                        <span className="font-medium text-gray-700">Views:</span>
+                        <span className="text-gray-600">{selectedJob.viewCount}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Tags */}
+                {selectedJob.tags && selectedJob.tags.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Tags</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedJob.tags.map((tag: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined, index: React.Key | null | undefined) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Original URL */}
+                {selectedJob.sourceUrl && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Source</h3>
+                    <a
+                      href={selectedJob.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-700 text-sm break-all"
+                    >
+                      {selectedJob.sourceUrl}
+                    </a>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Sticky Footer */}
             <div className="sticky bottom-0 flex-shrink-0 p-3 sm:p-4 border-t border-gray-200 bg-gray-50 z-10">
               <div className="flex flex-wrap gap-2 sm:gap-3">
-                {selectedJob.jobUrl && (
+                {(selectedJob.sourceUrl || selectedJob.jobUrl) && (
                   <button
-                    onClick={() => window.open(selectedJob.jobUrl, '_blank')}
+                    onClick={() => window.open(selectedJob.sourceUrl || selectedJob.jobUrl, '_blank')}
                     className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                   >
                     <ExternalLink className="h-4 w-4" />
