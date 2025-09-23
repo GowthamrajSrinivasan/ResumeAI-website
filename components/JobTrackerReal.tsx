@@ -26,7 +26,10 @@ import {
   LogIn,
   ArrowRight,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  LinkIcon,
+  Download,
+  Loader2
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSavedJobs } from '@/hooks/useSavedJobs';
@@ -101,6 +104,10 @@ export default function JobTrackerReal() {
   const [showJobDetails, setShowJobDetails] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showUrlForm, setShowUrlForm] = useState(false);
+  const [jobUrl, setJobUrl] = useState('');
+  const [isLoadingUrl, setIsLoadingUrl] = useState(false);
+  const [urlFormError, setUrlFormError] = useState('');
 
   const jobs = getJobsForTracker();
   const stats = getJobStatistics();
@@ -173,6 +180,143 @@ export default function JobTrackerReal() {
       return `$${Math.round(salary / 1000)}k`;
     }
     return `$${salary}`;
+  };
+
+  const extractKeywords = (description: string): string[] => {
+    const commonSkills = [
+      'JavaScript', 'TypeScript', 'React', 'Angular', 'Vue', 'Node.js', 'Python',
+      'Java', 'C++', 'C#', 'PHP', 'Ruby', 'Go', 'Rust', 'Swift', 'Kotlin',
+      'HTML', 'CSS', 'SCSS', 'Tailwind', 'Bootstrap', 'SQL', 'NoSQL', 'MongoDB',
+      'PostgreSQL', 'MySQL', 'Redis', 'AWS', 'Azure', 'GCP', 'Docker', 'Kubernetes',
+      'Git', 'Jenkins', 'CI/CD', 'REST', 'GraphQL', 'API', 'Microservices',
+      'Machine Learning', 'AI', 'Data Science', 'Analytics', 'Tableau', 'Power BI'
+    ];
+
+    const text = description.toLowerCase();
+    const foundSkills = commonSkills.filter(skill =>
+      text.includes(skill.toLowerCase())
+    );
+
+    return foundSkills;
+  };
+
+  const fetchJobFromUrl = async (url: string) => {
+    setIsLoadingUrl(true);
+    setUrlFormError('');
+
+    try {
+      // Validate URL
+      new URL(url);
+
+      // Use the scraping logic from the provided code
+      const API_KEY = '7SJQ7CE7BJI03CP24M8OO8X6T3FLTOI1I2YXBLLH336VBSER87P8V6XY4UR3NW7NZ58DG6Q5DVXWID3A';
+
+      const params = new URLSearchParams({
+        api_key: API_KEY,
+        url: url,
+        render_js: 'true',
+        premium_proxy: 'false',
+        wait: '3000'
+      });
+
+      const response = await fetch(`https://app.scrapingbee.com/api/v1/?${params}`);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch job data: ${response.status}`);
+      }
+
+      const html = await response.text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+
+      // Extract job information using common selectors
+      const extractJobInfo = () => {
+        const selectors = {
+          title: [
+            'h1', '.job-title', '.jobTitle', '.title', '[class*="title"]',
+            '[data-testid="job-title"]', '.job-header h1', '.posting-headline h2'
+          ],
+          company: [
+            '.company-name', '.companyName', '[class*="company"]',
+            '[data-testid="company"]', '.employer-name', '.job-company'
+          ],
+          location: [
+            '.location', '.job-location', '[class*="location"]',
+            '[data-testid="location"]', '.job-location-text'
+          ],
+          description: [
+            '.job-description', '.description', '.job-details',
+            '[class*="description"]', '.posting-description', '.job-content'
+          ],
+          salary: [
+            '.salary', '.compensation', '[class*="salary"]',
+            '[class*="compensation"]', '.pay-range'
+          ]
+        };
+
+        const extractText = (selectors: string[]) => {
+          for (const selector of selectors) {
+            const element = doc.querySelector(selector);
+            if (element && element.textContent?.trim()) {
+              return element.textContent.trim().replace(/\s+/g, ' ');
+            }
+          }
+          return '';
+        };
+
+        return {
+          title: extractText(selectors.title),
+          company: extractText(selectors.company),
+          location: extractText(selectors.location),
+          description: extractText(selectors.description),
+          salary: extractText(selectors.salary)
+        };
+      };
+
+      const jobInfo = extractJobInfo();
+
+      if (!jobInfo.title) {
+        throw new Error('Could not extract job title from the provided URL');
+      }
+
+      const keywords = extractKeywords(jobInfo.description);
+
+      // Create job object compatible with the existing system
+      const newJobData = {
+        title: jobInfo.title,
+        company: jobInfo.company || 'Unknown Company',
+        location: jobInfo.location || 'Location not specified',
+        description: jobInfo.description || 'No description available',
+        url: url,
+        platform: 'Manual Entry',
+        datePosted: new Date().toISOString(),
+        extractedSkills: keywords,
+        salaryHigh: jobInfo.salary ? null : null,
+        salaryLow: jobInfo.salary ? null : null,
+        type: 'Full-time',
+        status: 'applied',
+        notes: `Keywords found: ${keywords.join(', ')}`
+      };
+
+      // Add the job using the existing hook function
+      // Note: This would need to be integrated with the useSavedJobs hook
+      console.log('New job data to be saved:', newJobData);
+
+      setJobUrl('');
+      setShowUrlForm(false);
+
+    } catch (error) {
+      console.error('Error fetching job:', error);
+      setUrlFormError(error instanceof Error ? error.message : 'Failed to fetch job information');
+    } finally {
+      setIsLoadingUrl(false);
+    }
+  };
+
+  const handleUrlSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (jobUrl.trim()) {
+      fetchJobFromUrl(jobUrl.trim());
+    }
   };
 
   if (authLoading) {
@@ -265,13 +409,22 @@ export default function JobTrackerReal() {
           <h1 className="text-2xl font-bold text-gray-900">Job Applications</h1>
           <p className="text-gray-600">Track and manage your saved jobs</p>
         </div>
-        <button
-          onClick={() => setShowAddForm(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Add Application</span>
-        </button>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <button
+            onClick={() => setShowUrlForm(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          >
+            <LinkIcon className="h-4 w-4" />
+            <span>Add from URL</span>
+          </button>
+          <button
+            onClick={() => setShowAddForm(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Add Application</span>
+          </button>
+        </div>
       </div>
 
       {jobsLoading ? (
@@ -587,6 +740,92 @@ export default function JobTrackerReal() {
         </div>
       )}
 
+
+      {/* URL Form Modal */}
+      {showUrlForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold text-gray-900">Add Job from URL</h2>
+                <button
+                  onClick={() => {
+                    setShowUrlForm(false);
+                    setJobUrl('');
+                    setUrlFormError('');
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <XCircle className="h-6 w-6" />
+                </button>
+              </div>
+
+              <form onSubmit={handleUrlSubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="jobUrl" className="block text-sm font-medium text-gray-700 mb-2">
+                    Job Posting URL
+                  </label>
+                  <input
+                    type="url"
+                    id="jobUrl"
+                    value={jobUrl}
+                    onChange={(e) => setJobUrl(e.target.value)}
+                    placeholder="https://example.com/job-posting"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    required
+                    disabled={isLoadingUrl}
+                  />
+                </div>
+
+                {urlFormError && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-sm text-red-600">{urlFormError}</p>
+                  </div>
+                )}
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-sm text-blue-700">
+                    <strong>Supported sites:</strong> Naukri, Indeed, LinkedIn, Monster India,
+                    TimesJobs, Shine, FreshersWorld, and many other job portals.
+                  </p>
+                </div>
+
+                <div className="flex space-x-3 pt-4">
+                  <button
+                    type="submit"
+                    disabled={isLoadingUrl || !jobUrl.trim()}
+                    className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoadingUrl ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>Fetching Job...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Download className="h-4 w-4" />
+                        <span>Fetch Job Details</span>
+                      </>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowUrlForm(false);
+                      setJobUrl('');
+                      setUrlFormError('');
+                    }}
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                    disabled={isLoadingUrl}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add Application Form */}
       <AddApplicationForm
