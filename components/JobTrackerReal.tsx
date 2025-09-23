@@ -84,15 +84,16 @@ const priorityConfig = {
 export default function JobTrackerReal() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const { 
-    jobs: rawJobs, 
-    loading: jobsLoading, 
-    error, 
-    getJobsForTracker, 
+  const {
+    jobs: rawJobs,
+    loading: jobsLoading,
+    error,
+    getJobsForTracker,
     getJobStatistics,
     updateJobStatus,
     incrementViewCount,
     deleteJob,
+    addJob,
     totalJobs,
     remoteJobs
   } = useSavedJobs();
@@ -211,13 +212,24 @@ export default function JobTrackerReal() {
       // Use the scraping logic from the provided code
       const API_KEY = '7SJQ7CE7BJI03CP24M8OO8X6T3FLTOI1I2YXBLLH336VBSER87P8V6XY4UR3NW7NZ58DG6Q5DVXWID3A';
 
+      // Determine site-specific configuration
+      const isNaukri = url.includes('naukri.com');
+      const isLinkedIn = url.includes('linkedin.com');
+
       const params = new URLSearchParams({
         api_key: API_KEY,
         url: url,
         render_js: 'true',
-        premium_proxy: 'false',
-        wait: '3000'
+        premium_proxy: isNaukri || isLinkedIn ? 'true' : 'false',
+        wait: isNaukri ? '5000' : '3000'
       });
+
+      // Add additional parameters for difficult sites
+      if (isNaukri || isLinkedIn) {
+        params.append('country_code', 'IN');
+        params.append('block_ads', 'true');
+        params.append('stealth_proxy', 'true');
+      }
 
       const response = await fetch(`https://app.scrapingbee.com/api/v1/?${params}`);
 
@@ -228,81 +240,183 @@ export default function JobTrackerReal() {
       const html = await response.text();
       const doc = new DOMParser().parseFromString(html, 'text/html');
 
-      // Extract job information using common selectors
+      // Extract job information using comprehensive selectors
       const extractJobInfo = () => {
         const selectors = {
           title: [
-            'h1', '.job-title', '.jobTitle', '.title', '[class*="title"]',
-            '[data-testid="job-title"]', '.job-header h1', '.posting-headline h2'
+            // Naukri specific selectors
+            '.jd-header-title', '.job-title', '.jobTitle',
+            '.jd-job-title', '.detail-header h1', '.jd-header h1',
+            // Generic selectors
+            'h1', '.title', '[class*="title"]', '[class*="Title"]',
+            '[data-testid="job-title"]', '.job-header h1', '.posting-headline h2',
+            '[class*="job-title"]', '[class*="jobTitle"]',
+            // Broader selectors
+            'h1[class*="title"]', 'h2[class*="title"]', '.header h1', '.main-title'
           ],
           company: [
-            '.company-name', '.companyName', '[class*="company"]',
-            '[data-testid="company"]', '.employer-name', '.job-company'
+            // Naukri specific
+            '.jd-header-comp-name', '.company-name', '.companyName',
+            '.jd-company-name', '.detail-header .company',
+            // Generic selectors
+            '[class*="company"]', '[class*="Company"]',
+            '[data-testid="company"]', '.employer-name', '.job-company',
+            '.comp-name', '.company-title'
           ],
           location: [
-            '.location', '.job-location', '[class*="location"]',
-            '[data-testid="location"]', '.job-location-text'
+            // Naukri specific
+            '.jd-header-location', '.location', '.job-location',
+            '.jd-location', '.detail-header .location',
+            // Generic selectors
+            '[class*="location"]', '[class*="Location"]',
+            '[data-testid="location"]', '.job-location-text',
+            '.loc', '.job-loc'
           ],
           description: [
-            '.job-description', '.description', '.job-details',
-            '[class*="description"]', '.posting-description', '.job-content'
+            // Naukri specific
+            '.jd-desc', '.job-description', '.description', '.job-details',
+            '.jd-content', '.detail-content',
+            // Generic selectors
+            '[class*="description"]', '[class*="Description"]',
+            '.posting-description', '.job-content', '.job-desc',
+            '.content', '.main-content', '.body'
           ],
           salary: [
-            '.salary', '.compensation', '[class*="salary"]',
-            '[class*="compensation"]', '.pay-range'
+            // Naukri specific
+            '.jd-header-salary', '.salary', '.compensation',
+            '.jd-salary', '.detail-header .salary',
+            // Generic selectors
+            '[class*="salary"]', '[class*="Salary"]',
+            '[class*="compensation"]', '.pay-range', '.package'
           ]
         };
 
-        const extractText = (selectors: string[]) => {
+        const extractText = (selectors: string[], fieldName: string) => {
+          console.log(`\nTrying to extract ${fieldName}...`);
           for (const selector of selectors) {
             const element = doc.querySelector(selector);
             if (element && element.textContent?.trim()) {
-              return element.textContent.trim().replace(/\s+/g, ' ');
+              const text = element.textContent.trim().replace(/\s+/g, ' ');
+              console.log(`Found ${fieldName} with selector "${selector}": "${text}"`);
+              return text;
+            } else {
+              console.log(`No match for selector "${selector}"`);
             }
           }
+          console.log(`No ${fieldName} found with any selector`);
           return '';
         };
 
+        // Log all available h1 and title elements for debugging
+        console.log('\n=== DEBUGGING JOB EXTRACTION ===');
+        console.log('Available H1 elements:');
+        doc.querySelectorAll('h1').forEach((h1, index) => {
+          console.log(`H1 ${index}: class="${h1.className}" text="${h1.textContent?.trim()}"`);
+        });
+
+        console.log('\nElements with "title" in class:');
+        doc.querySelectorAll('[class*="title"], [class*="Title"]').forEach((el, index) => {
+          console.log(`Title ${index}: ${el.tagName} class="${el.className}" text="${el.textContent?.trim()}"`);
+        });
+
         return {
-          title: extractText(selectors.title),
-          company: extractText(selectors.company),
-          location: extractText(selectors.location),
-          description: extractText(selectors.description),
-          salary: extractText(selectors.salary)
+          title: extractText(selectors.title, 'title'),
+          company: extractText(selectors.company, 'company'),
+          location: extractText(selectors.location, 'location'),
+          description: extractText(selectors.description, 'description'),
+          salary: extractText(selectors.salary, 'salary')
         };
       };
 
       const jobInfo = extractJobInfo();
 
+      // Fallback: Try to extract title from page title if no title found
       if (!jobInfo.title) {
-        throw new Error('Could not extract job title from the provided URL');
+        console.log('\nTrying fallback methods...');
+        const pageTitle = doc.querySelector('title')?.textContent;
+        console.log('Page title:', pageTitle);
+
+        if (pageTitle) {
+          // Extract job title from page title (common pattern: "Job Title - Company - Naukri.com")
+          const titleParts = pageTitle.split(' - ');
+          if (titleParts.length > 0) {
+            const extractedTitle = titleParts[0].trim();
+            if (extractedTitle && !extractedTitle.toLowerCase().includes('naukri') && extractedTitle.length > 5) {
+              jobInfo.title = extractedTitle;
+              console.log('Extracted title from page title:', extractedTitle);
+            }
+          }
+        }
+      }
+
+      // Final check
+      if (!jobInfo.title) {
+        console.log('Final attempt: checking all text content for patterns...');
+
+        // Try to find text that looks like a job title
+        const allText = doc.body?.textContent || '';
+        const lines = allText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+
+        for (const line of lines.slice(0, 10)) { // Check first 10 lines
+          if (line.length > 10 && line.length < 100 &&
+              !line.toLowerCase().includes('naukri') &&
+              !line.toLowerCase().includes('login') &&
+              !line.toLowerCase().includes('register') &&
+              /[a-zA-Z]/.test(line)) {
+            jobInfo.title = line;
+            console.log('Extracted title from text content:', line);
+            break;
+          }
+        }
+      }
+
+      if (!jobInfo.title) {
+        // Log the first part of HTML for debugging
+        console.log('HTML preview (first 1000 chars):', html.substring(0, 1000));
+        throw new Error('Could not extract job title from the provided URL. The page might be using anti-bot protection or have a different structure.');
       }
 
       const keywords = extractKeywords(jobInfo.description);
 
-      // Create job object compatible with the existing system
+      // Create job object compatible with the SavedJob interface
       const newJobData = {
         title: jobInfo.title,
         company: jobInfo.company || 'Unknown Company',
         location: jobInfo.location || 'Location not specified',
         description: jobInfo.description || 'No description available',
-        url: url,
-        platform: 'Manual Entry',
-        datePosted: new Date().toISOString(),
         extractedSkills: keywords,
-        salaryHigh: jobInfo.salary ? null : null,
-        salaryLow: jobInfo.salary ? null : null,
-        type: 'Full-time',
-        status: 'applied',
-        notes: `Keywords found: ${keywords.join(', ')}`
+        searchTerms: keywords, // Use extracted keywords as search terms
+        searchKeywords: keywords, // Use extracted keywords as search keywords
+        tags: ['manual-entry', 'url-imported'],
+        skillsCount: keywords.length,
+        descriptionLength: jobInfo.description ? jobInfo.description.length : 0,
+        isRemote: jobInfo.location ? jobInfo.location.toLowerCase().includes('remote') : false,
+        salary: null, // Could be parsed from jobInfo.salary if needed
+        applicants: null,
+        platform: 'Manual Entry',
+        sourceUrl: url,
+        status: 'applied', // Default status for manually added jobs
+        lastViewed: null // Required by SavedJob interface
       };
 
-      // Add the job using the existing hook function
-      // Note: This would need to be integrated with the useSavedJobs hook
-      console.log('New job data to be saved:', newJobData);
+      console.log('Saving job data:', newJobData);
 
-      setJobUrl('');
-      setShowUrlForm(false);
+      // Save the job using the existing hook function
+      try {
+        const jobId = await addJob(newJobData);
+        console.log('Job saved successfully with ID:', jobId);
+
+        setJobUrl('');
+        setShowUrlForm(false);
+
+        // You could add a success notification here if needed
+        // For now, the job will automatically appear in the list due to the real-time listener
+
+      } catch (saveError) {
+        console.error('Error saving job:', saveError);
+        setUrlFormError('Successfully extracted job data, but failed to save to database. Please try again.');
+        return; // Don't close the form if saving failed
+      }
 
     } catch (error) {
       console.error('Error fetching job:', error);
