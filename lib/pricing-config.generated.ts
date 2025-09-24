@@ -1,5 +1,5 @@
 // Auto-generated from pricing.md - DO NOT EDIT MANUALLY
-// Generated at: 2025-09-20T14:43:34.383Z
+// Generated at: 2025-09-24T09:50:17.670Z
 // Source: config/pricing.md
 
 import { PricingConfig } from './currency-service';
