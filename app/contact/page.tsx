@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from "react";
-import { Briefcase, ArrowLeft, Mail, User, Phone, MessageSquare, Send, Clock, HelpCircle, Settings, Bug, Users, Twitter, Linkedin } from "lucide-react";
+import { Briefcase, ArrowLeft, Mail, User, Phone, MessageSquare, Send, Clock, HelpCircle, Settings, Bug, Users, Twitter, Linkedin, Loader2 } from "lucide-react";
 import { FIREBASE_FUNCTIONS } from '@/lib/firebase-functions';
 import { useAuth } from '@/hooks/useAuth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -312,7 +312,7 @@ export default function ContactUsPage() {
                       />
                       {isLoadingUserData && (
                         <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                          <Sparkles className="h-4 w-4 text-blue-400 animate-spin" />
+                          <Loader2 className="h-4 w-4 text-blue-400 animate-spin" />
                         </div>
                       )}
                     </div>
@@ -355,7 +355,7 @@ export default function ContactUsPage() {
                       />
                       {isLoadingUserData ? (
                         <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                          <Sparkles className="h-4 w-4 text-blue-400 animate-spin" />
+                          <Loader2 className="h-4 w-4 text-blue-400 animate-spin" />
                         </div>
                       ) : (firestoreUserData?.userEmail || (user && user.email)) ? (
                         <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -411,7 +411,7 @@ export default function ContactUsPage() {
                     >
                       {isSubmitting ? (
                         <>
-                          <Sparkles className="h-5 w-5 animate-spin" />
+                          <Loader2 className="h-5 w-5 animate-spin" />
                           <span>Sending...</span>
                         </>
                       ) : (
