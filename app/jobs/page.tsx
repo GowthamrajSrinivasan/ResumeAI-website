@@ -319,16 +319,16 @@ export default function JobsPage() {
 
   if (showJobTracker) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-surface-50 via-white to-primary-50/50">
+      <div className="min-h-screen bg-gray-50">
         {/* Header */}
-        <header className="fixed top-0 z-50 w-full bg-gradient-to-r from-white via-surface-50 to-white border-b border-border/30 backdrop-blur-md">
+        <header className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm">
           <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center shadow-lg">
-                  <Sparkles className="h-4 w-4 text-white" />
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
+                  <Briefcase className="h-4 w-4 text-white" />
                 </div>
-                <h1 className="text-lg font-bold bg-gradient-to-r from-primary-600 to-interactive-600 bg-clip-text text-transparent">Requill Job Tracker</h1>
+                <h1 className="text-lg font-bold text-gray-900">Fit2Hire Job Tracker</h1>
               </div>
 
               <div className="flex items-center space-x-4">
@@ -358,10 +358,10 @@ export default function JobsPage() {
         <section className="pt-24 pb-8 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-8">
-              <h1 className="text-display-sm text-gray-900 mb-4">
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">
                 Job Application Tracker
               </h1>
-              <p className="text-body-lg text-gray-600 max-w-2xl mx-auto">
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Manage your job applications with intelligent tracking, status updates, and insights
                 to help you land your dream role.
               </p>
@@ -684,20 +684,18 @@ export default function JobsPage() {
             </div>
           ) : (
             <div className="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-lg">
-              <CardContent>
-                <div className="text-gray-500 mb-4">
-                  <Search className="h-12 w-12 mx-auto" />
-                </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  No jobs found
-                </h3>
-                <p className="text-gray-700 mb-4">
-                  Try adjusting your search criteria or filters
-                </p>
-                <Button variant="outline" onClick={handleClearFilters} className="bg-gray-100 hover:bg-gray-200 border-gray-300">
-                  Clear Filters
-                </Button>
+              <div className="text-gray-500 mb-4">
+                <Search className="h-12 w-12 mx-auto" />
               </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No jobs found
+              </h3>
+              <p className="text-gray-700 mb-4">
+                Try adjusting your search criteria or filters
+              </p>
+              <Button variant="outline" onClick={handleClearFilters} className="bg-gray-100 hover:bg-gray-200 border-gray-300">
+                Clear Filters
+              </Button>
             </div>
           )}
         </div>

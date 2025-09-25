@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect, useState, Suspense } from "react";
-import { Sparkles, Eye, EyeOff, Mail, Lock, User, ArrowRight, Rocket, Zap, TrendingUp, Chrome } from "lucide-react";
+import { Briefcase, Eye, EyeOff, Mail, Lock, User, ArrowRight, Rocket, Zap, TrendingUp, Chrome } from "lucide-react";
 
 function LoginContent() {
   const { user, loading, signIn, signUp, signInWithGoogle } = useAuth();
@@ -113,10 +113,10 @@ function LoginContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-radial text-gray-200 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <Sparkles className="h-8 w-8 text-blue-400 animate-pulse mx-auto mb-4" />
-          <p className="text-xl text-gray-300">Loading...</p>
+          <Briefcase className="h-8 w-8 text-blue-600 animate-pulse mx-auto mb-4" />
+          <p className="text-xl text-gray-600">Loading...</p>
         </div>
       </div>
     );
@@ -125,9 +125,9 @@ function LoginContent() {
   // Show success screen when login is complete and about to redirect
   if (user && !loading && loginSuccessful) {
     return (
-      <div className="min-h-screen bg-gradient-radial text-gray-200 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto">
-          <div className="relative rounded-2xl border border-green-500 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8">
+          <div className="relative rounded-2xl border border-green-500 bg-white shadow-lg p-8">
             {/* Success Icon */}
             <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
               <svg
@@ -146,17 +146,17 @@ function LoginContent() {
               </svg>
             </div>
 
-            <h1 className="text-2xl font-bold text-white mb-4">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
               Login Successful! 🎉
             </h1>
             
-            <p className="text-gray-300 mb-6">
+            <p className="text-gray-600 mb-6">
               Welcome back! Redirecting you to your dashboard...
             </p>
 
             <div className="flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-blue-400 animate-pulse mr-3" />
-              <p className="text-blue-400">Setting up your workspace...</p>
+              <Briefcase className="h-5 w-5 text-blue-600 animate-pulse mr-3" />
+              <p className="text-blue-600">Setting up your workspace...</p>
             </div>
           </div>
         </div>
@@ -165,23 +165,23 @@ function LoginContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-white" />
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-md">
+              <Briefcase className="h-5 w-5 text-white" />
             </div>
-            <h1 className="text-heading-lg text-gray-900 font-bold">Requill</h1>
+            <h1 className="text-3xl text-gray-900 font-bold">Fit2Hire</h1>
           </div>
-          <p className="text-body-md text-gray-600">
+          <p className="text-lg text-gray-600">
             {isLogin ? 'Welcome back!' : 'Create your account'}
           </p>
         </div>
 
         {/* Authentication Form */}
-        <div className="card p-8">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-8">
           {/* Toggle Buttons */}
           <div className="flex rounded-xl bg-gray-100 p-1 mb-8">
             <button
@@ -223,7 +223,7 @@ function LoginContent() {
                 });
             }}
             disabled={isLoading}
-            className="w-full btn-secondary mb-6"
+            className="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-3 px-4 rounded-lg border border-gray-300 transition-colors mb-6 flex items-center justify-center"
           >
             <Chrome className="h-4 w-4 mr-2" />
             Continue with Google
@@ -233,7 +233,7 @@ function LoginContent() {
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300"></div>
             </div>
-            <div className="relative flex justify-center text-body-sm">
+            <div className="relative flex justify-center text-sm">
               <span className="px-2 bg-white text-gray-500">Or continue with email</span>
             </div>
           </div>
@@ -241,7 +241,7 @@ function LoginContent() {
           {/* Error Message */}
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-body-sm text-red-600">{error}</p>
+              <p className="text-sm text-red-600">{error}</p>
             </div>
           )}
 
@@ -249,7 +249,7 @@ function LoginContent() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <div>
-                <label htmlFor="name" className="block text-body-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                   Full Name
                 </label>
                 <div className="relative">
@@ -260,7 +260,7 @@ function LoginContent() {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="input-field pl-10"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                     placeholder="Enter your full name"
                     required={!isLogin}
                   />
@@ -269,7 +269,7 @@ function LoginContent() {
             )}
 
             <div>
-              <label htmlFor="email" className="block text-body-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                 Email Address
               </label>
               <div className="relative">
@@ -288,7 +288,7 @@ function LoginContent() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-body-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                 Password
               </label>
               <div className="relative">
@@ -299,7 +299,7 @@ function LoginContent() {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="input-field pl-10 pr-10"
+                  className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                   placeholder="Enter your password"
                   required
                 />
@@ -315,7 +315,7 @@ function LoginContent() {
 
             {!isLogin && (
               <div>
-                <label htmlFor="confirmPassword" className="block text-body-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -326,7 +326,7 @@ function LoginContent() {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
-                    className="input-field pl-10"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                     placeholder="Confirm your password"
                     required={!isLogin}
                   />
@@ -337,7 +337,7 @@ function LoginContent() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full btn-primary"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center">
@@ -356,11 +356,11 @@ function LoginContent() {
           {/* Links */}
           <div className="mt-6 text-center space-y-2">
             {isLogin && (
-              <a href="#" className="text-body-sm text-blue-600 hover:text-blue-700">
+              <a href="#" className="text-sm text-blue-600 hover:text-blue-700">
                 Forgot your password?
               </a>
             )}
-            <p className="text-body-sm text-gray-600">
+            <p className="text-sm text-gray-600">
               {isLogin ? "Don't have an account? " : 'Already have an account? '}
               <button
                 onClick={() => setIsLogin(!isLogin)}
@@ -374,7 +374,7 @@ function LoginContent() {
 
         {/* Footer */}
         <div className="mt-8 text-center">
-          <p className="text-body-sm text-gray-500">
+          <p className="text-sm text-gray-500">
             By continuing, you agree to our{' '}
             <a href="/terms" className="text-blue-600 hover:text-blue-700">Terms of Service</a>
             {' '}and{' '}
@@ -389,10 +389,10 @@ function LoginContent() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-body-lg text-gray-600">Loading...</p>
+          <p className="text-lg text-gray-600">Loading...</p>
         </div>
       </div>
     }>
