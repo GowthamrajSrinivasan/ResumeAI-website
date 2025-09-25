@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from "react";
-import { Sparkles, ArrowLeft, Mail, User, Phone, MessageSquare, Send } from "lucide-react";
+import { Briefcase, ArrowLeft, Mail, User, Phone, MessageSquare, Send, Clock, HelpCircle, Settings, Bug, Users, Twitter, Linkedin } from "lucide-react";
 import { FIREBASE_FUNCTIONS } from '@/lib/firebase-functions';
 import { useAuth } from '@/hooks/useAuth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -122,8 +122,8 @@ export default function ContactUsPage() {
       {/* Header */}
       <header className="sticky top-0 z-30 w-full flex items-center justify-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 py-4 px-4 shadow-xl text-white rounded-b-2xl backdrop-blur-lg bg-opacity-90">
         <div className="flex items-center space-x-2">
-          <Sparkles className="h-6 w-6 text-white" />
-          <h1 className="text-xl font-extrabold">Requill</h1>
+          <Briefcase className="h-6 w-6 text-white" />
+          <h1 className="text-xl font-extrabold">Fit2Hire</h1>
         </div>
       </header>
 
@@ -155,29 +155,124 @@ export default function ContactUsPage() {
                   Us
                 </span>
               </h2>
-              
+
               <div className="text-center mb-8">
-                <p className="text-lg text-gray-300 mb-2">
-                  We'd love to hear from you
+                <p className="text-xl text-gray-300 mb-4">
+                  We'd Love to Hear From You
                 </p>
-                <p className="text-sm text-gray-400">
-                  Email us directly at: <span className="text-blue-400 font-semibold">support@executivesai.pro</span>
+                <p className="text-gray-300">
+                  Have questions about how Fit2Hire works, need help with your account, or want to share feedback? We're here to help.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Contact Form Section */}
-        <section className="py-16 px-4">
+        {/* Email Support & Response Time Section */}
+        <section className="py-8 px-4">
           <div className="max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
+              {/* Email Support */}
+              <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+                <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                  background: "radial-gradient(circle at 40% 30%, #4361ee22 0%, transparent 75%)"
+                }} />
+                <div className="relative z-10">
+                  <div className="flex items-center mb-4">
+                    <Mail className="h-8 w-8 text-blue-400 mr-3" />
+                    <h3 className="text-xl font-bold text-white">📧 Email Support</h3>
+                  </div>
+                  <p className="text-gray-300 mb-4">
+                    For general inquiries, technical support, or feedback, reach out to us at:
+                  </p>
+                  <div className="text-center bg-[#1a1f2e] rounded-lg p-4 border border-blue-800">
+                    <p className="text-lg font-semibold text-blue-300">
+                      support@executivesai.com
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Response Time */}
+              <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+                <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                  background: "radial-gradient(circle at 60% 20%, #4cc9f022 0%, transparent 75%)"
+                }} />
+                <div className="relative z-10">
+                  <div className="flex items-center mb-4">
+                    <Clock className="h-8 w-8 text-green-400 mr-3" />
+                    <h3 className="text-xl font-bold text-white">⏱️ Response Time</h3>
+                  </div>
+                  <p className="text-gray-300">
+                    We typically respond to all inquiries within 24 hours on business days.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Why Contact Us Section */}
+        <section className="py-8 px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 50% 30%, #7209b722 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-6 text-center">Why Contact Us?</h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div className="flex items-start">
+                      <Settings className="h-6 w-6 text-blue-400 mr-3 mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="text-lg font-semibold text-blue-300 mb-2">🔹 Account Assistance</h4>
+                        <p className="text-gray-300 text-sm">Help with setup, subscription, or login issues.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start">
+                      <HelpCircle className="h-6 w-6 text-purple-400 mr-3 mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="text-lg font-semibold text-purple-300 mb-2">🔹 Feature Questions</h4>
+                        <p className="text-gray-300 text-sm">Learn more about job analysis, ATS scoring, or resume optimization.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-start">
+                      <Users className="h-6 w-6 text-green-400 mr-3 mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="text-lg font-semibold text-green-300 mb-2">🔹 Feedback & Suggestions</h4>
+                        <p className="text-gray-300 text-sm">Share ideas to make Fit2Hire even better.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start">
+                      <Bug className="h-6 w-6 text-red-400 mr-3 mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="text-lg font-semibold text-red-300 mb-2">🔹 Technical Support</h4>
+                        <p className="text-gray-300 text-sm">Report bugs or issues with the extension.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Contact Form Section */}
+        <section className="py-8 px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-white mb-8 text-center">Send Us a Message</h2>
+            <p className="text-gray-300 text-center mb-8">
+              You can also use the in-app contact form to send us a message directly. Please include your name, email address, and details of your inquiry so we can respond quickly and accurately.
+            </p>
             {/* Contact Form */}
             <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                 background: "radial-gradient(circle at 40% 30%, #4361ee22 0%, transparent 75%)"
               }} />
               <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-6 text-center">Send us a message</h3>
                 
                 {submitStatus === 'success' && (
                   <div className="mb-6 p-4 bg-green-900/30 border border-green-600 rounded-lg text-green-300">
@@ -331,30 +426,50 @@ export default function ContactUsPage() {
               </div>
             </div>
 
-            {/* Contact Information */}
+            {/* Stay Connected */}
             <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mt-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                 background: "radial-gradient(circle at 60% 70%, #4cc9f022 0%, transparent 75%)"
               }} />
               <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-6 text-center">Get in Touch</h3>
-                <div className="text-center space-y-4">
-                  <div>
-                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Email Support</h4>
-                    <p className="text-gray-300">
-                      For general inquiries, support, or feedback, reach out to us at:
-                    </p>
-                    <p className="text-xl font-semibold text-blue-400 mt-2">
-                      support@executivesai.pro
-                    </p>
-                  </div>
-                  <div className="mt-8">
-                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Response Time</h4>
-                    <p className="text-gray-300">
-                      We typically respond to all inquiries within 24 hours during business days.
-                    </p>
-                  </div>
+                <h3 className="text-2xl font-bold text-white mb-6 text-center">Stay Connected</h3>
+                <p className="text-gray-300 text-center mb-6">
+                  Follow us on LinkedIn and Twitter/X for updates, feature releases, and tips on getting the most out of Fit2Hire.
+                </p>
+                <div className="flex justify-center gap-6">
+                  <a
+                    href="#"
+                    aria-label="LinkedIn"
+                    className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  >
+                    <Linkedin className="h-5 w-5" />
+                    <span>LinkedIn</span>
+                  </a>
+                  <a
+                    href="#"
+                    aria-label="Twitter/X"
+                    className="flex items-center space-x-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                  >
+                    <Twitter className="h-5 w-5" />
+                    <span>Twitter/X</span>
+                  </a>
                 </div>
+              </div>
+            </div>
+
+            {/* Bottom Line */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mt-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 50% 50%, #7209b722 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center justify-center">
+                  <span className="mr-2">📌</span>
+                  Bottom Line
+                </h3>
+                <p className="text-gray-300 text-center leading-relaxed">
+                  Whether you're troubleshooting, seeking advice, or just curious about Fit2Hire's features, our team is here to ensure you get the support you need to land your next job faster.
+                </p>
               </div>
             </div>
           </div>
@@ -366,10 +481,10 @@ export default function ContactUsPage() {
             {/* Brand / Logo */}
             <div className="flex flex-col items-center md:items-start gap-2">
               <span className="text-2xl font-bold text-white tracking-tight">
-                Requill
+                Fit2Hire
               </span>
               <span className="text-gray-400 text-sm">
-                Your AI-powered LinkedIn companion
+                Your AI-powered job application assistant
               </span>
             </div>
             {/* Links */}
@@ -407,7 +522,7 @@ export default function ContactUsPage() {
             </div>
           </div>
           <div className="mt-8 text-center text-gray-500 text-sm">
-            © {new Date().getFullYear()} Requill. All rights reserved.
+            © {new Date().getFullYear()} Fit2Hire. All rights reserved.
           </div>
         </footer>
       </main>

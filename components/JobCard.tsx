@@ -90,9 +90,9 @@ const statusConfig = {
 }
 
 const priorityConfig = {
-  high: { borderColor: 'border-l-error-500', badgeVariant: 'destructive' as const },
-  medium: { borderColor: 'border-l-warning-500', badgeVariant: 'warning' as const },
-  low: { borderColor: 'border-l-surface-300', badgeVariant: 'secondary' as const }
+  high: { borderColor: 'border-l-red-500', badgeVariant: 'destructive' as const },
+  medium: { borderColor: 'border-l-yellow-500', badgeVariant: 'warning' as const },
+  low: { borderColor: 'border-l-gray-300', badgeVariant: 'secondary' as const }
 }
 
 const JobCard: React.FC<JobCardProps> = ({
@@ -161,14 +161,12 @@ const JobCard: React.FC<JobCardProps> = ({
   const StatusIcon = statusInfo?.icon
 
   return (
-    <Card
-      variant="default"
-      hover="lift"
+    <div
       className={cn(
-        "group relative overflow-hidden border-l-4 transition-all duration-300",
+        "group relative overflow-hidden border-l-4 transition-all duration-300 bg-white border border-gray-200 shadow-lg hover:shadow-xl hover:-translate-y-1 rounded-lg",
         priorityConfig[priority].borderColor,
-        isUrgent && "ring-2 ring-error-200 ring-offset-2",
-        isNew && "ring-2 ring-primary-200 ring-offset-2",
+        isUrgent && "ring-2 ring-red-200 ring-offset-2",
+        isNew && "ring-2 ring-blue-200 ring-offset-2",
         className
       )}
     >
@@ -204,20 +202,20 @@ const JobCard: React.FC<JobCardProps> = ({
                 />
               </div>
             ) : (
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-100 to-interactive-100 flex items-center justify-center shadow-card">
-                <Building2 className="w-6 h-6 text-primary-600" />
+              <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center shadow-md">
+                <Building2 className="w-6 h-6 text-blue-600" />
               </div>
             )}
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-semibold text-lg text-foreground group-hover:text-primary-600 transition-colors truncate">
+                <h3 className="font-semibold text-lg text-gray-900 group-hover:text-blue-600 transition-colors truncate">
                   {title}
                 </h3>
                 <Badge variant={priorityConfig[priority].badgeVariant} size="sm">
                   {priority.toUpperCase()}
                 </Badge>
               </div>
-              <p className="text-surface-600 font-medium truncate">{company}</p>
+              <p className="text-gray-700 font-medium truncate">{company}</p>
             </div>
           </div>
 
@@ -228,7 +226,7 @@ const JobCard: React.FC<JobCardProps> = ({
             className="opacity-0 group-hover:opacity-100 transition-all flex-shrink-0"
           >
             {isBookmarked ? (
-              <BookmarkCheck className="w-4 h-4 text-primary-500" />
+              <BookmarkCheck className="w-4 h-4 text-blue-500" />
             ) : (
               <Bookmark className="w-4 h-4" />
             )}
@@ -237,7 +235,7 @@ const JobCard: React.FC<JobCardProps> = ({
 
         {/* Job Details */}
         <div className="space-y-3 mb-4">
-          <div className="flex flex-wrap items-center gap-4 text-sm text-surface-600">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-700">
             <div className="flex items-center gap-1">
               <MapPin className="w-4 h-4" />
               <span>{location}</span>
@@ -260,7 +258,7 @@ const JobCard: React.FC<JobCardProps> = ({
 
           {/* Description */}
           {description && (
-            <p className="text-surface-700 text-sm line-clamp-2 leading-relaxed">
+            <p className="text-gray-800 text-sm line-clamp-2 leading-relaxed">
               {description}
             </p>
           )}
@@ -298,15 +296,15 @@ const JobCard: React.FC<JobCardProps> = ({
 
           {/* Notes preview */}
           {notes && (
-            <p className="text-surface-600 text-xs italic line-clamp-1">
+            <p className="text-gray-700 text-xs italic line-clamp-1">
               Note: {notes}
             </p>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-4 border-t border-border/50">
-          <div className="flex items-center gap-4 text-xs text-surface-500">
+        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+          <div className="flex items-center gap-4 text-xs text-gray-600">
             <div className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
               <span>{formatPostedDate(postedDate)}</span>
@@ -364,8 +362,8 @@ const JobCard: React.FC<JobCardProps> = ({
       </div>
 
       {/* Hover effect overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary-500/5 to-interactive-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-    </Card>
+      <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+    </div>
   )
 }
 

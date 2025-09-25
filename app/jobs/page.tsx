@@ -319,16 +319,16 @@ export default function JobsPage() {
 
   if (showJobTracker) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
+      <div className="min-h-screen bg-gradient-to-br from-surface-50 via-white to-primary-50/50">
         {/* Header */}
-        <header className="fixed top-0 z-50 w-full glass border-b border-gray-200/50">
+        <header className="fixed top-0 z-50 w-full bg-gradient-to-r from-white via-surface-50 to-white border-b border-border/30 backdrop-blur-md">
           <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center shadow-lg">
                   <Sparkles className="h-4 w-4 text-white" />
                 </div>
-                <h1 className="text-heading-sm text-gray-900 font-bold">Requill Job Tracker</h1>
+                <h1 className="text-lg font-bold bg-gradient-to-r from-primary-600 to-interactive-600 bg-clip-text text-transparent">Requill Job Tracker</h1>
               </div>
 
               <div className="flex items-center space-x-4">
@@ -380,16 +380,16 @@ export default function JobsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-surface-50 via-white to-primary-50/30">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="sticky top-0 z-40 w-full glass border-b border-border/50">
+      <header className="sticky top-0 z-40 w-full bg-white border-b border-gray-200 shadow-sm">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <Sparkles className="h-4 w-4 text-white" />
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
+                <Briefcase className="h-4 w-4 text-white" />
               </div>
-              <h1 className="text-lg font-bold gradient-text">Requill Jobs</h1>
+              <h1 className="text-lg font-bold text-gray-900">Fit2Hire Jobs</h1>
             </div>
 
             <div className="flex items-center space-x-4">
@@ -423,17 +423,17 @@ export default function JobsPage() {
       {/* Hero Section */}
       <section className="pt-8 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-            <span className="gradient-text">Find Your Dream Job</span>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-gray-900">
+            Find Your Dream Job
           </h1>
-          <p className="text-lg text-surface-600 max-w-2xl mx-auto mb-8">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8 leading-relaxed">
             Discover thousands of job opportunities from top companies around the world.
             Start your career journey today.
           </p>
 
           {/* Search Bar */}
           <div className="max-w-4xl mx-auto">
-            <Card variant="glass" className="p-6">
+            <div className="bg-white border border-gray-200 rounded-xl shadow-lg p-6">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
                   <Input
@@ -441,8 +441,8 @@ export default function JobsPage() {
                     placeholder="Job title, keywords, or company"
                     value={filters.search}
                     onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                    leftIcon={<Search className="h-4 w-4" />}
-                    className="h-12 text-base"
+                    leftIcon={<Search className="h-4 w-4 text-gray-500" />}
+                    className="h-12 text-base bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500 shadow-sm"
                   />
                 </div>
                 <div className="flex-1">
@@ -451,8 +451,8 @@ export default function JobsPage() {
                     placeholder="Location"
                     value={filters.location}
                     onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
-                    leftIcon={<MapPin className="h-4 w-4" />}
-                    className="h-12 text-base"
+                    leftIcon={<MapPin className="h-4 w-4 text-gray-500" />}
+                    className="h-12 text-base bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500 shadow-sm"
                   />
                 </div>
                 <div className="flex gap-2">
@@ -461,15 +461,20 @@ export default function JobsPage() {
                     size="lg"
                     onClick={() => setShowFilters(!showFilters)}
                     leftIcon={<Filter className="h-4 w-4" />}
+                    className="bg-gray-100 hover:bg-gray-200 border-gray-300 shadow-sm"
                   >
                     Filters
                   </Button>
-                  <Button variant="gradient" size="lg" className="min-w-[120px]">
+                  <Button
+                    variant="gradient"
+                    size="lg"
+                    className="min-w-[120px] bg-blue-600 hover:bg-blue-700 shadow-lg"
+                  >
                     Search Jobs
                   </Button>
                 </div>
               </div>
-            </Card>
+            </div>
           </div>
         </div>
       </section>
@@ -478,27 +483,28 @@ export default function JobsPage() {
       {showFilters && (
         <section className="px-4 sm:px-6 lg:px-8 pb-8">
           <div className="max-w-7xl mx-auto">
-            <Card variant="glass" className="p-6">
+            <div className="bg-white border border-gray-200 rounded-xl shadow-lg p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold">Filters</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
                 <div className="flex gap-2">
-                  <Button variant="ghost" size="sm" onClick={handleClearFilters}>
+                  <Button variant="ghost" size="sm" onClick={handleClearFilters} className="hover:bg-gray-100 text-gray-700">
                     Clear All
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setShowFilters(false)}
+                    className="hover:bg-gray-100 text-gray-700"
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 {/* Job Type */}
                 <div>
-                  <label className="text-sm font-medium text-surface-700 mb-2 block">
+                  <label className="text-sm font-medium text-gray-800 mb-2 block">
                     Job Type
                   </label>
                   <div className="space-y-2">
@@ -513,9 +519,9 @@ export default function JobsPage() {
                               : filters.jobType.filter(t => t !== type)
                             setFilters(prev => ({ ...prev, jobType: newJobTypes }))
                           }}
-                          className="rounded border-surface-300 text-primary-500 focus:ring-primary-500"
+                          className="rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
                         />
-                        <span className="text-sm text-surface-600">{type}</span>
+                        <span className="text-sm text-gray-700">{type}</span>
                       </label>
                     ))}
                   </div>
@@ -523,7 +529,7 @@ export default function JobsPage() {
 
                 {/* Experience Level */}
                 <div>
-                  <label className="text-sm font-medium text-surface-700 mb-2 block">
+                  <label className="text-sm font-medium text-gray-800 mb-2 block">
                     Experience
                   </label>
                   <div className="space-y-2">
@@ -538,9 +544,9 @@ export default function JobsPage() {
                               : filters.experience.filter(exp => exp !== level)
                             setFilters(prev => ({ ...prev, experience: newExperience }))
                           }}
-                          className="rounded border-surface-300 text-primary-500 focus:ring-primary-500"
+                          className="rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
                         />
-                        <span className="text-sm text-surface-600">{level}</span>
+                        <span className="text-sm text-gray-700">{level}</span>
                       </label>
                     ))}
                   </div>
@@ -548,7 +554,7 @@ export default function JobsPage() {
 
                 {/* Salary Range */}
                 <div>
-                  <label className="text-sm font-medium text-surface-700 mb-2 block">
+                  <label className="text-sm font-medium text-gray-800 mb-2 block">
                     Salary Range
                   </label>
                   <div className="space-y-2">
@@ -563,9 +569,9 @@ export default function JobsPage() {
                               : filters.salaryRange.filter(r => r !== range)
                             setFilters(prev => ({ ...prev, salaryRange: newSalaryRange }))
                           }}
-                          className="rounded border-surface-300 text-primary-500 focus:ring-primary-500"
+                          className="rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
                         />
-                        <span className="text-sm text-surface-600">{range}</span>
+                        <span className="text-sm text-gray-700">{range}</span>
                       </label>
                     ))}
                   </div>
@@ -573,7 +579,7 @@ export default function JobsPage() {
 
                 {/* Other Filters */}
                 <div>
-                  <label className="text-sm font-medium text-surface-700 mb-2 block">
+                  <label className="text-sm font-medium text-gray-800 mb-2 block">
                     Other Options
                   </label>
                   <div className="space-y-2">
@@ -582,20 +588,20 @@ export default function JobsPage() {
                         type="checkbox"
                         checked={filters.isRemote}
                         onChange={(e) => setFilters(prev => ({ ...prev, isRemote: e.target.checked }))}
-                        className="rounded border-surface-300 text-primary-500 focus:ring-primary-500"
+                        className="rounded border-gray-300 text-blue-500 focus:ring-blue-500"
                       />
-                      <span className="text-sm text-surface-600">Remote Only</span>
+                      <span className="text-sm text-gray-700">Remote Only</span>
                     </label>
                   </div>
 
                   <div className="mt-4">
-                    <label className="text-sm font-medium text-surface-700 mb-2 block">
+                    <label className="text-sm font-medium text-gray-800 mb-2 block">
                       Posted Within
                     </label>
                     <select
                       value={filters.postedWithin}
                       onChange={(e) => setFilters(prev => ({ ...prev, postedWithin: e.target.value }))}
-                      className="w-full px-3 py-2 text-sm border border-surface-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800"
                     >
                       <option value="all">Any Time</option>
                       <option value="1">Last 24 hours</option>
@@ -605,7 +611,7 @@ export default function JobsPage() {
                   </div>
                 </div>
               </div>
-            </Card>
+            </div>
           </div>
         </section>
       )}
@@ -615,17 +621,17 @@ export default function JobsPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-surface-900">
+              <h2 className="text-xl font-semibold text-gray-900">
                 {filteredJobs.length} Jobs Found
               </h2>
-              <p className="text-sm text-surface-600">
+              <p className="text-sm text-gray-700">
                 Showing results for your search criteria
               </p>
             </div>
 
             <div className="flex items-center gap-4">
               {/* Sort Options */}
-              <select className="px-3 py-2 text-sm border border-surface-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+              <select className="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 shadow-sm">
                 <option>Most Relevant</option>
                 <option>Most Recent</option>
                 <option>Salary: High to Low</option>
@@ -633,7 +639,7 @@ export default function JobsPage() {
               </select>
 
               {/* View Toggle */}
-              <div className="flex items-center bg-surface-100 rounded-lg p-1">
+              <div className="flex items-center bg-gray-100 border border-gray-200 rounded-lg p-1 shadow-sm">
                 <Button
                   variant={viewMode === "grid" ? "default" : "ghost"}
                   size="sm"
@@ -677,22 +683,22 @@ export default function JobsPage() {
               ))}
             </div>
           ) : (
-            <Card className="text-center py-16">
+            <div className="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-lg">
               <CardContent>
-                <div className="text-surface-400 mb-4">
+                <div className="text-gray-500 mb-4">
                   <Search className="h-12 w-12 mx-auto" />
                 </div>
-                <h3 className="text-lg font-medium text-surface-900 mb-2">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
                   No jobs found
                 </h3>
-                <p className="text-surface-600 mb-4">
+                <p className="text-gray-700 mb-4">
                   Try adjusting your search criteria or filters
                 </p>
-                <Button variant="outline" onClick={handleClearFilters}>
+                <Button variant="outline" onClick={handleClearFilters} className="bg-gray-100 hover:bg-gray-200 border-gray-300">
                   Clear Filters
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
         </div>
       </section>

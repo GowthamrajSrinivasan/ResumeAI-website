@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import React from "react";
-import { Sparkles, ArrowLeft } from "lucide-react";
+import { Briefcase, ArrowLeft, Target, BarChart, Search, ShieldCheck, Zap, Lightbulb, TrendingUp, Lock, Award } from "lucide-react";
 
 export default function PrivacyPolicyPage() {
   const router = useRouter();
@@ -12,8 +12,8 @@ export default function PrivacyPolicyPage() {
       {/* Header */}
       <header className="sticky top-0 z-30 w-full flex items-center justify-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 py-4 px-4 shadow-xl text-white rounded-b-2xl backdrop-blur-lg bg-opacity-90">
         <div className="flex items-center space-x-2">
-          <Sparkles className="h-6 w-6 text-white" />
-          <h1 className="text-xl font-extrabold">Requill</h1>
+          <Briefcase className="h-6 w-6 text-white" />
+          <h1 className="text-xl font-extrabold">Fit2Hire</h1>
         </div>
       </header>
 
@@ -22,7 +22,6 @@ export default function PrivacyPolicyPage() {
         {/* Hero Section */}
         <section className="py-20 md:py-28 flex items-center justify-center px-4">
           <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-10 md:p-14 w-full max-w-4xl mx-auto transition hover:-translate-y-2 hover:scale-[1.02] overflow-hidden">
-            {/* Subtle radial glow for depth */}
             <div
               className="pointer-events-none absolute inset-0 rounded-2xl"
               style={{
@@ -30,7 +29,6 @@ export default function PrivacyPolicyPage() {
               }}
             />
             <div className="relative z-10">
-              {/* Back Button */}
               <button
                 onClick={() => router.back()}
                 className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 mb-8 transition-colors"
@@ -40,264 +38,251 @@ export default function PrivacyPolicyPage() {
               </button>
 
               <h2 className="text-4xl md:text-6xl font-extrabold mb-8 text-white drop-shadow-lg text-center">
-                Privacy{' '}
+                About{' '}
                 <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-                  Policy
+                  Fit2Hire
                 </span>
               </h2>
-              
+
               <div className="text-center mb-8">
-                <p className="text-lg text-gray-300">
-                  Last updated: July 13, 2025
+                <p className="text-xl text-gray-300">
+                  Your AI-Powered Job Application Assistant
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Privacy Policy Content */}
+        {/* What Fit2Hire Does */}
         <section className="py-16 px-4">
           <div className="max-w-4xl mx-auto">
-            {/* Introduction */}
             <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                 background: "radial-gradient(circle at 40% 30%, #4361ee22 0%, transparent 75%)"
               }} />
               <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">Introduction</h3>
-                <p className="text-gray-300 leading-relaxed">
-                  We believe your data should always be secure, private, and fully under your control. This Privacy Policy 
-                  outlines how we safeguard your information when you use our Service.
+                <h3 className="text-2xl font-bold text-white mb-6 text-center">What Fit2Hire Does</h3>
+                <p className="text-gray-300 leading-relaxed text-center mb-6">
+                  Fit2Hire is a Chrome extension that transforms how you approach job applications by providing AI-powered analysis of job postings across major job platforms.
                 </p>
               </div>
             </div>
 
-            {/* Information Collection and Use */}
-            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
-              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-                background: "radial-gradient(circle at 60% 20%, #4cc9f022 0%, transparent 75%)"
-              }} />
-              <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">Information Collection and Use</h3>
-                <div className="space-y-4 text-gray-300">
-                  <p className="leading-relaxed">
-                    Requill is designed to help you interact with content on LinkedIn in new ways. Our goal is to provide 
-                    a useful service, not to extract value from your data. We do not use your data for advertising, profiling, 
-                    or training any third-party AI models beyond what is necessary to provide the service.
-                  </p>
-                  <p className="leading-relaxed">
-                    When you use the extension, we collect the text content from LinkedIn posts that you choose to process. 
-                    This data is sent to our secure cloud service to be analyzed by an AI model (powered by OpenAI) to generate 
-                    the results displayed to you in the side panel.
-                  </p>
-                  <p className="leading-relaxed">
-                    We may collect personally identifiable information such as your email address only if you voluntarily 
-                    provide it for account access or support and to communicate important updates.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Log Data */}
-            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
-              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-                background: "radial-gradient(circle at 65% 40%, #7209b722 0%, transparent 75%)"
-              }} />
-              <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">Log Data</h3>
-                <div className="text-gray-300">
-                  <p className="leading-relaxed">
-                    When you use the Service, we may collect standard diagnostic information—called Log Data. This can include 
-                    details like your IP address, browser type, and version to help us diagnose and fix issues with the service.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Cookies */}
-            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
-              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-                background: "radial-gradient(circle at 35% 50%, #4cc9f022 0%, transparent 75%)"
-              }} />
-              <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">Cookies</h3>
-                <div className="text-gray-300">
-                  <p className="leading-relaxed">
-                    Our service does not use cookies, as it operates as a browser extension. However, we do use the browser's 
-                    local storage to save your settings and preferences to improve your experience.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Service Providers */}
-            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
-              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-                background: "radial-gradient(circle at 55% 20%, #4361ee22 0%, transparent 75%)"
-              }} />
-              <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">Service Providers</h3>
-                <div className="space-y-4 text-gray-300">
-                  <p className="leading-relaxed">
-                    We use trusted third-party services to support our operations:
-                  </p>
-                  <div className="space-y-3">
+            {/* Features Grid */}
+            <div className="grid md:grid-cols-2 gap-8 mb-12">
+              {/* Instant Job Analysis */}
+              <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+                <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                  background: "radial-gradient(circle at 60% 20%, #4cc9f022 0%, transparent 75%)"
+                }} />
+                <div className="relative z-10">
+                  <div className="flex items-center mb-4">
+                    <Target className="h-8 w-8 text-blue-400 mr-3" />
+                    <h4 className="text-xl font-bold text-white">🎯 Instant Job Analysis</h4>
+                  </div>
+                  <div className="space-y-3 text-gray-300">
                     <div className="flex items-start">
                       <span className="font-bold text-blue-400 mr-3">•</span>
-                      <p><strong>Google Cloud Platform:</strong> Hosts our backend services that process the data.</p>
+                      <p><strong>Smart Extraction:</strong> Automatically detects and extracts complete job information (title, company, location, requirements, skills) from LinkedIn, Indeed, Glassdoor, Naukri, and 10+ other job sites</p>
                     </div>
                     <div className="flex items-start">
                       <span className="font-bold text-blue-400 mr-3">•</span>
-                      <p><strong>OpenAI:</strong> Provides the AI models used for analyzing the text content.</p>
+                      <p><strong>AI-Powered Insights:</strong> Uses OpenAI's latest models to analyze job descriptions and provide comprehensive breakdowns</p>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="font-bold text-blue-400 mr-3">•</span>
+                      <p><strong>One-Click Analysis:</strong> Simply navigate to any job posting and click "Analyze Job" for instant insights</p>
                     </div>
                   </div>
-                  <p className="leading-relaxed">
-                    We may also use services for analytics and error tracking to improve our product.
-                  </p>
                 </div>
               </div>
-            </div>
 
-            {/* Security */}
-            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
-              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-                background: "radial-gradient(circle at 35% 50%, #4cc9f022 0%, transparent 75%)"
-              }} />
-              <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">Security</h3>
-                <div className="text-gray-300">
-                  <p className="leading-relaxed">
-                    We take data security seriously. We use industry-standard security practices to protect your Personal Information, 
-                    both in transit and at rest. However, no system is 100% secure, so we encourage users to also take steps to 
-                    safeguard their credentials.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Data Ownership & Portability */}
-            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
-              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-                background: "radial-gradient(circle at 65% 70%, #7209b722 0%, transparent 75%)"
-              }} />
-              <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">Data Ownership & Portability</h3>
-                <div className="space-y-4 text-gray-300">
-                  <div>
-                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Data Ownership</h4>
-                    <p className="leading-relaxed">
-                      You own your data. Full stop. We do not access or use your content for any reason other than delivering 
-                      the features of the Service. You can access or delete your data at any time.
-                    </p>
+              {/* ATS Compatibility Scoring */}
+              <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+                <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                  background: "radial-gradient(circle at 65% 40%, #7209b722 0%, transparent 75%)"
+                }} />
+                <div className="relative z-10">
+                  <div className="flex items-center mb-4">
+                    <BarChart className="h-8 w-8 text-purple-400 mr-3" />
+                    <h4 className="text-xl font-bold text-white">📊 ATS Compatibility Scoring</h4>
                   </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Data Portability</h4>
-                    <p className="leading-relaxed">
-                      Your data should move with you. We support exporting your saved content so you always retain control.
-                    </p>
+                  <div className="space-y-3 text-gray-300">
+                    <div className="flex items-start">
+                      <span className="font-bold text-purple-400 mr-3">•</span>
+                      <p><strong>Resume Matching:</strong> Upload your resume to get a precise ATS compatibility score (0-100%) against any job description</p>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="font-bold text-purple-400 mr-3">•</span>
+                      <p><strong>Keyword Analysis:</strong> Identifies which keywords you have, which are missing, and their importance</p>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="font-bold text-purple-400 mr-3">•</span>
+                      <p><strong>Optimization Recommendations:</strong> Provides specific, actionable suggestions to improve your resume's ATS performance</p>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* Comprehensive Resume Analysis */}
+              <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+                <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                  background: "radial-gradient(circle at 35% 50%, #4cc9f022 0%, transparent 75%)"
+                }} />
+                <div className="relative z-10">
+                  <div className="flex items-center mb-4">
+                    <Search className="h-8 w-8 text-green-400 mr-3" />
+                    <h4 className="text-xl font-bold text-white">🔍 Comprehensive Resume Analysis</h4>
+                  </div>
+                  <div className="space-y-3 text-gray-300">
+                    <div className="flex items-start">
+                      <span className="font-bold text-green-400 mr-3">•</span>
+                      <p><strong>Strengths & Weaknesses:</strong> Detailed feedback on what's working and what needs improvement</p>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="font-bold text-green-400 mr-3">•</span>
+                      <p><strong>Skills Gap Analysis:</strong> Shows which skills to highlight or develop for better job fit</p>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="font-bold text-green-400 mr-3">•</span>
+                      <p><strong>Experience Assessment:</strong> Evaluates how well your background aligns with job requirements</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Job Collection & Management */}
+              <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+                <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                  background: "radial-gradient(circle at 55% 20%, #4361ee22 0%, transparent 75%)"
+                }} />
+                <div className="relative z-10">
+                  <div className="flex items-center mb-4">
+                    <ShieldCheck className="h-8 w-8 text-pink-400 mr-3" />
+                    <h4 className="text-xl font-bold text-white">💾 Job Collection & Management</h4>
+                  </div>
+                  <div className="space-y-3 text-gray-300">
+                    <div className="flex items-start">
+                      <span className="font-bold text-pink-400 mr-3">•</span>
+                      <p><strong>Smart Saving:</strong> Save analyzed jobs with all AI-generated insights for future reference</p>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="font-bold text-pink-400 mr-3">•</span>
+                      <p><strong>Application Tracking:</strong> Keep track of your applications and optimization notes</p>
+                    </div>
+                    <div className="flex items-start">
+                      <span className="font-bold text-pink-400 mr-3">•</span>
+                      <p><strong>Cross-Platform Support:</strong> Works on LinkedIn, Indeed, Glassdoor, Monster, Naukri, and more</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Your Rights (GDPR, CCPA, and similar laws) */}
+            {/* Why Users Should Install It */}
             <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-                background: "radial-gradient(circle at 55% 20%, #4361ee22 0%, transparent 75%)"
+                background: "radial-gradient(circle at 50% 30%, #4361ee22 0%, transparent 75%)"
               }} />
               <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">Your Rights (GDPR, CCPA, and similar laws)</h3>
-                <div className="space-y-4 text-gray-300">
-                  <p className="leading-relaxed">
-                    Depending on your location, you may have rights under applicable data protection laws, such as:
-                  </p>
+                <h3 className="text-2xl font-bold text-white mb-6 text-center">Why Users Should Install It</h3>
+
+                {/* Benefits Grid */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Save Time & Effort */}
                   <div className="space-y-3">
-                    <div className="flex items-start">
-                      <span className="font-bold text-green-400 mr-3">•</span>
-                      <p><strong>Right to access</strong> – You can request a copy of the personal data we hold about you.</p>
+                    <div className="flex items-center mb-3">
+                      <Zap className="h-6 w-6 text-yellow-400 mr-3" />
+                      <h4 className="text-lg font-semibold text-yellow-300">⚡ Save Time & Effort</h4>
                     </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-green-400 mr-3">•</span>
-                      <p><strong>Right to rectification</strong> – You can ask us to correct inaccurate or incomplete data.</p>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-green-400 mr-3">•</span>
-                      <p><strong>Right to erasure ("Right to be forgotten")</strong> – You can request that we delete your data.</p>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-green-400 mr-3">•</span>
-                      <p><strong>Right to data portability</strong> – You can export your data in a machine-readable format.</p>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-green-400 mr-3">•</span>
-                      <p><strong>Right to object</strong> – You can object to certain types of processing, like marketing or profiling (we don't do this anyway).</p>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-green-400 mr-3">•</span>
-                      <p><strong>Right not to be subject to automated decision-making</strong> (we don't do this anyway).</p>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-green-400 mr-3">•</span>
-                      <p><strong>Right to opt-out of the sale of personal data</strong> (we don't sell data).</p>
+                    <div className="space-y-2 text-gray-300 text-sm">
+                      <p>• <strong>Instant Analysis:</strong> Get comprehensive job insights in seconds instead of spending minutes manually analyzing</p>
+                      <p>• <strong>Automated Extraction:</strong> No more copy-pasting job descriptions or manually identifying requirements</p>
+                      <p>• <strong>Batch Processing:</strong> Analyze multiple jobs quickly during your job search</p>
                     </div>
                   </div>
-                  <p className="leading-relaxed">
-                    To exercise any of these rights, email us at <strong>support@executivesai.com</strong>. We'll respond within 30 days.
-                  </p>
+
+                  {/* Beat the ATS System */}
+                  <div className="space-y-3">
+                    <div className="flex items-center mb-3">
+                      <Target className="h-6 w-6 text-red-400 mr-3" />
+                      <h4 className="text-lg font-semibold text-red-300">🎯 Beat the ATS System</h4>
+                    </div>
+                    <div className="space-y-2 text-gray-300 text-sm">
+                      <p>• <strong>ATS Optimization:</strong> 75% of resumes are filtered out by ATS systems - this extension helps you get through</p>
+                      <p>• <strong>Keyword Intelligence:</strong> Know exactly which keywords to include for better ATS ranking</p>
+                      <p>• <strong>Score-Based Improvements:</strong> Get measurable feedback (0-100%) on your resume's compatibility</p>
+                    </div>
+                  </div>
+
+                  {/* Make Smarter Applications */}
+                  <div className="space-y-3">
+                    <div className="flex items-center mb-3">
+                      <Lightbulb className="h-6 w-6 text-blue-400 mr-3" />
+                      <h4 className="text-lg font-semibold text-blue-300">💡 Make Smarter Applications</h4>
+                    </div>
+                    <div className="space-y-2 text-gray-300 text-sm">
+                      <p>• <strong>Strategic Insights:</strong> Understand job requirements beyond surface-level descriptions</p>
+                      <p>• <strong>Tailored Applications:</strong> Get specific tips for customizing your resume and cover letter</p>
+                      <p>• <strong>Career Intelligence:</strong> Discover skills and qualifications that boost your profile</p>
+                    </div>
+                  </div>
+
+                  {/* Competitive Advantage */}
+                  <div className="space-y-3">
+                    <div className="flex items-center mb-3">
+                      <TrendingUp className="h-6 w-6 text-green-400 mr-3" />
+                      <h4 className="text-lg font-semibold text-green-300">🚀 Competitive Advantage</h4>
+                    </div>
+                    <div className="space-y-2 text-gray-300 text-sm">
+                      <p>• <strong>AI-Powered Edge:</strong> Use the same technology that top recruiters and hiring managers rely on</p>
+                      <p>• <strong>Data-Driven Decisions:</strong> Make informed choices about which jobs to pursue</p>
+                      <p>• <strong>Professional Growth:</strong> Learn what skills and experiences are most valued in your field</p>
+                    </div>
+                  </div>
+
+                  {/* Secure & Private */}
+                  <div className="space-y-3">
+                    <div className="flex items-center mb-3">
+                      <Lock className="h-6 w-6 text-purple-400 mr-3" />
+                      <h4 className="text-lg font-semibold text-purple-300">🔒 Secure & Private</h4>
+                    </div>
+                    <div className="space-y-2 text-gray-300 text-sm">
+                      <p>• <strong>Privacy-First:</strong> Your resume and data are processed securely with enterprise-grade encryption</p>
+                      <p>• <strong>No Data Storage:</strong> Personal information isn't permanently stored or shared</p>
+                      <p>• <strong>Open Source:</strong> Transparent about how your data is handled</p>
+                    </div>
+                  </div>
+
+                  {/* Proven Results */}
+                  <div className="space-y-3">
+                    <div className="flex items-center mb-3">
+                      <Award className="h-6 w-6 text-orange-400 mr-3" />
+                      <h4 className="text-lg font-semibold text-orange-300">📈 Proven Results</h4>
+                    </div>
+                    <div className="space-y-2 text-gray-300 text-sm">
+                      <p>Perfect for job seekers who want to:</p>
+                      <p>• Increase their interview callback rate</p>
+                      <p>• Optimize resumes for specific job postings</p>
+                      <p>• Save time during job search</p>
+                      <p>• Understand market requirements better</p>
+                      <p>• Get past ATS filters more effectively</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Links to Other Sites */}
-            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
-              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-                background: "radial-gradient(circle at 65% 70%, #7209b722 0%, transparent 75%)"
-              }} />
-              <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">Links to Other Sites</h3>
-                <div className="text-gray-300">
-                  <p className="leading-relaxed">
-                    Our Service operates on LinkedIn and may interact with links to external sites. We do not control and are not 
-                    responsible for the privacy practices or content of those other sites. We encourage you to review their privacy 
-                    policies if you visit them.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Changes to This Privacy Policy */}
-            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
-              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-                background: "radial-gradient(circle at 40% 30%, #4361ee22 0%, transparent 75%)"
-              }} />
-              <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">Changes to This Privacy Policy</h3>
-                <div className="text-gray-300">
-                  <p className="leading-relaxed">
-                    We may update this Privacy Policy periodically. We will notify users of any significant changes by posting 
-                    the new policy within the extension or on our website. Changes are effective immediately once published.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Contact Us */}
+            {/* Bottom Line */}
             <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                 background: "radial-gradient(circle at 50% 50%, #4361ee22 0%, transparent 75%)"
               }} />
-              <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-4">Contact Us</h3>
-                <div className="text-gray-300">
-                  <p className="leading-relaxed mb-4">
-                    If you have any questions, concerns, or requests related to your data or this Privacy Policy, please contact us at:
-                  </p>
-                  <div className="text-center">
-                    <p className="text-lg font-semibold text-blue-300">
-                      <strong>support@executivesai.com</strong>
-                    </p>
-                  </div>
-                </div>
+              <div className="relative z-10 text-center">
+                <h3 className="text-2xl font-bold text-white mb-4">Bottom Line</h3>
+                <p className="text-lg text-gray-300 leading-relaxed">
+                  Fit2Hire turns job hunting from guesswork into a data-driven strategy, helping you land interviews faster by understanding exactly what employers want and how well you match their requirements.
+                </p>
               </div>
             </div>
           </div>
@@ -306,16 +291,14 @@ export default function PrivacyPolicyPage() {
         {/* Footer */}
         <footer className="bg-[#111624]/90 border-t border-blue-900 py-10 mt-16">
           <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center md:items-start justify-between gap-8">
-            {/* Brand / Logo */}
             <div className="flex flex-col items-center md:items-start gap-2">
               <span className="text-2xl font-bold text-white tracking-tight">
-                Requill
+                Fit2Hire
               </span>
               <span className="text-gray-400 text-sm">
-                Your AI-powered LinkedIn companion
+                Your AI-powered job application assistant
               </span>
             </div>
-            {/* Links */}
             <div className="flex flex-wrap gap-8 text-center md:text-left">
               <div>
                 <h4 className="font-semibold text-gray-300 mb-2">Product</h4>
@@ -335,7 +318,6 @@ export default function PrivacyPolicyPage() {
                 </ul>
               </div>
             </div>
-            {/* Social Icons */}
             <div className="flex items-center gap-5 mt-6 md:mt-0">
               <a href="#" aria-label="Twitter" className="text-gray-400 hover:text-blue-400 transition">
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -350,7 +332,7 @@ export default function PrivacyPolicyPage() {
             </div>
           </div>
           <div className="mt-8 text-center text-gray-500 text-sm">
-            © {new Date().getFullYear()} Requill. All rights reserved.
+            © {new Date().getFullYear()} Fit2Hire. All rights reserved.
           </div>
         </footer>
       </main>
