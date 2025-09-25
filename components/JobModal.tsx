@@ -25,7 +25,8 @@ import {
   XCircle,
   Eye,
   Edit3,
-  Trash2
+  Trash2,
+  X
 } from "lucide-react"
 import {
   Modal,
@@ -194,8 +195,8 @@ const JobModal: React.FC<JobModalProps> = ({
       className={cn(
         "px-4 py-2 rounded-lg text-sm font-medium transition-all",
         isActive
-          ? "bg-gradient-primary text-white shadow-card"
-          : "text-surface-600 hover:text-surface-900 hover:bg-surface-100"
+          ? "bg-blue-600 text-white shadow-md"
+          : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
       )}
     >
       {label}
@@ -206,28 +207,28 @@ const JobModal: React.FC<JobModalProps> = ({
     <div className="space-y-6">
       {/* Job Description */}
       {job.description && (
-        <Card variant="glass">
-          <CardHeader>
-            <CardTitle className="text-lg">Job Description</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-surface-700 leading-relaxed whitespace-pre-line">
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Job Description</h3>
+          </div>
+          <div>
+            <p className="text-gray-700 leading-relaxed whitespace-pre-line">
               {job.description}
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Requirements */}
       {job.requirements && job.requirements.length > 0 && (
-        <Card variant="glass">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-primary-500" />
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-blue-500" />
               Requirements
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
+          </div>
+          <div>
             <ul className="space-y-2">
               {job.requirements.map((req, index) => (
                 <li key={index} className="flex items-start gap-2 text-surface-700">
@@ -236,20 +237,20 @@ const JobModal: React.FC<JobModalProps> = ({
                 </li>
               ))}
             </ul>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Responsibilities */}
       {job.responsibilities && job.responsibilities.length > 0 && (
-        <Card variant="glass">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Briefcase className="w-5 h-5 text-interactive-500" />
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <Briefcase className="w-5 h-5 text-indigo-500" />
               Responsibilities
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
+          </div>
+          <div>
             <ul className="space-y-2">
               {job.responsibilities.map((resp, index) => (
                 <li key={index} className="flex items-start gap-2 text-surface-700">
@@ -258,20 +259,20 @@ const JobModal: React.FC<JobModalProps> = ({
                 </li>
               ))}
             </ul>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Benefits */}
       {job.benefits && job.benefits.length > 0 && (
-        <Card variant="glass">
-          <CardHeader>
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+          <div className="mb-4">
             <CardTitle className="text-lg flex items-center gap-2">
               <Award className="w-5 h-5 text-success-500" />
               Benefits & Perks
             </CardTitle>
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {job.benefits.map((benefit, index) => (
                 <div key={index} className="flex items-center gap-2 text-surface-700">
@@ -280,17 +281,17 @@ const JobModal: React.FC<JobModalProps> = ({
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Skills */}
       {job.skills && job.skills.length > 0 && (
-        <Card variant="glass">
-          <CardHeader>
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+          <div className="mb-4">
             <CardTitle className="text-lg">Required Skills</CardTitle>
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div>
             <div className="flex flex-wrap gap-2">
               {job.skills.map((skill, index) => (
                 <Badge key={index} variant="secondary" className="text-sm">
@@ -298,8 +299,8 @@ const JobModal: React.FC<JobModalProps> = ({
                 </Badge>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   )
@@ -355,11 +356,11 @@ const JobModal: React.FC<JobModalProps> = ({
 
       {/* Contact Information */}
       {(job.companyInfo?.website || job.companyInfo?.email || job.companyInfo?.phone) && (
-        <Card variant="glass">
-          <CardHeader>
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+          <div className="mb-4">
             <CardTitle className="text-lg">Contact Information</CardTitle>
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div>
             <div className="space-y-3">
               {job.companyInfo?.website && (
                 <div className="flex items-center gap-3">
@@ -397,8 +398,8 @@ const JobModal: React.FC<JobModalProps> = ({
                 </div>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   )
@@ -541,133 +542,136 @@ const JobModal: React.FC<JobModalProps> = ({
 
   return (
     <Modal open={isOpen} onOpenChange={onClose}>
-      <ModalContent size="xl" variant="default" className="max-h-[90vh] overflow-hidden">
-        <ModalHeader className="pb-4 border-b border-border/50">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              {job.companyLogo ? (
-                <div className="w-12 h-12 rounded-lg overflow-hidden bg-gradient-surface shadow-card">
-                  <img
-                    src={job.companyLogo}
-                    alt={`${job.company} logo`}
-                    className="w-full h-full object-cover"
-                  />
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        {/* Backdrop */}
+        <div
+          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+          onClick={onClose}
+        />
+
+        {/* Modal Container */}
+        <div className="relative w-[90vw] max-w-5xl max-h-[90vh] bg-white rounded-2xl shadow-2xl flex flex-col">
+
+          {/* Header */}
+          <ModalHeader className="p-6 border-b border-gray-200 shrink-0">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                {job.companyLogo ? (
+                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-white shadow-md">
+                    <img
+                      src={job.companyLogo}
+                      alt={`${job.company} logo`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center shadow-md">
+                    <Building2 className="w-6 h-6 text-blue-600" />
+                  </div>
+                )}
+                <div>
+                  <ModalTitle className="text-xl font-semibold text-gray-900">{job.title}</ModalTitle>
+                  <ModalDescription className="text-gray-600 font-medium">
+                    {job.company} • {job.location}
+                  </ModalDescription>
                 </div>
-              ) : (
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-100 to-interactive-100 flex items-center justify-center shadow-card">
-                  <Building2 className="w-6 h-6 text-primary-600" />
+              </div>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClose}
+                className="text-gray-600 hover:bg-gray-100 border-0 h-10 w-10 p-0 rounded-xl"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Job meta information */}
+            <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-gray-600">
+              <div className="flex items-center gap-1">
+                <DollarSign className="w-4 h-4" />
+                <span>{formatSalary()}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Briefcase className="w-4 h-4" />
+                <span>{job.type}</span>
+              </div>
+              {job.experience && (
+                <div className="flex items-center gap-1">
+                  <TrendingUp className="w-4 h-4" />
+                  <span>{job.experience}</span>
                 </div>
               )}
-              <div>
-                <ModalTitle className="text-xl gradient-text">{job.title}</ModalTitle>
-                <ModalDescription className="text-surface-600 font-medium">
-                  {job.company} • {job.location}
-                </ModalDescription>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              {job.isNew && (
-                <Badge variant="gradient" size="sm" className="animate-pulse">
-                  New
-                </Badge>
-              )}
-              {job.isUrgent && (
-                <Badge variant="destructive" size="sm">
-                  Urgent
-                </Badge>
-              )}
-              {job.isRemote && (
-                <Badge variant="success" size="sm">
-                  Remote
-                </Badge>
-              )}
-            </div>
-          </div>
-
-          {/* Job meta information */}
-          <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-surface-600">
-            <div className="flex items-center gap-1">
-              <DollarSign className="w-4 h-4" />
-              <span>{formatSalary()}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Briefcase className="w-4 h-4" />
-              <span>{job.type}</span>
-            </div>
-            {job.experience && (
               <div className="flex items-center gap-1">
-                <TrendingUp className="w-4 h-4" />
-                <span>{job.experience}</span>
+                <Clock className="w-4 h-4" />
+                <span>{formatPostedDate(job.postedDate)}</span>
               </div>
-            )}
-            <div className="flex items-center gap-1">
-              <Clock className="w-4 h-4" />
-              <span>{formatPostedDate(job.postedDate)}</span>
+              {job.applicants && (
+                <div className="flex items-center gap-1">
+                  <Users className="w-4 h-4" />
+                  <span>{job.applicants} applicants</span>
+                </div>
+              )}
+              {job.applicationDeadline && (
+                <div className="flex items-center gap-1 text-yellow-600">
+                  <Calendar className="w-4 h-4" />
+                  <span>Deadline: {formatDate(job.applicationDeadline)}</span>
+                </div>
+              )}
             </div>
-            {job.applicants && (
-              <div className="flex items-center gap-1">
-                <Users className="w-4 h-4" />
-                <span>{job.applicants} applicants</span>
+
+            {/* Status Badge */}
+            {job.status && statusInfo && StatusIcon && (
+              <div className="flex items-center gap-2 mt-4">
+                <Badge variant={statusInfo.variant} className="flex items-center gap-1">
+                  <StatusIcon className="w-3 h-3" />
+                  {statusInfo.label}
+                </Badge>
               </div>
             )}
-            {job.applicationDeadline && (
-              <div className="flex items-center gap-1 text-warning-600">
-                <Calendar className="w-4 h-4" />
-                <span>Deadline: {formatDate(job.applicationDeadline)}</span>
-              </div>
-            )}
+
+            {/* Tab Navigation */}
+            <div className="flex items-center gap-1 mt-4 bg-gray-100 rounded-lg p-1">
+              <TabButton tab="overview" label="Overview" isActive={activeTab === "overview"} />
+              <TabButton tab="company" label="Company" isActive={activeTab === "company"} />
+              <TabButton tab="apply" label={job.status ? "Application" : "Apply"} isActive={activeTab === "apply"} />
+            </div>
+          </ModalHeader>
+
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+            {activeTab === "overview" && renderOverviewTab()}
+            {activeTab === "company" && renderCompanyTab()}
+            {activeTab === "apply" && renderApplyTab()}
           </div>
 
-          {/* Status Badge */}
-          {job.status && statusInfo && StatusIcon && (
-            <div className="flex items-center gap-2 mt-4">
-              <Badge variant={statusInfo.variant} className="flex items-center gap-1">
-                <StatusIcon className="w-3 h-3" />
-                {statusInfo.label}
-              </Badge>
-            </div>
-          )}
-
-          {/* Tab Navigation */}
-          <div className="flex items-center gap-1 mt-4 bg-surface-100 rounded-lg p-1">
-            <TabButton tab="overview" label="Overview" isActive={activeTab === "overview"} />
-            <TabButton tab="company" label="Company" isActive={activeTab === "company"} />
-            <TabButton tab="apply" label={job.status ? "Application" : "Apply"} isActive={activeTab === "apply"} />
-          </div>
-        </ModalHeader>
-
-        {/* Tab Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
-          {activeTab === "overview" && renderOverviewTab()}
-          {activeTab === "company" && renderCompanyTab()}
-          {activeTab === "apply" && renderApplyTab()}
-        </div>
-
-        <ModalFooter className="pt-4 border-t border-border/50">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex gap-2">
-              <Button variant="ghost" size="sm" onClick={onShare}>
-                <Share2 className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="sm" onClick={onReport}>
-                <Flag className="w-4 h-4" />
-              </Button>
-            </div>
-
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={onClose}>
-                Close
-              </Button>
-              {!job.status && (
-                <Button variant="gradient" onClick={onApply}>
-                  Apply Now
+          {/* Footer */}
+          <ModalFooter className="p-6 border-t border-gray-200 shrink-0">
+            <div className="flex items-center justify-between w-full">
+              <div className="flex gap-2">
+                <Button variant="ghost" size="sm" onClick={onShare}>
+                  <Share2 className="w-4 h-4" />
                 </Button>
-              )}
+                <Button variant="ghost" size="sm" onClick={onReport}>
+                  <Flag className="w-4 h-4" />
+                </Button>
+              </div>
+
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={onClose}>
+                  Close
+                </Button>
+                {!job.status && (
+                  <Button variant="gradient" onClick={onApply}>
+                    Apply Now
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
-        </ModalFooter>
-      </ModalContent>
+          </ModalFooter>
+        </div>
+      </div>
     </Modal>
   )
 }
