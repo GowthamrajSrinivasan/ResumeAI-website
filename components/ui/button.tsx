@@ -12,21 +12,21 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-card hover:shadow-card-hover hover:scale-[1.02] active:scale-[0.98]",
+          "bg-blue-600 text-black shadow-card hover:shadow-card-hover hover:scale-[1.02] active:scale-[0.98]",
         destructive:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-card hover:shadow-card-hover hover:scale-[1.02] active:scale-[0.98]",
+          "bg-blue-600 text-black shadow-card hover:shadow-card-hover hover:scale-[1.02] active:scale-[0.98]",
         outline:
-          "border border-border bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-sm hover:shadow-card transition-all hover:scale-[1.02] active:scale-[0.98]",
+          "border border-border bg-blue-600 text-black shadow-sm hover:shadow-card transition-all hover:scale-[1.02] active:scale-[0.98]",
         secondary:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-card hover:shadow-card-hover hover:scale-[1.02] active:scale-[0.98]",
+          "bg-blue-600 text-black shadow-card hover:shadow-card-hover hover:scale-[1.02] active:scale-[0.98]",
         ghost:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white hover:shadow-card rounded-lg transition-all hover:scale-[1.02] active:scale-[0.98]",
+          "bg-blue-600 text-black hover:shadow-card rounded-lg transition-all hover:scale-[1.02] active:scale-[0.98]",
         link:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white underline-offset-4 hover:underline transition-all",
+          "bg-blue-600 text-black underline-offset-4 hover:underline transition-all",
         gradient:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-card hover:shadow-card-hover hover:scale-[1.02] active:scale-[0.98] animate-fade-in",
+          "bg-blue-600 text-black shadow-card hover:shadow-card-hover hover:scale-[1.02] active:scale-[0.98] animate-fade-in",
         glass:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-glass hover:shadow-card-hover transition-all border border-transparent hover:scale-[1.02] active:scale-[0.98]",
+          "bg-blue-600 text-black shadow-card hover:shadow-card-hover transition-all border border-transparent hover:scale-[1.02] active:scale-[0.98]",
       },
       size: {
         default: "h-10 px-4 py-2",
