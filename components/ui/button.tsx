@@ -7,26 +7,26 @@ import { cn } from "@/lib/utils"
 import { Loader2 } from "lucide-react"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-bold ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "btn inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-bold ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         default:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-card hover:shadow-card-hover hover:scale-[1.02] active:scale-[0.98]",
+          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
         destructive:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-card hover:shadow-card-hover hover:scale-[1.02] active:scale-[0.98]",
+          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
         outline:
-          "border border-border bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-sm hover:shadow-card transition-all hover:scale-[1.02] active:scale-[0.98]",
+          "border border-border bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
         secondary:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-card hover:shadow-card-hover hover:scale-[1.02] active:scale-[0.98]",
+          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
         ghost:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white hover:shadow-card rounded-lg transition-all hover:scale-[1.02] active:scale-[0.98]",
+          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
         link:
           "bg-gradient-to-r from-blue-600 to-violet-600 text-white underline-offset-4 hover:underline transition-all",
         gradient:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-card hover:shadow-card-hover hover:scale-[1.02] active:scale-[0.98] animate-fade-in",
+          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] animate-fade-in",
         glass:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-card hover:shadow-card-hover transition-all border border-transparent hover:scale-[1.02] active:scale-[0.98]",
+          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
       },
       size: {
         default: "h-10 px-4 py-2",
