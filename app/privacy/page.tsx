@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import React from "react";
-import { Briefcase, ArrowLeft, Target, BarChart, Search, ShieldCheck, Zap, Lightbulb, TrendingUp, Lock, Award } from "lucide-react";
+import { Briefcase, ArrowLeft, ShieldCheck } from "lucide-react";
 
 export default function PrivacyPolicyPage() {
   const router = useRouter();
@@ -38,251 +38,483 @@ export default function PrivacyPolicyPage() {
               </button>
 
               <h2 className="text-4xl md:text-6xl font-extrabold mb-8 text-white drop-shadow-lg text-center">
-                About{' '}
+                Privacy{' '}
                 <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-                  Fit2Hire
+                  Policy
                 </span>
               </h2>
 
               <div className="text-center mb-8">
-                <p className="text-xl text-gray-300">
-                  Your AI-Powered Job Application Assistant
+                <p className="text-lg text-gray-300">
+                  Last Updated: October 14, 2025
+                </p>
+                <p className="text-lg text-gray-300">
+                  Effective Date: October 14, 2025
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* What Fit2Hire Does */}
+        {/* Privacy Policy Content */}
         <section className="py-16 px-4">
           <div className="max-w-4xl mx-auto">
+            {/* Introduction */}
             <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                 background: "radial-gradient(circle at 40% 30%, #4361ee22 0%, transparent 75%)"
               }} />
               <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-6 text-center">What Fit2Hire Does</h3>
-                <p className="text-gray-300 leading-relaxed text-center mb-6">
-                  Fit2Hire is a Chrome extension that transforms how you approach job applications by providing AI-powered analysis of job postings across major job platforms.
-                </p>
-              </div>
-            </div>
-
-            {/* Features Grid */}
-            <div className="grid md:grid-cols-2 gap-8 mb-12">
-              {/* Instant Job Analysis */}
-              <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
-                <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-                  background: "radial-gradient(circle at 60% 20%, #4cc9f022 0%, transparent 75%)"
-                }} />
-                <div className="relative z-10">
-                  <div className="flex items-center mb-4">
-                    <Target className="h-8 w-8 text-blue-400 mr-3" />
-                    <h4 className="text-xl font-bold text-white">🎯 Instant Job Analysis</h4>
-                  </div>
-                  <div className="space-y-3 text-gray-300">
-                    <div className="flex items-start">
-                      <span className="font-bold text-blue-400 mr-3">•</span>
-                      <p><strong>Smart Extraction:</strong> Automatically detects and extracts complete job information (title, company, location, requirements, skills) from LinkedIn, Indeed, Glassdoor, Naukri, and 10+ other job sites</p>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-blue-400 mr-3">•</span>
-                      <p><strong>AI-Powered Insights:</strong> Uses OpenAI's latest models to analyze job descriptions and provide comprehensive breakdowns</p>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-blue-400 mr-3">•</span>
-                      <p><strong>One-Click Analysis:</strong> Simply navigate to any job posting and click "Analyze Job" for instant insights</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* ATS Compatibility Scoring */}
-              <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
-                <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-                  background: "radial-gradient(circle at 65% 40%, #7209b722 0%, transparent 75%)"
-                }} />
-                <div className="relative z-10">
-                  <div className="flex items-center mb-4">
-                    <BarChart className="h-8 w-8 text-purple-400 mr-3" />
-                    <h4 className="text-xl font-bold text-white">📊 ATS Compatibility Scoring</h4>
-                  </div>
-                  <div className="space-y-3 text-gray-300">
-                    <div className="flex items-start">
-                      <span className="font-bold text-purple-400 mr-3">•</span>
-                      <p><strong>Resume Matching:</strong> Upload your resume to get a precise ATS compatibility score (0-100%) against any job description</p>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-purple-400 mr-3">•</span>
-                      <p><strong>Keyword Analysis:</strong> Identifies which keywords you have, which are missing, and their importance</p>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-purple-400 mr-3">•</span>
-                      <p><strong>Optimization Recommendations:</strong> Provides specific, actionable suggestions to improve your resume's ATS performance</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Comprehensive Resume Analysis */}
-              <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
-                <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-                  background: "radial-gradient(circle at 35% 50%, #4cc9f022 0%, transparent 75%)"
-                }} />
-                <div className="relative z-10">
-                  <div className="flex items-center mb-4">
-                    <Search className="h-8 w-8 text-green-400 mr-3" />
-                    <h4 className="text-xl font-bold text-white">🔍 Comprehensive Resume Analysis</h4>
-                  </div>
-                  <div className="space-y-3 text-gray-300">
-                    <div className="flex items-start">
-                      <span className="font-bold text-green-400 mr-3">•</span>
-                      <p><strong>Strengths & Weaknesses:</strong> Detailed feedback on what's working and what needs improvement</p>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-green-400 mr-3">•</span>
-                      <p><strong>Skills Gap Analysis:</strong> Shows which skills to highlight or develop for better job fit</p>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-green-400 mr-3">•</span>
-                      <p><strong>Experience Assessment:</strong> Evaluates how well your background aligns with job requirements</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Job Collection & Management */}
-              <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
-                <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-                  background: "radial-gradient(circle at 55% 20%, #4361ee22 0%, transparent 75%)"
-                }} />
-                <div className="relative z-10">
-                  <div className="flex items-center mb-4">
-                    <ShieldCheck className="h-8 w-8 text-pink-400 mr-3" />
-                    <h4 className="text-xl font-bold text-white">💾 Job Collection & Management</h4>
-                  </div>
-                  <div className="space-y-3 text-gray-300">
-                    <div className="flex items-start">
-                      <span className="font-bold text-pink-400 mr-3">•</span>
-                      <p><strong>Smart Saving:</strong> Save analyzed jobs with all AI-generated insights for future reference</p>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-pink-400 mr-3">•</span>
-                      <p><strong>Application Tracking:</strong> Keep track of your applications and optimization notes</p>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="font-bold text-pink-400 mr-3">•</span>
-                      <p><strong>Cross-Platform Support:</strong> Works on LinkedIn, Indeed, Glassdoor, Monster, Naukri, and more</p>
-                    </div>
-                  </div>
+                <h3 className="text-2xl font-bold text-white mb-4">Introduction</h3>
+                <div className="space-y-4 text-gray-300">
+                  <p className="leading-relaxed">
+                    Fit2Hire (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;the extension&rdquo;) is a Chrome browser extension designed to help job seekers analyze job descriptions and optimize their resumes for Applicant Tracking Systems (ATS). This Privacy Policy explains how we collect, use, store, and protect your information when you use our extension.
+                  </p>
+                  <p className="leading-relaxed">
+                    By installing and using Fit2Hire, you agree to the collection and use of information in accordance with this policy.
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* Why Users Should Install It */}
+            {/* Information We Collect */}
             <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
-                background: "radial-gradient(circle at 50% 30%, #4361ee22 0%, transparent 75%)"
+                background: "radial-gradient(circle at 60% 20%, #4cc9f022 0%, transparent 75%)"
               }} />
               <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-white mb-6 text-center">Why Users Should Install It</h3>
-
-                {/* Benefits Grid */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  {/* Save Time & Effort */}
-                  <div className="space-y-3">
-                    <div className="flex items-center mb-3">
-                      <Zap className="h-6 w-6 text-yellow-400 mr-3" />
-                      <h4 className="text-lg font-semibold text-yellow-300">⚡ Save Time & Effort</h4>
-                    </div>
-                    <div className="space-y-2 text-gray-300 text-sm">
-                      <p>• <strong>Instant Analysis:</strong> Get comprehensive job insights in seconds instead of spending minutes manually analyzing</p>
-                      <p>• <strong>Automated Extraction:</strong> No more copy-pasting job descriptions or manually identifying requirements</p>
-                      <p>• <strong>Batch Processing:</strong> Analyze multiple jobs quickly during your job search</p>
-                    </div>
+                <h3 className="text-2xl font-bold text-white mb-4">Information We Collect</h3>
+                <div className="space-y-4 text-gray-300">
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">1. Job-Related Information</h4>
+                    <p className="leading-relaxed mb-2">When you use our extension to analyze job postings, we may collect:</p>
+                    <ul className="list-disc list-inside space-y-1 pl-4">
+                      <li>Job titles, company names, and locations</li>
+                      <li>Job descriptions and requirements</li>
+                      <li>Skills and qualifications extracted from job postings</li>
+                      <li>URLs of job posting pages you analyze</li>
+                      <li>Platform names (LinkedIn, Indeed, Glassdoor, etc.)</li>
+                    </ul>
                   </div>
 
-                  {/* Beat the ATS System */}
-                  <div className="space-y-3">
-                    <div className="flex items-center mb-3">
-                      <Target className="h-6 w-6 text-red-400 mr-3" />
-                      <h4 className="text-lg font-semibold text-red-300">🎯 Beat the ATS System</h4>
-                    </div>
-                    <div className="space-y-2 text-gray-300 text-sm">
-                      <p>• <strong>ATS Optimization:</strong> 75% of resumes are filtered out by ATS systems - this extension helps you get through</p>
-                      <p>• <strong>Keyword Intelligence:</strong> Know exactly which keywords to include for better ATS ranking</p>
-                      <p>• <strong>Score-Based Improvements:</strong> Get measurable feedback (0-100%) on your resume's compatibility</p>
-                    </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">2. Resume Information</h4>
+                    <p className="leading-relaxed mb-2">When you upload your resume for ATS analysis:</p>
+                    <ul className="list-disc list-inside space-y-1 pl-4">
+                      <li>Text content extracted from your PDF resume</li>
+                      <li>File name and metadata (page count, character count)</li>
+                      <li>Resume analysis results and compatibility scores</li>
+                    </ul>
                   </div>
 
-                  {/* Make Smarter Applications */}
-                  <div className="space-y-3">
-                    <div className="flex items-center mb-3">
-                      <Lightbulb className="h-6 w-6 text-blue-400 mr-3" />
-                      <h4 className="text-lg font-semibold text-blue-300">💡 Make Smarter Applications</h4>
-                    </div>
-                    <div className="space-y-2 text-gray-300 text-sm">
-                      <p>• <strong>Strategic Insights:</strong> Understand job requirements beyond surface-level descriptions</p>
-                      <p>• <strong>Tailored Applications:</strong> Get specific tips for customizing your resume and cover letter</p>
-                      <p>• <strong>Career Intelligence:</strong> Discover skills and qualifications that boost your profile</p>
-                    </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">3. User Authentication Information</h4>
+                    <p className="leading-relaxed mb-2">When you choose to sign in with Google:</p>
+                    <ul className="list-disc list-inside space-y-1 pl-4">
+                      <li>Email address</li>
+                      <li>Display name</li>
+                      <li>Profile photo URL</li>
+                      <li>Google user ID (UID)</li>
+                    </ul>
                   </div>
 
-                  {/* Competitive Advantage */}
-                  <div className="space-y-3">
-                    <div className="flex items-center mb-3">
-                      <TrendingUp className="h-6 w-6 text-green-400 mr-3" />
-                      <h4 className="text-lg font-semibold text-green-300">🚀 Competitive Advantage</h4>
-                    </div>
-                    <div className="space-y-2 text-gray-300 text-sm">
-                      <p>• <strong>AI-Powered Edge:</strong> Use the same technology that top recruiters and hiring managers rely on</p>
-                      <p>• <strong>Data-Driven Decisions:</strong> Make informed choices about which jobs to pursue</p>
-                      <p>• <strong>Professional Growth:</strong> Learn what skills and experiences are most valued in your field</p>
-                    </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">4. Usage Data</h4>
+                    <p className="leading-relaxed mb-2">We may collect:</p>
+                    <ul className="list-disc list-inside space-y-1 pl-4">
+                      <li>Extension interaction data (button clicks, feature usage)</li>
+                      <li>Error logs and diagnostic information</li>
+                      <li>Browser tab URLs (only for job posting pages)</li>
+                      <li>Timestamps of actions performed</li>
+                    </ul>
                   </div>
 
-                  {/* Secure & Private */}
-                  <div className="space-y-3">
-                    <div className="flex items-center mb-3">
-                      <Lock className="h-6 w-6 text-purple-400 mr-3" />
-                      <h4 className="text-lg font-semibold text-purple-300">🔒 Secure & Private</h4>
-                    </div>
-                    <div className="space-y-2 text-gray-300 text-sm">
-                      <p>• <strong>Privacy-First:</strong> Your resume and data are processed securely with enterprise-grade encryption</p>
-                      <p>• <strong>No Data Storage:</strong> Personal information isn't permanently stored or shared</p>
-                      <p>• <strong>Open Source:</strong> Transparent about how your data is handled</p>
-                    </div>
-                  </div>
-
-                  {/* Proven Results */}
-                  <div className="space-y-3">
-                    <div className="flex items-center mb-3">
-                      <Award className="h-6 w-6 text-orange-400 mr-3" />
-                      <h4 className="text-lg font-semibold text-orange-300">📈 Proven Results</h4>
-                    </div>
-                    <div className="space-y-2 text-gray-300 text-sm">
-                      <p>Perfect for job seekers who want to:</p>
-                      <p>• Increase their interview callback rate</p>
-                      <p>• Optimize resumes for specific job postings</p>
-                      <p>• Save time during job search</p>
-                      <p>• Understand market requirements better</p>
-                      <p>• Get past ATS filters more effectively</p>
-                    </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">5. Local Storage Data</h4>
+                    <p className="leading-relaxed mb-2">The extension stores data locally in your browser using Chrome&apos;s storage API:</p>
+                    <ul className="list-disc list-inside space-y-1 pl-4">
+                      <li>Cached job analysis results</li>
+                      <li>Resume data and analysis results</li>
+                      <li>User authentication session data</li>
+                      <li>Saved job listings</li>
+                      <li>Anonymous user identifiers (if you choose anonymous mode)</li>
+                    </ul>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Bottom Line */}
+            {/* How We Use Your Information */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 35% 50%, #4cc9f022 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">How We Use Your Information</h3>
+                <div className="space-y-4 text-gray-300">
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Primary Functions</h4>
+                    <ul className="list-disc list-inside space-y-2 pl-4">
+                      <li><strong>Job Analysis:</strong> Extract and analyze job descriptions to identify required skills and qualifications</li>
+                      <li><strong>ATS Score Calculation:</strong> Compare your resume against job requirements to generate compatibility scores</li>
+                      <li><strong>Recommendations:</strong> Provide personalized suggestions to improve your resume&apos;s ATS compatibility</li>
+                      <li><strong>Job Saving:</strong> Store and organize jobs you want to track for future reference</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Service Improvement</h4>
+                    <ul className="list-disc list-inside space-y-1 pl-4">
+                      <li>Improve extension functionality and user experience</li>
+                      <li>Diagnose and fix technical issues</li>
+                      <li>Analyze usage patterns to enhance features</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Communication</h4>
+                    <ul className="list-disc list-inside space-y-1 pl-4">
+                      <li>Send service-related notifications</li>
+                      <li>Respond to user inquiries and support requests</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Data Storage and Retention */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 55% 20%, #4361ee22 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">Data Storage and Retention</h3>
+                <div className="space-y-4 text-gray-300">
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Local Storage</h4>
+                    <ul className="list-disc list-inside space-y-1 pl-4">
+                      <li>Job analysis data is stored locally in your browser</li>
+                      <li>Resume data is cached locally for quick access</li>
+                      <li>You can clear all locally stored data by removing the extension or clearing browser data</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Cloud Storage (Firebase Firestore)</h4>
+                    <p className="leading-relaxed mb-2">When you sign in with Google:</p>
+                    <ul className="list-disc list-inside space-y-1 pl-4">
+                      <li>Saved jobs are stored in our secure Firebase database</li>
+                      <li>Data is associated with your unique user ID</li>
+                      <li>You can delete your saved jobs at any time through the extension</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Anonymous Usage</h4>
+                    <p className="leading-relaxed mb-2">If you choose to continue anonymously:</p>
+                    <ul className="list-disc list-inside space-y-1 pl-4">
+                      <li>A temporary anonymous ID is generated locally</li>
+                      <li>Limited data is stored in the cloud</li>
+                      <li>You can clear this data by signing out or removing the extension</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Data Retention Period</h4>
+                    <ul className="list-disc list-inside space-y-1 pl-4">
+                      <li><strong>Active Users:</strong> Data is retained while you actively use the extension</li>
+                      <li><strong>Inactive Users:</strong> Data may be retained for up to 90 days after last activity</li>
+                      <li><strong>Deleted Accounts:</strong> Data is permanently deleted within 30 days of account deletion request</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Data Sharing and Third Parties */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 65% 40%, #7209b722 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">Data Sharing and Third Parties</h3>
+                <div className="space-y-4 text-gray-300">
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Third-Party Services We Use</h4>
+
+                    <div className="space-y-3 mt-3">
+                      <div>
+                        <p className="font-semibold text-white">1. Google Firebase</p>
+                        <ul className="list-disc list-inside space-y-1 pl-4 mt-1">
+                          <li>Purpose: User authentication and data storage</li>
+                          <li>Data shared: Email, name, profile photo, saved jobs</li>
+                          <li>Privacy Policy: https://firebase.google.com/support/privacy</li>
+                        </ul>
+                      </div>
+
+                      <div>
+                        <p className="font-semibold text-white">2. OpenAI API</p>
+                        <ul className="list-disc list-inside space-y-1 pl-4 mt-1">
+                          <li>Purpose: AI-powered job analysis and ATS scoring</li>
+                          <li>Data shared: Job descriptions and resume text (anonymized)</li>
+                          <li>Privacy Policy: https://openai.com/privacy</li>
+                        </ul>
+                      </div>
+
+                      <div>
+                        <p className="font-semibold text-white">3. Google OAuth 2.0</p>
+                        <ul className="list-disc list-inside space-y-1 pl-4 mt-1">
+                          <li>Purpose: User authentication</li>
+                          <li>Data shared: Email, profile information</li>
+                          <li>Privacy Policy: https://policies.google.com/privacy</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">We Do NOT:</h4>
+                    <ul className="list-disc list-inside space-y-1 pl-4">
+                      <li>Sell your personal information to third parties</li>
+                      <li>Share your resume or job data with employers or recruiters</li>
+                      <li>Use your data for advertising purposes</li>
+                      <li>Share your information with job posting platforms (LinkedIn, Indeed, etc.)</li>
+                      <li>Track your browsing activity on non-job-related websites</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Data Security */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 40% 30%, #4361ee22 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">Data Security</h3>
+                <div className="space-y-4 text-gray-300">
+                  <p className="leading-relaxed">
+                    We implement industry-standard security measures to protect your information:
+                  </p>
+
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Technical Safeguards</h4>
+                    <ul className="list-disc list-inside space-y-1 pl-4">
+                      <li>HTTPS/TLS encryption for all data transmission</li>
+                      <li>Secure Firebase authentication with OAuth 2.0</li>
+                      <li>Content Security Policy (CSP) to prevent unauthorized script execution</li>
+                      <li>Encrypted storage of sensitive data</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Access Controls</h4>
+                    <ul className="list-disc list-inside space-y-1 pl-4">
+                      <li>Limited access to user data by authorized personnel only</li>
+                      <li>Regular security audits and updates</li>
+                      <li>Secure API authentication for cloud functions</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">User Controls</h4>
+                    <ul className="list-disc list-inside space-y-1 pl-4">
+                      <li>You can delete your account and all associated data at any time</li>
+                      <li>You can clear locally stored data through browser settings</li>
+                      <li>You can revoke Google authentication permissions</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Permissions Explained */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 60% 20%, #4cc9f022 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">Permissions Explained</h3>
+                <div className="space-y-3 text-gray-300">
+                  <p className="leading-relaxed mb-3">The extension requires the following Chrome permissions:</p>
+                  <div className="space-y-2">
+                    <p><strong>1. activeTab, tabs:</strong> To detect when you&apos;re on a job posting page and analyze the content</p>
+                    <p><strong>2. storage:</strong> To save your preferences, cached data, and analysis results locally</p>
+                    <p><strong>3. identity:</strong> To enable Google sign-in for cloud synchronization</p>
+                    <p><strong>4. contextMenus:</strong> To provide right-click menu options for quick actions</p>
+                    <p><strong>5. clipboardWrite:</strong> To allow copying job descriptions and skills to your clipboard</p>
+                    <p><strong>6. sidePanel:</strong> To display the extension interface as a side panel</p>
+                    <p><strong>7. host_permissions:</strong> To access content on job posting websites (LinkedIn, Indeed, etc.) for analysis</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Your Rights and Choices */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 35% 50%, #4cc9f022 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">Your Rights and Choices</h3>
+                <div className="space-y-4 text-gray-300">
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Access and Control</h4>
+                    <ul className="list-disc list-inside space-y-1 pl-4">
+                      <li><strong>View Your Data:</strong> Access all data we&apos;ve collected about you</li>
+                      <li><strong>Download Your Data:</strong> Export your saved jobs and analysis results</li>
+                      <li><strong>Delete Your Data:</strong> Request deletion of all your personal data</li>
+                      <li><strong>Update Your Data:</strong> Modify your profile information and preferences</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">Privacy Options</h4>
+                    <ul className="list-disc list-inside space-y-1 pl-4">
+                      <li><strong>Anonymous Mode:</strong> Use the extension without signing in (limited features)</li>
+                      <li><strong>Data Deletion:</strong> Clear specific job analyses or all saved data</li>
+                      <li><strong>Sign Out:</strong> Remove authentication and clear session data</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-300 mb-2">How to Exercise Your Rights</h4>
+                    <p className="leading-relaxed mb-2">To exercise any of these rights:</p>
+                    <ol className="list-decimal list-inside space-y-1 pl-4">
+                      <li>Sign out from the extension (clears local and session data)</li>
+                      <li>Contact us at [your-email@example.com] for data deletion requests</li>
+                      <li>Revoke extension permissions through Chrome settings</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Children's Privacy */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 55% 20%, #4361ee22 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">Children&apos;s Privacy</h3>
+                <div className="text-gray-300">
+                  <p className="leading-relaxed">
+                    Fit2Hire is not intended for use by individuals under the age of 16. We do not knowingly collect personal information from children. If you believe we have inadvertently collected information from a child, please contact us immediately.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* California Privacy Rights (CCPA) */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 65% 40%, #7209b722 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">California Privacy Rights (CCPA)</h3>
+                <div className="space-y-3 text-gray-300">
+                  <p className="leading-relaxed">If you are a California resident, you have additional rights under the California Consumer Privacy Act (CCPA):</p>
+                  <ul className="list-disc list-inside space-y-1 pl-4">
+                    <li><strong>Right to Know:</strong> Request information about data collected and how it&apos;s used</li>
+                    <li><strong>Right to Delete:</strong> Request deletion of your personal information</li>
+                    <li><strong>Right to Opt-Out:</strong> Opt-out of the sale of personal information (we do not sell data)</li>
+                    <li><strong>Right to Non-Discrimination:</strong> Equal service regardless of exercising privacy rights</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* European Privacy Rights (GDPR) */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 40% 30%, #4361ee22 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">European Privacy Rights (GDPR)</h3>
+                <div className="space-y-3 text-gray-300">
+                  <p className="leading-relaxed">If you are located in the European Economic Area (EEA), you have rights under the General Data Protection Regulation (GDPR):</p>
+                  <ul className="list-disc list-inside space-y-1 pl-4">
+                    <li><strong>Legal Basis:</strong> We process data based on your consent and legitimate interests</li>
+                    <li><strong>Data Portability:</strong> Request your data in a machine-readable format</li>
+                    <li><strong>Right to Object:</strong> Object to processing of your personal data</li>
+                    <li><strong>Right to Restrict:</strong> Restrict how we process your data</li>
+                    <li><strong>Supervisory Authority:</strong> Right to lodge a complaint with your local data protection authority</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Changes to This Privacy Policy */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 mb-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 60% 20%, #4cc9f022 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">Changes to This Privacy Policy</h3>
+                <div className="space-y-4 text-gray-300">
+                  <p className="leading-relaxed">
+                    We may update this Privacy Policy from time to time to reflect changes in our practices or legal requirements. When we make changes:
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 pl-4">
+                    <li>We will update the &ldquo;Last Updated&rdquo; date at the top of this policy</li>
+                    <li>For significant changes, we will notify users through the extension</li>
+                    <li>Continued use of the extension after changes constitutes acceptance</li>
+                  </ul>
+                  <p className="leading-relaxed mt-4">
+                    We encourage you to review this policy periodically to stay informed about how we protect your information.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Information */}
             <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
                 background: "radial-gradient(circle at 50% 50%, #4361ee22 0%, transparent 75%)"
               }} />
-              <div className="relative z-10 text-center">
-                <h3 className="text-2xl font-bold text-white mb-4">Bottom Line</h3>
-                <p className="text-lg text-gray-300 leading-relaxed">
-                  Fit2Hire turns job hunting from guesswork into a data-driven strategy, helping you land interviews faster by understanding exactly what employers want and how well you match their requirements.
-                </p>
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">Contact Information</h3>
+                <div className="space-y-3 text-gray-300">
+                  <p className="leading-relaxed">
+                    If you have questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:
+                  </p>
+                  <ul className="space-y-2">
+                    <li><strong>Email:</strong> [your-email@example.com]</li>
+                    <li><strong>GitHub:</strong> [your-github-repo-url]</li>
+                    <li><strong>Support:</strong> Create an issue at [your-github-repo-url/issues]</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Consent */}
+            <div className="relative rounded-2xl border border-blue-900 bg-[#181c28]/80 backdrop-blur-md shadow-2xl p-8 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                background: "radial-gradient(circle at 35% 50%, #4cc9f022 0%, transparent 75%)"
+              }} />
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4">Consent</h3>
+                <div className="space-y-4 text-gray-300">
+                  <p className="leading-relaxed">By using Fit2Hire, you consent to:</p>
+                  <ul className="list-disc list-inside space-y-1 pl-4">
+                    <li>The collection and use of information as described in this Privacy Policy</li>
+                    <li>The processing of your data for the purposes outlined above</li>
+                    <li>The storage of data in accordance with our retention policies</li>
+                    <li>The use of third-party services as described in this policy</li>
+                  </ul>
+
+                  <p className="leading-relaxed mt-4">You can withdraw your consent at any time by:</p>
+                  <ul className="list-disc list-inside space-y-1 pl-4">
+                    <li>Signing out of the extension</li>
+                    <li>Uninstalling the extension</li>
+                    <li>Contacting us to request data deletion</li>
+                  </ul>
+
+                  <p className="leading-relaxed font-semibold text-blue-300 mt-6">
+                    Acknowledgment: By installing and using Fit2Hire, you acknowledge that you have read, understood, and agree to be bound by this Privacy Policy.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
