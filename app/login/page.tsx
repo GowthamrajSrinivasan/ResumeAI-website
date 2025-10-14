@@ -3,7 +3,10 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect, useState, Suspense } from "react";
-import { Briefcase, Eye, EyeOff, Mail, Lock, User, ArrowRight, Rocket, Zap, TrendingUp, Chrome } from "lucide-react";
+import { Briefcase, Mail, Lock, User, ArrowRight, Chrome, Sparkles, Zap, Shield, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 
 function LoginContent() {
   const { user, loading, signIn, signUp, signInWithGoogle } = useAuth();
@@ -89,10 +92,6 @@ function LoginContent() {
     setLoginSuccessful(false); // Reset login success flag when switching modes
   };
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     setError('');
@@ -113,10 +112,13 @@ function LoginContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Briefcase className="h-8 w-8 text-blue-600 animate-pulse mx-auto mb-4" />
-          <p className="text-xl text-gray-600">Loading...</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center animate-fade-in">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-20 blur-xl animate-pulse" />
+            <Briefcase className="relative h-12 w-12 text-blue-600 animate-pulse mx-auto mb-4" />
+          </div>
+          <p className="text-xl font-medium bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Loading...</p>
         </div>
       </div>
     );
@@ -125,89 +127,104 @@ function LoginContent() {
   // Show success screen when login is complete and about to redirect
   if (user && !loading && loginSuccessful) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto">
-          <div className="relative rounded-2xl border border-green-500 bg-white shadow-lg p-8">
-            {/* Success Icon */}
-            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
-              <svg
-                className="h-8 w-8 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
-              Login Successful! 🎉
-            </h1>
-            
-            <p className="text-gray-600 mb-6">
-              Welcome back! Redirecting you to your dashboard...
-            </p>
-
-            <div className="flex items-center justify-center">
-              <Briefcase className="h-5 w-5 text-blue-600 animate-pulse mr-3" />
-              <p className="text-blue-600">Setting up your workspace...</p>
-            </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 flex items-center justify-center p-4">
+        <div className="relative">
+          {/* Gradient Background Orbs */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-20 blur-3xl animate-pulse" />
           </div>
+
+          <Card className="relative glass backdrop-blur-xl border-white/20 shadow-2xl max-w-md mx-auto animate-scale-in">
+            <CardContent className="p-8 sm:p-12 text-center">
+              {/* Success Icon with Gradient Background */}
+              <div className="relative mx-auto mb-6">
+                <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 opacity-20 blur-xl animate-pulse" />
+                <div className="relative mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 shadow-lg">
+                  <CheckCircle2 className="h-10 w-10 text-white" />
+                </div>
+              </div>
+
+              {/* Success Message */}
+              <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Login Successful!
+              </h1>
+
+              <p className="text-surface-600 text-base md:text-lg mb-8">
+                Welcome back! Redirecting you to your dashboard...
+              </p>
+
+              {/* Loading Animation */}
+              <div className="flex items-center justify-center space-x-3">
+                <Sparkles className="h-5 w-5 text-blue-600 animate-pulse" />
+                <p className="text-blue-600 font-medium">Setting up your workspace...</p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center space-x-3 mb-4">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-md">
-              <Briefcase className="h-5 w-5 text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 relative overflow-hidden">
+      {/* Gradient Background Orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-600 to-purple-600 opacity-10 blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-600 to-pink-600 opacity-10 blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      </div>
+
+      <div className="relative flex items-center justify-center min-h-screen p-4">
+        <div className="w-full max-w-md">
+          {/* Header */}
+          <div className="text-center mb-8 animate-fade-in">
+            <div className="flex items-center justify-center space-x-3 mb-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-20 blur-xl" />
+                <div className="relative w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center shadow-lg">
+                  <Briefcase className="h-6 w-6 text-white" />
+                </div>
+              </div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Fit2Hire
+              </h1>
             </div>
-            <h1 className="text-3xl text-gray-900 font-bold">Fit2Hire</h1>
+            <p className="text-lg md:text-xl text-surface-600 font-medium">
+              {isLogin ? 'Welcome back!' : 'Create your account'}
+            </p>
+            <p className="text-sm text-surface-500 mt-2">
+              {isLogin ? 'Sign in to access your dashboard' : 'Join us and start your journey'}
+            </p>
           </div>
-          <p className="text-lg text-gray-600">
-            {isLogin ? 'Welcome back!' : 'Create your account'}
-          </p>
-        </div>
 
         {/* Authentication Form */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-8">
-          {/* Toggle Buttons */}
-          <div className="flex rounded-xl bg-gray-100 p-1 mb-8">
-            <button
-              onClick={() => setIsLogin(true)}
-              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
-                isLogin
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => setIsLogin(false)}
-              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
-                !isLogin
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Sign Up
-            </button>
-          </div>
+        <Card className="glass backdrop-blur-xl border-white/20 shadow-2xl animate-scale-in">
+          <CardContent className="p-6 sm:p-8">
+            {/* Toggle Buttons */}
+            <div className="flex rounded-xl bg-surface-100 p-1 mb-8">
+              <button
+                onClick={() => setIsLogin(true)}
+                className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                  isLogin
+                    ? 'bg-gradient-primary text-white shadow-md'
+                    : 'text-surface-600 hover:text-surface-900'
+                }`}
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => setIsLogin(false)}
+                className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                  !isLogin
+                    ? 'bg-gradient-primary text-white shadow-md'
+                    : 'text-surface-600 hover:text-surface-900'
+                }`}
+              >
+                Sign Up
+              </button>
+            </div>
 
           {/* Google Sign In */}
-          <button
+          <Button
             onClick={() => {
               setIsLoading(true);
               signInWithGoogle()
@@ -223,164 +240,174 @@ function LoginContent() {
                 });
             }}
             disabled={isLoading}
-            className="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-3 px-4 rounded-lg border border-gray-300 transition-colors mb-6 flex items-center justify-center"
+            variant="outline"
+            size="lg"
+            className="w-full mb-6"
+            leftIcon={<Chrome className="h-5 w-5" />}
           >
-            <Chrome className="h-4 w-4 mr-2" />
             Continue with Google
-          </button>
+          </Button>
 
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              <div className="w-full border-t border-surface-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with email</span>
+              <span className="px-3 bg-white text-surface-500 font-medium">Or continue with email</span>
             </div>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{error}</p>
+            <div className="mb-6 p-4 bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-lg animate-slide-down">
+              <p className="text-sm text-red-600 font-medium">{error}</p>
             </div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {!isLogin && (
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="animate-slide-down">
+                <label htmlFor="name" className="block text-sm font-semibold text-surface-700 mb-2">
                   Full Name
                 </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                    placeholder="Enter your full name"
-                    required={!isLogin}
-                  />
-                </div>
+                <Input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Enter your full name"
+                  leftIcon={<User className="h-4 w-4" />}
+                  inputSize="lg"
+                  required={!isLogin}
+                />
               </div>
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="email" className="block text-sm font-semibold text-surface-700 mb-2">
                 Email Address
               </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="input-field pl-10"
-                  placeholder="Enter your email"
-                  required
-                />
-              </div>
+              <Input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="Enter your email"
+                leftIcon={<Mail className="h-4 w-4" />}
+                inputSize="lg"
+                required
+              />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="password" className="block text-sm font-semibold text-surface-700 mb-2">
                 Password
               </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                  placeholder="Enter your password"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
+              <Input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                placeholder="Enter your password"
+                leftIcon={<Lock className="h-4 w-4" />}
+                inputSize="lg"
+                required
+              />
             </div>
 
             {!isLogin && (
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="animate-slide-down">
+                <label htmlFor="confirmPassword" className="block text-sm font-semibold text-surface-700 mb-2">
                   Confirm Password
                 </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                    placeholder="Confirm your password"
-                    required={!isLogin}
-                  />
-                </div>
+                <Input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  placeholder="Confirm your password"
+                  leftIcon={<Lock className="h-4 w-4" />}
+                  inputSize="lg"
+                  required={!isLogin}
+                />
               </div>
             )}
 
-            <button
+            <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
+              loading={isLoading}
+              variant="gradient"
+              size="lg"
+              className="w-full mt-6"
+              rightIcon={!isLoading && <ArrowRight className="h-5 w-5" />}
             >
-              {isLoading ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                  {isLogin ? 'Signing In...' : 'Creating Account...'}
-                </div>
-              ) : (
-                <>
-                  {isLogin ? 'Sign In' : 'Create Account'}
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </>
-              )}
-            </button>
+              {isLoading
+                ? (isLogin ? 'Signing In...' : 'Creating Account...')
+                : (isLogin ? 'Sign In' : 'Create Account')
+              }
+            </Button>
           </form>
 
           {/* Links */}
-          <div className="mt-6 text-center space-y-2">
+          <div className="mt-8 text-center space-y-3">
             {isLogin && (
-              <a href="#" className="text-sm text-blue-600 hover:text-blue-700">
+              <a href="#" className="block text-sm font-medium text-blue-600 hover:text-purple-600 transition-colors">
                 Forgot your password?
               </a>
             )}
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-surface-600">
               {isLogin ? "Don't have an account? " : 'Already have an account? '}
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-blue-600 hover:text-blue-700 font-medium"
+                className="font-semibold text-blue-600 hover:text-purple-600 transition-colors"
               >
                 {isLogin ? 'Sign up' : 'Sign in'}
               </button>
             </p>
           </div>
-        </div>
+
+          {/* Features */}
+          <div className="mt-8 pt-6 border-t border-surface-200">
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div className="space-y-2">
+                <div className="w-10 h-10 mx-auto bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
+                  <Shield className="h-5 w-5 text-blue-600" />
+                </div>
+                <p className="text-xs text-surface-600 font-medium">Secure</p>
+              </div>
+              <div className="space-y-2">
+                <div className="w-10 h-10 mx-auto bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg flex items-center justify-center">
+                  <Zap className="h-5 w-5 text-purple-600" />
+                </div>
+                <p className="text-xs text-surface-600 font-medium">Fast</p>
+              </div>
+              <div className="space-y-2">
+                <div className="w-10 h-10 mx-auto bg-gradient-to-br from-pink-100 to-pink-200 rounded-lg flex items-center justify-center">
+                  <Sparkles className="h-5 w-5 text-pink-600" />
+                </div>
+                <p className="text-xs text-surface-600 font-medium">Smart</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+        </Card>
 
         {/* Footer */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500">
+        <div className="mt-8 text-center animate-fade-in">
+          <p className="text-sm text-surface-500">
             By continuing, you agree to our{' '}
-            <a href="/terms" className="text-blue-600 hover:text-blue-700">Terms of Service</a>
+            <a href="/terms" className="font-medium text-blue-600 hover:text-purple-600 transition-colors">Terms of Service</a>
             {' '}and{' '}
-            <a href="/privacy" className="text-blue-600 hover:text-blue-700">Privacy Policy</a>
+            <a href="/privacy" className="font-medium text-blue-600 hover:text-purple-600 transition-colors">Privacy Policy</a>
           </p>
         </div>
+      </div>
       </div>
     </div>
   );
@@ -389,10 +416,13 @@ function LoginContent() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading...</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center animate-fade-in">
+          <div className="relative mx-auto mb-4">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-20 blur-xl" />
+            <div className="relative animate-spin h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto"></div>
+          </div>
+          <p className="text-lg font-medium bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Loading...</p>
         </div>
       </div>
     }>

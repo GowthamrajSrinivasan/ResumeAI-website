@@ -123,6 +123,19 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
+  /* Gradient backgrounds */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, hsl(var(--primary-500)), hsl(var(--primary-600)));
+  }
+
+  .bg-gradient-surface {
+    background: linear-gradient(135deg, hsl(var(--surface-50)), hsl(var(--surface-100)));
+  }
+
+  .bg-gradient-interactive {
+    background: linear-gradient(135deg, hsl(var(--interactive-500)), hsl(var(--interactive-600)));
+  }
+
   /* Gradient text */
   .gradient-text {
     @apply bg-gradient-to-r from-primary-500 to-interactive-500 bg-clip-text text-transparent;
