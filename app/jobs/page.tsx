@@ -1,552 +1,777 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useMemo } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 import {
   Search,
-  Filter,
   MapPin,
   Briefcase,
   DollarSign,
-  SlidersHorizontal,
+  Filter,
   Grid3x3,
   List,
-  TrendingUp,
-  Clock,
-  Star,
-  Bookmark,
-  RefreshCw,
   ChevronDown,
-  X,
-  Plus,
+  Clock,
+  Bookmark,
+  BookmarkCheck,
+  Heart,
+  Share2,
+  TrendingUp,
   Users,
   Building2,
-  CheckCircle,
-  AlertCircle,
-  Sparkles,
-  User,
-  Crown,
+  X,
+  Menu,
   LogOut,
-  Home,
-  BarChart3
-} from "lucide-react"
-import JobCard from "@/components/JobCard"
-import JobModal from "@/components/JobModal"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
-import { useAuth } from '@/hooks/useAuth'
-import JobTrackerReal from '@/components/JobTrackerReal'
+  User,
+  ChevronRight,
+  CheckCircle2,
+  Star,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
-// Mock data for job listings (you can replace this with real API data)
-const mockJobs = [
+// Types
+interface Job {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  locationType: "Remote" | "Hybrid" | "On-site";
+  salary: {
+    min: number;
+    max: number;
+    currency: string;
+  };
+  type: "Full-time" | "Part-time" | "Contract" | "Freelance";
+  experience: "Entry" | "Mid" | "Senior" | "Lead";
+  skills: string[];
+  description: string;
+  requirements: string[];
+  benefits: string[];
+  postedAt: Date;
+  applicants: number;
+  featured: boolean;
+  companyLogo?: string;
+}
+
+interface FilterState {
+  jobType: string[];
+  experienceLevel: string[];
+  locationType: string[];
+  salaryRange: [number, number];
+}
+
+// Mock Job Data
+const MOCK_JOBS: Job[] = [
   {
     id: "1",
-    title: "Senior Frontend Developer",
+    title: "Senior Full-Stack Engineer",
     company: "TechCorp Inc.",
     location: "San Francisco, CA",
-    salary: "$120k - $160k",
-    salaryRange: { min: 120, max: 160, currency: "$" },
-    type: "Full-time" as const,
-    experience: "5+ years",
-    skills: ["React", "TypeScript", "Next.js", "Tailwind CSS", "GraphQL"],
-    description: "Join our dynamic team as a Senior Frontend Developer and help build cutting-edge web applications that serve millions of users worldwide. You'll work with the latest technologies and collaborate with talented engineers to deliver exceptional user experiences.",
+    locationType: "Hybrid",
+    salary: { min: 150000, max: 200000, currency: "USD" },
+    type: "Full-time",
+    experience: "Senior",
+    skills: ["React", "Node.js", "TypeScript", "AWS", "PostgreSQL"],
+    description:
+      "We're looking for an experienced Full-Stack Engineer to join our growing team. You'll work on cutting-edge projects using modern technologies and help shape the future of our platform.",
     requirements: [
-      "5+ years of experience in frontend development",
-      "Expert knowledge of React and TypeScript",
-      "Experience with modern CSS frameworks",
-      "Strong understanding of web performance optimization",
-      "Experience with testing frameworks (Jest, Cypress)"
-    ],
-    responsibilities: [
-      "Develop and maintain high-quality frontend applications",
-      "Collaborate with design and backend teams",
-      "Optimize applications for maximum speed and scalability",
-      "Mentor junior developers and code review",
-      "Stay up-to-date with emerging technologies"
+      "5+ years of experience with React and Node.js",
+      "Strong understanding of TypeScript and modern JavaScript",
+      "Experience with cloud platforms (AWS, Azure, or GCP)",
+      "Excellent problem-solving and communication skills",
     ],
     benefits: [
       "Competitive salary and equity",
       "Health, dental, and vision insurance",
-      "Flexible working hours",
-      "Remote work options",
-      "Professional development budget",
-      "Free lunch and snacks"
+      "401(k) matching",
+      "Unlimited PTO",
+      "Remote work flexibility",
     ],
-    postedDate: "2024-01-15",
-    applicationDeadline: "2024-02-15",
-    isBookmarked: false,
-    companyLogo: "/api/placeholder/64/64",
-    applicants: 23,
-    isUrgent: false,
-    isRemote: true,
-    isNew: true,
-    companyInfo: {
-      website: "https://techcorp.com",
-      email: "careers@techcorp.com",
-      phone: "+1 (555) 123-4567",
-      size: "500-1000 employees",
-      industry: "Technology",
-      founded: "2010",
-      description: "TechCorp is a leading technology company focused on building innovative solutions that transform how people work and collaborate."
-    },
-    applicationInfo: {
-      howToApply: "Please submit your resume along with a cover letter explaining why you're interested in this role.",
-      contactPerson: "Sarah Johnson, Senior Recruiter",
-      additionalInstructions: "Include links to your portfolio and GitHub profile."
-    }
+    postedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    applicants: 47,
+    featured: true,
   },
   {
     id: "2",
     title: "Product Manager",
-    company: "StartupX",
+    company: "InnovateLabs",
     location: "New York, NY",
-    salary: "$140k - $180k",
-    salaryRange: { min: 140, max: 180, currency: "$" },
-    type: "Full-time" as const,
-    experience: "3+ years",
-    skills: ["Product Strategy", "User Research", "Agile", "Analytics", "Roadmapping"],
-    description: "Lead product development for our flagship SaaS platform. Drive product strategy, work with cross-functional teams, and deliver features that delight our customers.",
+    locationType: "On-site",
+    salary: { min: 120000, max: 160000, currency: "USD" },
+    type: "Full-time",
+    experience: "Mid",
+    skills: ["Product Strategy", "Agile", "Analytics", "UX Design", "Roadmapping"],
+    description:
+      "Join our product team to drive innovation and deliver exceptional user experiences. You'll work cross-functionally to define product vision and execute on strategic initiatives.",
     requirements: [
       "3+ years of product management experience",
-      "Strong analytical and problem-solving skills",
-      "Experience with B2B SaaS products",
-      "Excellent communication skills"
-    ],
-    responsibilities: [
-      "Define and execute product roadmap",
-      "Work with engineering and design teams",
-      "Analyze user feedback and market trends",
-      "Coordinate product launches"
+      "Strong analytical and data-driven decision making",
+      "Experience with Agile methodologies",
+      "Excellent communication and leadership skills",
     ],
     benefits: [
+      "Comprehensive health benefits",
       "Stock options",
-      "Health insurance",
-      "Flexible PTO",
-      "Learning stipend"
+      "Professional development budget",
+      "Gym membership",
     ],
-    postedDate: "2024-01-14",
-    applicationDeadline: "2024-02-10",
-    isBookmarked: true,
-    applicants: 45,
-    isUrgent: true,
-    isRemote: false,
-    isNew: false,
-    companyInfo: {
-      website: "https://startupx.com",
-      email: "jobs@startupx.com",
-      size: "50-100 employees",
-      industry: "SaaS",
-      founded: "2018",
-      description: "StartupX is revolutionizing the way businesses manage their operations with our innovative SaaS platform."
-    }
+    postedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+    applicants: 89,
+    featured: true,
   },
   {
     id: "3",
-    title: "UX Designer",
-    company: "DesignStudio",
-    location: "Austin, TX",
-    salary: "$90k - $120k",
-    salaryRange: { min: 90, max: 120, currency: "$" },
-    type: "Full-time" as const,
-    experience: "2+ years",
-    skills: ["Figma", "User Research", "Prototyping", "Design Systems", "Adobe Creative Suite"],
-    description: "Create beautiful, intuitive user experiences for our growing portfolio of digital products. Work closely with product and engineering teams to bring ideas to life.",
+    title: "UX/UI Designer",
+    company: "DesignStudio Pro",
+    location: "Remote",
+    locationType: "Remote",
+    salary: { min: 90000, max: 130000, currency: "USD" },
+    type: "Full-time",
+    experience: "Mid",
+    skills: ["Figma", "Adobe XD", "User Research", "Prototyping", "Design Systems"],
+    description:
+      "Create beautiful and intuitive user experiences for our suite of products. You'll work closely with engineers and product managers to bring designs to life.",
     requirements: [
-      "2+ years of UX design experience",
-      "Proficiency in Figma and design tools",
-      "Strong portfolio showcasing UX process",
-      "Experience with user research methods"
-    ],
-    responsibilities: [
-      "Design user interfaces for web and mobile",
-      "Conduct user research and usability testing",
-      "Create and maintain design systems",
-      "Collaborate with product and engineering teams"
+      "3+ years of UX/UI design experience",
+      "Strong portfolio demonstrating design expertise",
+      "Proficiency in Figma and Adobe Creative Suite",
+      "Experience with user research and testing",
     ],
     benefits: [
-      "Creative freedom",
-      "Conference and workshop budget",
-      "Health and dental insurance",
-      "Flexible schedule"
+      "Fully remote position",
+      "Flexible working hours",
+      "Health insurance",
+      "Annual design conference budget",
     ],
-    postedDate: "2024-01-12",
-    isBookmarked: false,
-    applicants: 67,
-    isUrgent: false,
-    isRemote: true,
-    isNew: false,
-    companyInfo: {
-      website: "https://designstudio.com",
-      email: "hello@designstudio.com",
-      size: "20-50 employees",
-      industry: "Design",
-      founded: "2019",
-      description: "DesignStudio helps companies create exceptional user experiences through thoughtful design and research."
-    }
-  }
-]
-
-const jobTypes = ["Full-time", "Part-time", "Contract", "Internship"]
-const experienceLevels = ["Entry Level", "1-2 years", "3-5 years", "5+ years", "10+ years"]
-const salaryRanges = ["$0-50k", "$50k-100k", "$100k-150k", "$150k-200k", "$200k+"]
-
-interface FilterState {
-  search: string
-  location: string
-  jobType: string[]
-  experience: string[]
-  salaryRange: string[]
-  isRemote: boolean
-  postedWithin: string
-}
+    postedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    applicants: 124,
+    featured: false,
+  },
+  {
+    id: "4",
+    title: "Data Scientist",
+    company: "DataDriven Analytics",
+    location: "Boston, MA",
+    locationType: "Hybrid",
+    salary: { min: 130000, max: 180000, currency: "USD" },
+    type: "Full-time",
+    experience: "Senior",
+    skills: ["Python", "Machine Learning", "TensorFlow", "SQL", "Statistics"],
+    description:
+      "Join our data science team to build predictive models and extract insights from large datasets. You'll have the opportunity to work on challenging problems across multiple domains.",
+    requirements: [
+      "5+ years of data science experience",
+      "Strong programming skills in Python",
+      "Experience with ML frameworks (TensorFlow, PyTorch)",
+      "PhD or Master's in Computer Science, Statistics, or related field",
+    ],
+    benefits: [
+      "Competitive compensation",
+      "Research publication opportunities",
+      "Conference attendance",
+      "Latest hardware and tools",
+    ],
+    postedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+    applicants: 62,
+    featured: true,
+  },
+  {
+    id: "5",
+    title: "Frontend Developer",
+    company: "WebWorks LLC",
+    location: "Austin, TX",
+    locationType: "Remote",
+    salary: { min: 80000, max: 120000, currency: "USD" },
+    type: "Full-time",
+    experience: "Entry",
+    skills: ["React", "JavaScript", "CSS", "HTML", "Git"],
+    description:
+      "Looking for a passionate frontend developer to join our team. Perfect opportunity for someone early in their career who wants to grow and learn from experienced engineers.",
+    requirements: [
+      "1-2 years of React development experience",
+      "Strong understanding of HTML, CSS, and JavaScript",
+      "Familiarity with Git and version control",
+      "Eagerness to learn and grow",
+    ],
+    benefits: [
+      "Mentorship program",
+      "Remote-first culture",
+      "Learning and development budget",
+      "Health insurance",
+    ],
+    postedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    applicants: 203,
+    featured: false,
+  },
+  {
+    id: "6",
+    title: "DevOps Engineer",
+    company: "CloudScale Systems",
+    location: "Seattle, WA",
+    locationType: "Hybrid",
+    salary: { min: 140000, max: 190000, currency: "USD" },
+    type: "Full-time",
+    experience: "Senior",
+    skills: ["Kubernetes", "Docker", "AWS", "Terraform", "CI/CD"],
+    description:
+      "Build and maintain scalable infrastructure for our cloud-native applications. You'll work with cutting-edge DevOps tools and practices to ensure reliability and performance.",
+    requirements: [
+      "5+ years of DevOps/Infrastructure experience",
+      "Expert knowledge of Kubernetes and Docker",
+      "Strong experience with AWS or GCP",
+      "Infrastructure as Code experience (Terraform, CloudFormation)",
+    ],
+    benefits: [
+      "Top-tier compensation",
+      "Equity package",
+      "Comprehensive benefits",
+      "Continuous learning opportunities",
+    ],
+    postedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
+    applicants: 56,
+    featured: false,
+  },
+  {
+    id: "7",
+    title: "Marketing Manager",
+    company: "GrowthHub Marketing",
+    location: "Los Angeles, CA",
+    locationType: "On-site",
+    salary: { min: 95000, max: 135000, currency: "USD" },
+    type: "Full-time",
+    experience: "Mid",
+    skills: ["Digital Marketing", "SEO", "Content Strategy", "Analytics", "Social Media"],
+    description:
+      "Lead marketing initiatives and drive growth for our B2B SaaS product. You'll develop and execute comprehensive marketing strategies across multiple channels.",
+    requirements: [
+      "3+ years of B2B marketing experience",
+      "Proven track record of driving growth",
+      "Experience with marketing automation tools",
+      "Strong analytical and strategic thinking skills",
+    ],
+    benefits: [
+      "Competitive salary",
+      "Performance bonuses",
+      "Health and wellness benefits",
+      "Professional development",
+    ],
+    postedAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
+    applicants: 78,
+    featured: false,
+  },
+  {
+    id: "8",
+    title: "Sales Development Representative",
+    company: "SalesPro Solutions",
+    location: "Chicago, IL",
+    locationType: "Hybrid",
+    salary: { min: 60000, max: 90000, currency: "USD" },
+    type: "Full-time",
+    experience: "Entry",
+    skills: ["Sales", "CRM", "Communication", "Lead Generation", "Salesforce"],
+    description:
+      "Join our dynamic sales team and help drive revenue growth. This is an excellent opportunity for someone looking to start their career in SaaS sales.",
+    requirements: [
+      "0-2 years of sales experience",
+      "Excellent communication skills",
+      "Self-motivated and goal-oriented",
+      "Familiarity with CRM tools (Salesforce preferred)",
+    ],
+    benefits: [
+      "Base salary plus commission",
+      "Comprehensive training program",
+      "Career advancement opportunities",
+      "Health insurance",
+    ],
+    postedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
+    applicants: 145,
+    featured: false,
+  },
+];
 
 export default function JobsPage() {
-  const { user, logout } = useAuth()
-  const [jobs, setJobs] = useState(mockJobs)
-  const [filteredJobs, setFilteredJobs] = useState(mockJobs)
-  const [selectedJob, setSelectedJob] = useState<typeof mockJobs[0] | null>(null)
-  const [isJobModalOpen, setIsJobModalOpen] = useState(false)
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [showFilters, setShowFilters] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [showJobTracker, setShowJobTracker] = useState(false)
+  const { user, loading, logout } = useAuth();
+  const router = useRouter();
+
+  // State management
+  const [searchQuery, setSearchQuery] = useState("");
+  const [locationQuery, setLocationQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [sortBy, setSortBy] = useState<"recent" | "salary" | "relevance">("recent");
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [savedJobs, setSavedJobs] = useState<Set<string>>(new Set());
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const [filters, setFilters] = useState<FilterState>({
-    search: "",
-    location: "",
     jobType: [],
-    experience: [],
-    salaryRange: [],
-    isRemote: false,
-    postedWithin: "all"
-  })
+    experienceLevel: [],
+    locationType: [],
+    salaryRange: [0, 300000],
+  });
 
-  // Filter jobs based on current filters
-  const applyFilters = useCallback(() => {
-    let filtered = [...jobs]
+  // Filter and search logic
+  const filteredJobs = useMemo(() => {
+    let jobs = [...MOCK_JOBS];
 
     // Search filter
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase()
-      filtered = filtered.filter(job =>
-        job.title.toLowerCase().includes(searchLower) ||
-        job.company.toLowerCase().includes(searchLower) ||
-        job.skills.some(skill => skill.toLowerCase().includes(searchLower)) ||
-        (job.description && job.description.toLowerCase().includes(searchLower))
-      )
+    if (searchQuery) {
+      jobs = jobs.filter(
+        (job) =>
+          job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          job.skills.some((skill) =>
+            skill.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+      );
     }
 
     // Location filter
-    if (filters.location) {
-      const locationLower = filters.location.toLowerCase()
-      filtered = filtered.filter(job =>
-        job.location.toLowerCase().includes(locationLower)
-      )
+    if (locationQuery) {
+      jobs = jobs.filter((job) =>
+        job.location.toLowerCase().includes(locationQuery.toLowerCase())
+      );
     }
 
     // Job type filter
     if (filters.jobType.length > 0) {
-      filtered = filtered.filter(job =>
-        filters.jobType.includes(job.type)
-      )
+      jobs = jobs.filter((job) => filters.jobType.includes(job.type));
     }
 
-    // Remote filter
-    if (filters.isRemote) {
-      filtered = filtered.filter(job => job.isRemote)
+    // Experience level filter
+    if (filters.experienceLevel.length > 0) {
+      jobs = jobs.filter((job) =>
+        filters.experienceLevel.includes(job.experience)
+      );
     }
 
-    // Posted within filter
-    if (filters.postedWithin !== "all") {
-      const days = parseInt(filters.postedWithin)
-      const cutoffDate = new Date()
-      cutoffDate.setDate(cutoffDate.getDate() - days)
-
-      filtered = filtered.filter(job => {
-        if (!job.postedDate) return false
-        return new Date(job.postedDate) >= cutoffDate
-      })
+    // Location type filter
+    if (filters.locationType.length > 0) {
+      jobs = jobs.filter((job) =>
+        filters.locationType.includes(job.locationType)
+      );
     }
 
-    setFilteredJobs(filtered)
-  }, [jobs, filters])
+    // Salary range filter
+    jobs = jobs.filter(
+      (job) =>
+        job.salary.max >= filters.salaryRange[0] &&
+        job.salary.min <= filters.salaryRange[1]
+    );
 
-  useEffect(() => {
-    applyFilters()
-  }, [applyFilters])
+    // Sorting
+    if (sortBy === "recent") {
+      jobs.sort((a, b) => b.postedAt.getTime() - a.postedAt.getTime());
+    } else if (sortBy === "salary") {
+      jobs.sort((a, b) => b.salary.max - a.salary.max);
+    }
 
-  const handleJobView = (job: typeof mockJobs[0]) => {
-    setSelectedJob(job)
-    setIsJobModalOpen(true)
-  }
+    return jobs;
+  }, [searchQuery, locationQuery, filters, sortBy]);
 
-  const handleJobApply = (jobId?: string) => {
-    console.log("Applying to job:", jobId)
-    // You can add logic to navigate to application form or external URL
-  }
+  // Helper functions
+  const toggleFilter = (
+    category: keyof FilterState,
+    value: string
+  ) => {
+    setFilters((prev) => {
+      const current = prev[category] as string[];
+      const updated = current.includes(value)
+        ? current.filter((v) => v !== value)
+        : [...current, value];
+      return { ...prev, [category]: updated };
+    });
+  };
 
-  const handleJobBookmark = (jobId?: string) => {
-    if (!jobId) return
+  const toggleSaveJob = (jobId: string) => {
+    setSavedJobs((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(jobId)) {
+        newSet.delete(jobId);
+      } else {
+        newSet.add(jobId);
+      }
+      return newSet;
+    });
+  };
 
-    setJobs(prevJobs =>
-      prevJobs.map(job =>
-        job.id === jobId ? { ...job, isBookmarked: !job.isBookmarked } : job
-      )
-    )
-  }
+  const formatSalary = (job: Job) => {
+    const formatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: job.salary.currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+    return `${formatter.format(job.salary.min)} - ${formatter.format(
+      job.salary.max
+    )}`;
+  };
 
-  const handleClearFilters = () => {
-    setFilters({
-      search: "",
-      location: "",
-      jobType: [],
-      experience: [],
-      salaryRange: [],
-      isRemote: false,
-      postedWithin: "all"
-    })
-  }
+  const formatPostedDate = (date: Date) => {
+    const days = Math.floor(
+      (Date.now() - date.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    if (days === 0) return "Today";
+    if (days === 1) return "Yesterday";
+    return `${days} days ago`;
+  };
 
   const handleLogout = async () => {
-    try {
-      await logout()
-    } catch (error) {
-      console.error('Error logging out:', error)
-    }
-  }
+    await logout();
+    router.push("/login");
+  };
 
-  if (showJobTracker) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <header className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm">
-          <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
-                  <Briefcase className="h-4 w-4 text-white" />
-                </div>
-                <h1 className="text-lg font-bold text-gray-900">Fit2Hire Job Tracker</h1>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+      {/* Header */}
+      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-slate-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <div className="flex items-center space-x-2">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg">
+                <Briefcase className="w-6 h-6 text-white" />
               </div>
+              <div>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Fit2Hire
+                </h1>
+                <p className="text-xs text-slate-600">Find Your Perfect Job</p>
+              </div>
+            </div>
 
-              <div className="flex items-center space-x-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowJobTracker(false)}
-                >
-                  View Job Listings
-                </Button>
-                {user && (
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-4">
+              {user ? (
+                <>
+                  <Button variant="ghost" size="sm">
+                    <User className="w-4 h-4 mr-2" />
+                    {user.email}
+                  </Button>
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     onClick={handleLogout}
-                    rightIcon={<LogOut className="h-4 w-4" />}
+                    leftIcon={<LogOut className="w-4 h-4" />}
                   >
                     Logout
                   </Button>
-                )}
-              </div>
-            </div>
-          </nav>
-        </header>
-
-        {/* Page Title Section */}
-        <section className="pt-24 pb-8 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                Job Application Tracker
-              </h1>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Manage your job applications with intelligent tracking, status updates, and insights
-                to help you land your dream role.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Content */}
-        <section className="pb-16 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <JobTrackerReal />
-          </div>
-        </section>
-      </div>
-    )
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="sticky top-0 z-40 w-full bg-white border-b border-gray-200 shadow-sm">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
-                <Briefcase className="h-4 w-4 text-white" />
-              </div>
-              <h1 className="text-lg font-bold text-gray-900">Fit2Hire Jobs</h1>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowJobTracker(true)}
-                leftIcon={<BarChart3 className="h-4 w-4" />}
-              >
-                Job Tracker
-              </Button>
-              {user ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleLogout}
-                  rightIcon={<LogOut className="h-4 w-4" />}
-                >
-                  Logout
-                </Button>
+                </>
               ) : (
-                <Button variant="gradient" size="sm">
-                  <a href="/login">Sign In</a>
+                <Button
+                  variant="gradient"
+                  size="sm"
+                  onClick={() => router.push("/login")}
+                >
+                  Sign In
                 </Button>
               )}
             </div>
+
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="md:hidden"
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+            >
+              {showMobileMenu ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
+            </Button>
           </div>
-        </nav>
+
+          {/* Mobile Menu */}
+          {showMobileMenu && (
+            <div className="md:hidden py-4 border-t border-slate-200 animate-slide-down">
+              {user ? (
+                <div className="space-y-2">
+                  <div className="px-4 py-2 text-sm text-slate-600">
+                    {user.email}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={handleLogout}
+                    leftIcon={<LogOut className="w-4 h-4" />}
+                  >
+                    Logout
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  variant="gradient"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => router.push("/login")}
+                >
+                  Sign In
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
       </header>
 
       {/* Hero Section */}
-      <section className="pt-8 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-gray-900">
-            Find Your Dream Job
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8 leading-relaxed">
-            Discover thousands of job opportunities from top companies around the world.
-            Start your career journey today.
-          </p>
+      <section className="relative py-12 md:py-20 overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 opacity-10" />
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8 md:mb-12 animate-fade-in">
+            <h2 className="text-4xl md:text-6xl font-bold text-slate-900 mb-4">
+              Find Your Dream Job
+            </h2>
+            <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
+              Discover thousands of opportunities from top companies worldwide
+            </p>
+          </div>
 
           {/* Search Bar */}
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white border border-gray-200 rounded-xl shadow-lg p-6">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <Input
-                    type="text"
-                    placeholder="Job title, keywords, or company"
-                    value={filters.search}
-                    onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                    leftIcon={<Search className="h-4 w-4 text-gray-500" />}
-                    className="h-12 text-base bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500 shadow-sm"
-                  />
-                </div>
-                <div className="flex-1">
-                  <Input
-                    type="text"
-                    placeholder="Location"
-                    value={filters.location}
-                    onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
-                    leftIcon={<MapPin className="h-4 w-4 text-gray-500" />}
-                    className="h-12 text-base bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500 shadow-sm"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    onClick={() => setShowFilters(!showFilters)}
-                    leftIcon={<Filter className="h-4 w-4" />}
-                    className="bg-gray-100 hover:bg-gray-200 border-gray-300 shadow-sm"
-                  >
-                    Filters
-                  </Button>
-                  <Button
-                    variant="gradient"
-                    size="lg"
-                    className="min-w-[120px] bg-blue-600 hover:bg-blue-700 shadow-lg"
-                  >
-                    Search Jobs
-                  </Button>
-                </div>
+          <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl p-4 md:p-6 border border-slate-200 animate-scale-in">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Job Title Search */}
+              <div className="relative">
+                <Input
+                  placeholder="Job title or keyword"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  leftIcon={<Search className="w-4 h-4" />}
+                  className="h-12"
+                />
+              </div>
+
+              {/* Location Search */}
+              <div className="relative">
+                <Input
+                  placeholder="Location"
+                  value={locationQuery}
+                  onChange={(e) => setLocationQuery(e.target.value)}
+                  leftIcon={<MapPin className="w-4 h-4" />}
+                  className="h-12"
+                />
+              </div>
+
+              {/* Search Button */}
+              <Button
+                size="lg"
+                variant="gradient"
+                className="h-12 w-full"
+                leftIcon={<Search className="w-5 h-5" />}
+              >
+                Search Jobs
+              </Button>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="flex flex-wrap items-center justify-center gap-6 mt-6 pt-6 border-t border-slate-100">
+              <div className="flex items-center space-x-2 text-sm text-slate-600">
+                <Briefcase className="w-4 h-4 text-blue-600" />
+                <span>
+                  <strong className="text-slate-900">{MOCK_JOBS.length}</strong>{" "}
+                  Jobs Available
+                </span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm text-slate-600">
+                <Building2 className="w-4 h-4 text-purple-600" />
+                <span>
+                  <strong className="text-slate-900">500+</strong> Companies
+                </span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm text-slate-600">
+                <Users className="w-4 h-4 text-pink-600" />
+                <span>
+                  <strong className="text-slate-900">10K+</strong> Active Users
+                </span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Filters Panel */}
-      {showFilters && (
-        <section className="px-4 sm:px-6 lg:px-8 pb-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="bg-white border border-gray-200 rounded-xl shadow-lg p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-                <div className="flex gap-2">
-                  <Button variant="ghost" size="sm" onClick={handleClearFilters} className="hover:bg-gray-100 text-gray-700">
-                    Clear All
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowFilters(false)}
-                    className="hover:bg-gray-100 text-gray-700"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
+      {/* Main Content */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        {/* Controls Bar */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          {/* Results Count */}
+          <div className="flex items-center space-x-4">
+            <h3 className="text-lg font-semibold text-slate-900">
+              {filteredJobs.length} Jobs Found
+            </h3>
+            {(filters.jobType.length > 0 ||
+              filters.experienceLevel.length > 0 ||
+              filters.locationType.length > 0) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() =>
+                  setFilters({
+                    jobType: [],
+                    experienceLevel: [],
+                    locationType: [],
+                    salaryRange: [0, 300000],
+                  })
+                }
+                leftIcon={<X className="w-4 h-4" />}
+              >
+                Clear Filters
+              </Button>
+            )}
+          </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {/* View Controls */}
+          <div className="flex items-center space-x-2">
+            {/* Filter Button */}
+            <Button
+              variant={showFilters ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+              leftIcon={<Filter className="w-4 h-4" />}
+            >
+              Filters
+            </Button>
+
+            {/* Sort Dropdown */}
+            <select
+              value={sortBy}
+              onChange={(e) =>
+                setSortBy(e.target.value as "recent" | "salary" | "relevance")
+              }
+              className="px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+            >
+              <option value="recent">Most Recent</option>
+              <option value="salary">Highest Salary</option>
+              <option value="relevance">Most Relevant</option>
+            </select>
+
+            {/* View Toggle */}
+            <div className="hidden md:flex items-center space-x-1 bg-white border border-slate-300 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={cn(
+                  "p-2 rounded transition-all",
+                  viewMode === "grid"
+                    ? "bg-blue-600 text-white"
+                    : "text-slate-600 hover:bg-slate-100"
+                )}
+              >
+                <Grid3x3 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={cn(
+                  "p-2 rounded transition-all",
+                  viewMode === "list"
+                    ? "bg-blue-600 text-white"
+                    : "text-slate-600 hover:bg-slate-100"
+                )}
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Filters Panel */}
+          {showFilters && (
+            <aside className="lg:w-64 flex-shrink-0 animate-slide-up">
+              <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-6 sticky top-24">
+                <h4 className="font-semibold text-slate-900 mb-4 flex items-center justify-between">
+                  Filters
+                  <button
+                    onClick={() => setShowFilters(false)}
+                    className="lg:hidden text-slate-400 hover:text-slate-600"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </h4>
+
                 {/* Job Type */}
-                <div>
-                  <label className="text-sm font-medium text-gray-800 mb-2 block">
+                <div className="mb-6">
+                  <h5 className="text-sm font-medium text-slate-700 mb-3">
                     Job Type
-                  </label>
+                  </h5>
                   <div className="space-y-2">
-                    {jobTypes.map(type => (
-                      <label key={type} className="flex items-center space-x-2 cursor-pointer">
+                    {["Full-time", "Part-time", "Contract", "Freelance"].map(
+                      (type) => (
+                        <label
+                          key={type}
+                          className="flex items-center space-x-2 cursor-pointer group"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={filters.jobType.includes(type)}
+                            onChange={() => toggleFilter("jobType", type)}
+                            className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-slate-600 group-hover:text-slate-900">
+                            {type}
+                          </span>
+                        </label>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                {/* Experience Level */}
+                <div className="mb-6">
+                  <h5 className="text-sm font-medium text-slate-700 mb-3">
+                    Experience Level
+                  </h5>
+                  <div className="space-y-2">
+                    {["Entry", "Mid", "Senior", "Lead"].map((level) => (
+                      <label
+                        key={level}
+                        className="flex items-center space-x-2 cursor-pointer group"
+                      >
                         <input
                           type="checkbox"
-                          checked={filters.jobType.includes(type)}
-                          onChange={(e) => {
-                            const newJobTypes = e.target.checked
-                              ? [...filters.jobType, type]
-                              : filters.jobType.filter(t => t !== type)
-                            setFilters(prev => ({ ...prev, jobType: newJobTypes }))
-                          }}
-                          className="rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
+                          checked={filters.experienceLevel.includes(level)}
+                          onChange={() =>
+                            toggleFilter("experienceLevel", level)
+                          }
+                          className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                         />
-                        <span className="text-sm text-gray-700">{type}</span>
+                        <span className="text-sm text-slate-600 group-hover:text-slate-900">
+                          {level}
+                        </span>
                       </label>
                     ))}
                   </div>
                 </div>
 
-                {/* Experience Level */}
-                <div>
-                  <label className="text-sm font-medium text-gray-800 mb-2 block">
-                    Experience
-                  </label>
+                {/* Location Type */}
+                <div className="mb-6">
+                  <h5 className="text-sm font-medium text-slate-700 mb-3">
+                    Work Location
+                  </h5>
                   <div className="space-y-2">
-                    {experienceLevels.map(level => (
-                      <label key={level} className="flex items-center space-x-2 cursor-pointer">
+                    {["Remote", "Hybrid", "On-site"].map((location) => (
+                      <label
+                        key={location}
+                        className="flex items-center space-x-2 cursor-pointer group"
+                      >
                         <input
                           type="checkbox"
-                          checked={filters.experience.includes(level)}
-                          onChange={(e) => {
-                            const newExperience = e.target.checked
-                              ? [...filters.experience, level]
-                              : filters.experience.filter(exp => exp !== level)
-                            setFilters(prev => ({ ...prev, experience: newExperience }))
-                          }}
-                          className="rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
+                          checked={filters.locationType.includes(location)}
+                          onChange={() =>
+                            toggleFilter("locationType", location)
+                          }
+                          className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                         />
-                        <span className="text-sm text-gray-700">{level}</span>
+                        <span className="text-sm text-slate-600 group-hover:text-slate-900">
+                          {location}
+                        </span>
                       </label>
                     ))}
                   </div>
@@ -554,168 +779,407 @@ export default function JobsPage() {
 
                 {/* Salary Range */}
                 <div>
-                  <label className="text-sm font-medium text-gray-800 mb-2 block">
+                  <h5 className="text-sm font-medium text-slate-700 mb-3">
                     Salary Range
-                  </label>
+                  </h5>
                   <div className="space-y-2">
-                    {salaryRanges.map(range => (
-                      <label key={range} className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={filters.salaryRange.includes(range)}
-                          onChange={(e) => {
-                            const newSalaryRange = e.target.checked
-                              ? [...filters.salaryRange, range]
-                              : filters.salaryRange.filter(r => r !== range)
-                            setFilters(prev => ({ ...prev, salaryRange: newSalaryRange }))
-                          }}
-                          className="rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
-                        />
-                        <span className="text-sm text-gray-700">{range}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Other Filters */}
-                <div>
-                  <label className="text-sm font-medium text-gray-800 mb-2 block">
-                    Other Options
-                  </label>
-                  <div className="space-y-2">
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={filters.isRemote}
-                        onChange={(e) => setFilters(prev => ({ ...prev, isRemote: e.target.checked }))}
-                        className="rounded border-gray-300 text-blue-500 focus:ring-blue-500"
-                      />
-                      <span className="text-sm text-gray-700">Remote Only</span>
-                    </label>
-                  </div>
-
-                  <div className="mt-4">
-                    <label className="text-sm font-medium text-gray-800 mb-2 block">
-                      Posted Within
-                    </label>
-                    <select
-                      value={filters.postedWithin}
-                      onChange={(e) => setFilters(prev => ({ ...prev, postedWithin: e.target.value }))}
-                      className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800"
-                    >
-                      <option value="all">Any Time</option>
-                      <option value="1">Last 24 hours</option>
-                      <option value="7">Last 7 days</option>
-                      <option value="30">Last 30 days</option>
-                    </select>
+                    <input
+                      type="range"
+                      min="0"
+                      max="300000"
+                      step="10000"
+                      value={filters.salaryRange[1]}
+                      onChange={(e) =>
+                        setFilters((prev) => ({
+                          ...prev,
+                          salaryRange: [0, parseInt(e.target.value)],
+                        }))
+                      }
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-xs text-slate-600">
+                      <span>$0</span>
+                      <span>
+                        ${(filters.salaryRange[1] / 1000).toFixed(0)}K+
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Results Header */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">
-                {filteredJobs.length} Jobs Found
-              </h2>
-              <p className="text-sm text-gray-700">
-                Showing results for your search criteria
-              </p>
-            </div>
-
-            <div className="flex items-center gap-4">
-              {/* Sort Options */}
-              <select className="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 shadow-sm">
-                <option>Most Relevant</option>
-                <option>Most Recent</option>
-                <option>Salary: High to Low</option>
-                <option>Salary: Low to High</option>
-              </select>
-
-              {/* View Toggle */}
-              <div className="flex items-center bg-gray-100 border border-gray-200 rounded-lg p-1 shadow-sm">
-                <Button
-                  variant={viewMode === "grid" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("grid")}
-                >
-                  <Grid3x3 className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === "list" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("list")}
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Job Listings */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="max-w-7xl mx-auto">
-          {filteredJobs.length > 0 ? (
-            <div
-              className={
-                viewMode === "grid"
-                  ? "grid gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3"
-                  : "space-y-4"
-              }
-            >
-              {filteredJobs.map((job) => (
-                <JobCard
-                  key={job.id}
-                  {...job}
-                  onView={() => handleJobView(job)}
-                  onApply={() => handleJobApply(job.id)}
-                  onBookmark={() => handleJobBookmark(job.id)}
-                  className={viewMode === "list" ? "max-w-none" : ""}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-lg">
-              <div className="text-gray-500 mb-4">
-                <Search className="h-12 w-12 mx-auto" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                No jobs found
-              </h3>
-              <p className="text-gray-700 mb-4">
-                Try adjusting your search criteria or filters
-              </p>
-              <Button variant="outline" onClick={handleClearFilters} className="bg-gray-100 hover:bg-gray-200 border-gray-300">
-                Clear Filters
-              </Button>
-            </div>
+            </aside>
           )}
+
+          {/* Jobs Grid/List */}
+          <div className="flex-1">
+            {filteredJobs.length === 0 ? (
+              <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-12 text-center">
+                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-slate-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                  No jobs found
+                </h3>
+                <p className="text-slate-600 mb-4">
+                  Try adjusting your search or filters
+                </p>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setLocationQuery("");
+                    setFilters({
+                      jobType: [],
+                      experienceLevel: [],
+                      locationType: [],
+                      salaryRange: [0, 300000],
+                    });
+                  }}
+                >
+                  Clear All Filters
+                </Button>
+              </div>
+            ) : (
+              <div
+                className={cn(
+                  "grid gap-6",
+                  viewMode === "grid"
+                    ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
+                    : "grid-cols-1"
+                )}
+              >
+                {filteredJobs.map((job, index) => (
+                  <JobCard
+                    key={job.id}
+                    job={job}
+                    viewMode={viewMode}
+                    isSaved={savedJobs.has(job.id)}
+                    onSave={() => toggleSaveJob(job.id)}
+                    onViewDetails={() => setSelectedJob(job)}
+                    formatSalary={formatSalary}
+                    formatPostedDate={formatPostedDate}
+                    index={index}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
-      {/* Job Modal */}
+      {/* Job Detail Modal */}
       {selectedJob && (
-        <JobModal
-          isOpen={isJobModalOpen}
-          onClose={() => {
-            setIsJobModalOpen(false)
-            setSelectedJob(null)
-          }}
+        <JobDetailModal
           job={selectedJob}
-          onApply={() => handleJobApply(selectedJob.id)}
-          onBookmark={() => handleJobBookmark(selectedJob.id)}
-          onShare={() => console.log("Share job:", selectedJob.id)}
-          onReport={() => console.log("Report job:", selectedJob.id)}
+          isSaved={savedJobs.has(selectedJob.id)}
+          onClose={() => setSelectedJob(null)}
+          onSave={() => toggleSaveJob(selectedJob.id)}
+          formatSalary={formatSalary}
+          formatPostedDate={formatPostedDate}
         />
       )}
     </div>
-  )
+  );
+}
+
+// Job Card Component
+interface JobCardProps {
+  job: Job;
+  viewMode: "grid" | "list";
+  isSaved: boolean;
+  onSave: () => void;
+  onViewDetails: () => void;
+  formatSalary: (job: Job) => string;
+  formatPostedDate: (date: Date) => string;
+  index: number;
+}
+
+function JobCard({
+  job,
+  viewMode,
+  isSaved,
+  onSave,
+  onViewDetails,
+  formatSalary,
+  formatPostedDate,
+  index,
+}: JobCardProps) {
+  return (
+    <div
+      className={cn(
+        "group bg-white rounded-xl shadow-md border border-slate-200 hover:shadow-2xl hover:border-blue-300 transition-all duration-300 overflow-hidden animate-scale-in cursor-pointer",
+        job.featured && "ring-2 ring-blue-400 ring-offset-2"
+      )}
+      style={{ animationDelay: `${index * 50}ms` }}
+      onClick={onViewDetails}
+    >
+      {job.featured && (
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-semibold px-4 py-2 flex items-center">
+          <Star className="w-3 h-3 mr-1 fill-current" />
+          Featured Job
+        </div>
+      )}
+
+      <div className={cn("p-6", viewMode === "list" && "flex items-start gap-6")}>
+        {/* Company Logo */}
+        <div className={cn(
+          "flex-shrink-0",
+          viewMode === "grid" && "mb-4"
+        )}>
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+            {job.company.charAt(0)}
+          </div>
+        </div>
+
+        <div className="flex-1 min-w-0">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-lg font-semibold text-slate-900 mb-1 group-hover:text-blue-600 transition-colors truncate">
+                {job.title}
+              </h3>
+              <p className="text-sm text-slate-600 mb-2">{job.company}</p>
+            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onSave();
+              }}
+              className="ml-2 p-2 rounded-lg hover:bg-slate-100 transition-colors"
+            >
+              {isSaved ? (
+                <BookmarkCheck className="w-5 h-5 text-blue-600 fill-current" />
+              ) : (
+                <Bookmark className="w-5 h-5 text-slate-400" />
+              )}
+            </button>
+          </div>
+
+          {/* Details */}
+          <div className="space-y-2 mb-4">
+            <div className="flex items-center text-sm text-slate-600">
+              <MapPin className="w-4 h-4 mr-2 text-slate-400" />
+              {job.location}
+            </div>
+            <div className="flex items-center text-sm text-slate-600">
+              <DollarSign className="w-4 h-4 mr-2 text-slate-400" />
+              {formatSalary(job)}
+            </div>
+            <div className="flex items-center text-sm text-slate-600">
+              <Clock className="w-4 h-4 mr-2 text-slate-400" />
+              {formatPostedDate(job.postedAt)}
+            </div>
+          </div>
+
+          {/* Badges */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            <Badge variant="secondary" size="sm">
+              {job.type}
+            </Badge>
+            <Badge variant="info" size="sm">
+              {job.locationType}
+            </Badge>
+            <Badge variant="outline" size="sm">
+              {job.experience}
+            </Badge>
+          </div>
+
+          {/* Skills */}
+          <div className="flex flex-wrap gap-1 mb-4">
+            {job.skills.slice(0, 3).map((skill) => (
+              <span
+                key={skill}
+                className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded"
+              >
+                {skill}
+              </span>
+            ))}
+            {job.skills.length > 3 && (
+              <span className="text-xs text-slate-500 px-2 py-1">
+                +{job.skills.length - 3} more
+              </span>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+            <div className="flex items-center text-sm text-slate-600">
+              <Users className="w-4 h-4 mr-1 text-slate-400" />
+              {job.applicants} applicants
+            </div>
+            <Button
+              size="sm"
+              variant="gradient"
+              onClick={(e) => {
+                e.stopPropagation();
+                onViewDetails();
+              }}
+              rightIcon={<ChevronRight className="w-4 h-4" />}
+            >
+              View Details
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Job Detail Modal Component
+interface JobDetailModalProps {
+  job: Job;
+  isSaved: boolean;
+  onClose: () => void;
+  onSave: () => void;
+  formatSalary: (job: Job) => string;
+  formatPostedDate: (date: Date) => string;
+}
+
+function JobDetailModal({
+  job,
+  isSaved,
+  onClose,
+  onSave,
+  formatSalary,
+  formatPostedDate,
+}: JobDetailModalProps) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden animate-scale-in">
+        {/* Header */}
+        <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-6">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center space-x-4">
+              <div className="w-16 h-16 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-2xl">
+                {job.company.charAt(0)}
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold mb-1">{job.title}</h2>
+                <p className="text-blue-100">{job.company}</p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-lg hover:bg-white/20 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          <div className="flex flex-wrap gap-4 text-sm">
+            <div className="flex items-center">
+              <MapPin className="w-4 h-4 mr-2" />
+              {job.location}
+            </div>
+            <div className="flex items-center">
+              <DollarSign className="w-4 h-4 mr-2" />
+              {formatSalary(job)}
+            </div>
+            <div className="flex items-center">
+              <Clock className="w-4 h-4 mr-2" />
+              {formatPostedDate(job.postedAt)}
+            </div>
+            <div className="flex items-center">
+              <Users className="w-4 h-4 mr-2" />
+              {job.applicants} applicants
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="overflow-y-auto max-h-[calc(90vh-180px)] px-6 py-6">
+          {/* Badges */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            <Badge variant="default">{job.type}</Badge>
+            <Badge variant="info">{job.locationType}</Badge>
+            <Badge variant="secondary">{job.experience}</Badge>
+            {job.featured && <Badge variant="gradient">Featured</Badge>}
+          </div>
+
+          {/* Description */}
+          <section className="mb-8">
+            <h3 className="text-lg font-semibold text-slate-900 mb-3">
+              About the Role
+            </h3>
+            <p className="text-slate-700 leading-relaxed">{job.description}</p>
+          </section>
+
+          {/* Requirements */}
+          <section className="mb-8">
+            <h3 className="text-lg font-semibold text-slate-900 mb-3">
+              Requirements
+            </h3>
+            <ul className="space-y-2">
+              {job.requirements.map((req, index) => (
+                <li key={index} className="flex items-start">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
+                  <span className="text-slate-700">{req}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {/* Skills */}
+          <section className="mb-8">
+            <h3 className="text-lg font-semibold text-slate-900 mb-3">
+              Required Skills
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {job.skills.map((skill) => (
+                <Badge key={skill} variant="outline" size="lg">
+                  {skill}
+                </Badge>
+              ))}
+            </div>
+          </section>
+
+          {/* Benefits */}
+          <section className="mb-8">
+            <h3 className="text-lg font-semibold text-slate-900 mb-3">
+              Benefits
+            </h3>
+            <ul className="space-y-2">
+              {job.benefits.map((benefit, index) => (
+                <li key={index} className="flex items-start">
+                  <Star className="w-5 h-5 text-yellow-500 mr-3 mt-0.5 flex-shrink-0 fill-current" />
+                  <span className="text-slate-700">{benefit}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+
+        {/* Footer */}
+        <div className="sticky bottom-0 bg-slate-50 border-t border-slate-200 px-6 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={onSave}
+                leftIcon={
+                  isSaved ? (
+                    <BookmarkCheck className="w-5 h-5 fill-current" />
+                  ) : (
+                    <Bookmark className="w-5 h-5" />
+                  )
+                }
+              >
+                {isSaved ? "Saved" : "Save Job"}
+              </Button>
+              <Button variant="ghost" size="lg" leftIcon={<Share2 className="w-5 h-5" />}>
+                Share
+              </Button>
+            </div>
+            <Button
+              variant="gradient"
+              size="lg"
+              leftIcon={<TrendingUp className="w-5 h-5" />}
+            >
+              Apply Now
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
