@@ -16,17 +16,17 @@ const buttonVariants = cva(
         destructive:
           "bg-gradient-to-r from-error-500 to-error-600 text-white shadow-card hover:shadow-card-hover hover:scale-[1.02] active:scale-[0.98]",
         outline:
-          "border border-border bg-background/80 backdrop-blur-sm hover:bg-surface-100 hover:text-surface-900 shadow-sm hover:shadow-card transition-all",
+          "border border-border bg-white hover:bg-surface-100 hover:text-surface-900 shadow-sm hover:shadow-card transition-all",
         secondary:
           "bg-gradient-to-r from-surface-200 to-surface-300 text-surface-900 shadow-card hover:shadow-card-hover hover:scale-[1.02] active:scale-[0.98]",
         ghost:
-          "hover:bg-surface-100 hover:text-surface-900 rounded-lg transition-all hover:shadow-sm",
+          "bg-transparent hover:bg-surface-100 hover:text-surface-900 rounded-lg transition-all hover:shadow-sm",
         link:
-          "text-primary-600 underline-offset-4 hover:underline transition-all",
+          "bg-transparent text-primary-600 underline-offset-4 hover:underline transition-all",
         gradient:
           "bg-gradient-to-r from-primary-500 via-interactive-500 to-primary-600 text-white shadow-card hover:shadow-card-hover hover:scale-[1.02] active:scale-[0.98] animate-fade-in",
         glass:
-          "glass text-surface-900 hover:bg-white/20 shadow-glass hover:shadow-card-hover transition-all",
+          "bg-white bg-opacity-100 text-surface-900 hover:bg-surface-50 shadow-glass hover:shadow-card-hover transition-all border border-surface-200",
       },
       size: {
         default: "h-10 px-4 py-2",
