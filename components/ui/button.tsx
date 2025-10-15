@@ -12,21 +12,21 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
         destructive:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
         outline:
-          "border border-border bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "border border-border bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
         secondary:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
         ghost:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
         link:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white underline-offset-4 hover:underline transition-all",
+          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white underline-offset-4 hover:underline transition-all",
         gradient:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] animate-fade-in",
+          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] animate-fade-in",
         glass:
-          "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
       },
       size: {
         default: "h-10 px-4 py-2",
