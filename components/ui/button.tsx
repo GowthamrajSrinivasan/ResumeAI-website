@@ -7,32 +7,32 @@ import { cn } from "@/lib/utils"
 import { Loader2 } from "lucide-react"
 
 const buttonVariants = cva(
-  "btn inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-bold ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "btn inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold text-white ring-offset-background transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         default:
-          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] shadow-[0_10px_15px_-3px_rgba(37,99,235,0.3)] hover:scale-105 hover:shadow-[0_20px_25px_-5px_rgba(37,99,235,0.4)]",
         destructive:
-          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] shadow-[0_10px_15px_-3px_rgba(37,99,235,0.3)] hover:scale-105 hover:shadow-[0_20px_25px_-5px_rgba(37,99,235,0.4)]",
         outline:
-          "border border-border bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "border border-border bg-[linear-gradient(to_right,#2563eb,#60a5fa)] shadow-[0_10px_15px_-3px_rgba(37,99,235,0.3)] hover:scale-105 hover:shadow-[0_20px_25px_-5px_rgba(37,99,235,0.4)]",
         secondary:
-          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] shadow-[0_10px_15px_-3px_rgba(37,99,235,0.3)] hover:scale-105 hover:shadow-[0_20px_25px_-5px_rgba(37,99,235,0.4)]",
         ghost:
-          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] shadow-[0_10px_15px_-3px_rgba(37,99,235,0.3)] hover:scale-105 hover:shadow-[0_20px_25px_-5px_rgba(37,99,235,0.4)]",
         link:
-          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white underline-offset-4 hover:underline transition-all",
+          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] underline-offset-4 hover:underline transition-all",
         gradient:
-          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] animate-fade-in",
+          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] shadow-[0_10px_15px_-3px_rgba(37,99,235,0.3)] hover:scale-105 hover:shadow-[0_20px_25px_-5px_rgba(37,99,235,0.4)] animate-fade-in",
         glass:
-          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] shadow-[0_10px_15px_-3px_rgba(37,99,235,0.3)] hover:scale-105 hover:shadow-[0_20px_25px_-5px_rgba(37,99,235,0.4)]",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-12 rounded-lg px-8 text-base",
-        xl: "h-14 rounded-xl px-10 text-lg",
+        default: "px-6 py-3",
+        sm: "px-4 py-2 text-xs",
+        lg: "px-8 py-4 text-base",
+        xl: "px-10 py-5 text-lg",
         icon: "h-10 w-10",
         "icon-sm": "h-8 w-8",
         "icon-lg": "h-12 w-12",
