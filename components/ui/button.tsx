@@ -12,21 +12,21 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
         destructive:
-          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
         outline:
-          "border border-border bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "border border-white/30 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
         secondary:
-          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
         ghost:
-          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
         link:
-          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white underline-offset-4 hover:underline transition-all",
+          "text-white underline-offset-4 hover:underline transition-all",
         gradient:
-          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] animate-fade-in",
+          "text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] animate-fade-in",
         glass:
-          "bg-[linear-gradient(to_right,#2563eb,#60a5fa)] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
+          "text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
       },
       size: {
         default: "h-10 px-4 py-2",
