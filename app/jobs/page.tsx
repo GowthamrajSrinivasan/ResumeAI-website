@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useSavedJobs } from "@/hooks/useSavedJobs";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -294,8 +295,9 @@ const MOCK_JOBS: Job[] = [
 ];
 
 export default function JobsPage() {
-  const { user, loading, logout } = useAuth();
+  const { user, loading: authLoading, logout } = useAuth();
   const router = useRouter();
+  const { jobs: savedJobsData, deleteJob, loading: savedJobsLoading } = useSavedJobs();
 
   // State management
   const [searchQuery, setSearchQuery] = useState("");
@@ -304,8 +306,12 @@ export default function JobsPage() {
   const [sortBy, setSortBy] = useState<"recent" | "salary" | "relevance">("recent");
   const [showFilters, setShowFilters] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [savedJobs, setSavedJobs] = useState<Set<string>>(new Set());
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+
+  // Create a Set of saved job IDs for quick lookup
+  const savedJobIds = useMemo(() => {
+    return new Set(savedJobsData.map(job => job.id));
+  }, [savedJobsData]);
 
   const [filters, setFilters] = useState<FilterState>({
     jobType: [],
@@ -314,9 +320,34 @@ export default function JobsPage() {
     salaryRange: [0, 300000],
   });
 
+  // Convert SavedJob data to Job format for display
+  const convertedJobs = useMemo(() => {
+    return savedJobsData.map(savedJob => ({
+      id: savedJob.id,
+      title: savedJob.title,
+      company: savedJob.company,
+      location: savedJob.location,
+      locationType: savedJob.isRemote ? "Remote" as const : "On-site" as const,
+      salary: {
+        min: savedJob.salary ? savedJob.salary * 0.8 : 0,
+        max: savedJob.salary || 0,
+        currency: "USD"
+      },
+      type: "Full-time" as const,
+      experience: "Mid" as const,
+      skills: savedJob.extractedSkills || [],
+      description: savedJob.description || "",
+      requirements: [],
+      benefits: [],
+      postedAt: savedJob.savedAt?.toDate?.() || new Date(),
+      applicants: savedJob.applicants || 0,
+      featured: savedJob.tags?.includes('featured') || false,
+    })) as Job[];
+  }, [savedJobsData]);
+
   // Filter and search logic
   const filteredJobs = useMemo(() => {
-    let jobs = [...MOCK_JOBS];
+    let jobs = [...convertedJobs];
 
     // Search filter
     if (searchQuery) {
@@ -371,7 +402,7 @@ export default function JobsPage() {
     }
 
     return jobs;
-  }, [searchQuery, locationQuery, filters, sortBy]);
+  }, [searchQuery, locationQuery, filters, sortBy, convertedJobs]);
 
   // Helper functions
   const toggleFilter = (
@@ -387,16 +418,24 @@ export default function JobsPage() {
     });
   };
 
-  const toggleSaveJob = (jobId: string) => {
-    setSavedJobs((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(jobId)) {
-        newSet.delete(jobId);
-      } else {
-        newSet.add(jobId);
+  const toggleSaveJob = async (job: Job) => {
+    if (!user) {
+      // Redirect to login if not authenticated
+      router.push('/login');
+      return;
+    }
+
+    try {
+      // Check if job is already saved
+      const isSaved = savedJobIds.has(job.id);
+
+      if (isSaved) {
+        // Delete the saved job from Firestore
+        await deleteJob(job.id);
       }
-      return newSet;
-    });
+    } catch (error) {
+      console.error('Error removing saved job:', error);
+    }
   };
 
   const formatSalary = (job: Job) => {
@@ -577,20 +616,22 @@ export default function JobsPage() {
               <div className="flex items-center space-x-2 text-sm text-slate-600">
                 <Briefcase className="w-4 h-4 text-blue-600" />
                 <span>
-                  <strong className="text-slate-900">{MOCK_JOBS.length}</strong>{" "}
-                  Jobs Available
+                  <strong className="text-slate-900">{savedJobsLoading ? '-' : savedJobsData.length}</strong>{" "}
+                  Jobs Saved
                 </span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-slate-600">
                 <Building2 className="w-4 h-4 text-purple-600" />
                 <span>
-                  <strong className="text-slate-900">500+</strong> Companies
+                  <strong className="text-slate-900">{savedJobsLoading ? '-' : new Set(savedJobsData.map(j => j.company)).size}</strong>{" "}
+                  Companies
                 </span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-slate-600">
                 <Users className="w-4 h-4 text-pink-600" />
                 <span>
-                  <strong className="text-slate-900">10K+</strong> Active Users
+                  <strong className="text-slate-900">{savedJobsLoading ? '-' : savedJobsData.reduce((sum, j) => sum + (j.applicants || 0), 0)}</strong>{" "}
+                  Total Applicants
                 </span>
               </div>
             </div>
@@ -811,7 +852,42 @@ export default function JobsPage() {
 
           {/* Jobs Grid/List */}
           <div className="flex-1">
-            {filteredJobs.length === 0 ? (
+            {/* Loading State */}
+            {savedJobsLoading ? (
+              <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-12 text-center">
+                <div className="flex justify-center mb-4">
+                  <div className="animate-spin">
+                    <Briefcase className="w-8 h-8 text-blue-600" />
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                  Loading your saved jobs...
+                </h3>
+                <p className="text-slate-600">
+                  Please wait while we fetch your jobs from Firestore
+                </p>
+              </div>
+            ) : savedJobsData.length === 0 ? (
+              // Empty state when no jobs are saved
+              <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-12 text-center">
+                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Bookmark className="w-8 h-8 text-slate-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                  No saved jobs yet
+                </h3>
+                <p className="text-slate-600 mb-4">
+                  Start saving jobs to track them and manage your job search
+                </p>
+                <Button
+                  variant="gradient"
+                  onClick={() => router.push('/jobs')}
+                >
+                  Browse Jobs
+                </Button>
+              </div>
+            ) : filteredJobs.length === 0 ? (
+              // No results after filtering
               <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-12 text-center">
                 <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Search className="w-8 h-8 text-slate-400" />
@@ -852,8 +928,8 @@ export default function JobsPage() {
                     key={job.id}
                     job={job}
                     viewMode={viewMode}
-                    isSaved={savedJobs.has(job.id)}
-                    onSave={() => toggleSaveJob(job.id)}
+                    isSaved={savedJobIds.has(job.id)}
+                    onSave={() => toggleSaveJob(job)}
                     onViewDetails={() => setSelectedJob(job)}
                     formatSalary={formatSalary}
                     formatPostedDate={formatPostedDate}
@@ -870,9 +946,9 @@ export default function JobsPage() {
       {selectedJob && (
         <JobDetailModal
           job={selectedJob}
-          isSaved={savedJobs.has(selectedJob.id)}
+          isSaved={savedJobIds.has(selectedJob.id)}
           onClose={() => setSelectedJob(null)}
-          onSave={() => toggleSaveJob(selectedJob.id)}
+          onSave={() => toggleSaveJob(selectedJob)}
           formatSalary={formatSalary}
           formatPostedDate={formatPostedDate}
         />
