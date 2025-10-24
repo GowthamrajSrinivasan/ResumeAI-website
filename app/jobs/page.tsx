@@ -1076,6 +1076,15 @@ function JobCard({
             )}
           </div>
 
+          {/* Description Preview (List View) */}
+          {viewMode === "list" && job.description && (
+            <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <p className="text-sm text-slate-600 line-clamp-2">
+                {job.description.split('\n')[0]}
+              </p>
+            </div>
+          )}
+
           {/* Footer */}
           <div className="flex items-center justify-between pt-4 border-t border-slate-100">
             <div className="flex items-center text-sm text-slate-600">
@@ -1173,10 +1182,47 @@ function JobDetailModal({
 
           {/* Description */}
           <section className="mb-8">
-            <h3 className="text-lg font-semibold text-slate-900 mb-3">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">
               About the Role
             </h3>
-            <p className="text-slate-700 leading-relaxed">{job.description}</p>
+            <div className="space-y-4">
+              {job.description ? (
+                job.description.split('\n').filter(para => para.trim()).map((para, index) => {
+                  // Check if the paragraph is a list item (starts with - or •)
+                  if (para.trim().startsWith('-') || para.trim().startsWith('•')) {
+                    return (
+                      <div key={index} className="flex items-start">
+                        <div className="w-2 h-2 bg-blue-600 rounded-full mt-2.5 mr-3 flex-shrink-0" />
+                        <p className="text-slate-700 leading-relaxed">
+                          {para.trim().replace(/^[-•]\s*/, '')}
+                        </p>
+                      </div>
+                    );
+                  }
+                  // Check if it's a numbered list
+                  if (/^\d+\.\s/.test(para.trim())) {
+                    return (
+                      <div key={index} className="flex items-start">
+                        <span className="text-blue-600 font-semibold mr-3 mt-0.5 flex-shrink-0">
+                          {para.trim().match(/^\d+/)?.[0]}.
+                        </span>
+                        <p className="text-slate-700 leading-relaxed">
+                          {para.trim().replace(/^\d+\.\s*/, '')}
+                        </p>
+                      </div>
+                    );
+                  }
+                  // Regular paragraph
+                  return (
+                    <p key={index} className="text-slate-700 leading-relaxed">
+                      {para.trim()}
+                    </p>
+                  );
+                })
+              ) : (
+                <p className="text-slate-600 italic">No description provided</p>
+              )}
+            </div>
           </section>
 
           {/* Requirements */}
